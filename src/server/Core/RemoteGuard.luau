@@ -39,7 +39,9 @@ local function allow(player: Player, key: string, perSecond: number, burst: numb
 	end
 	violations[player] = (violations[player] or 0) + 1
 	if violations[player] % 50 == 0 then
-		warn(string.format("[RemoteGuard] %s exceeded rate limit on %s (%d drops)", player.Name, key, violations[player]))
+		warn(
+			string.format("[RemoteGuard] %s exceeded rate limit on %s (%d drops)", player.Name, key, violations[player])
+		)
 	end
 	return false
 end

@@ -24,7 +24,11 @@ local function rngFor(raceId)
 		cumulative += entry.Weight
 		if entry.Id == raceId then
 			local target = cumulative
-			return { NextInteger = function() return target end }
+			return {
+				NextInteger = function()
+					return target
+				end,
+			}
 		end
 	end
 	error("unknown race " .. raceId)
@@ -121,7 +125,12 @@ describe("Race rolling (server-authoritative)", function()
 		local p = newProfile()
 		local c = ctx(rngFor("Human"))
 		RaceRollLogic.Roll(p, "req-e0001", "Token", c)
-		local tooSoon = RaceRollLogic.Roll(p, "req-e0002", "Token", { Now = c.Now + 0.1, UnixTime = 0, Rng = rngFor("Human"), LastRollAt = c.Now })
+		local tooSoon = RaceRollLogic.Roll(
+			p,
+			"req-e0002",
+			"Token",
+			{ Now = c.Now + 0.1, UnixTime = 0, Rng = rngFor("Human"), LastRollAt = c.Now }
+		)
 		expect(tooSoon.Reason).toBe("Cooldown")
 	end)
 

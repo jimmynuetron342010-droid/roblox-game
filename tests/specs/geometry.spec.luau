@@ -92,7 +92,14 @@ describe("GeometryKit triangles", function()
 
 	it("welds every generated part to the root with matching offsets", function()
 		local kit, model = newKit(CFrame.new(1, 2, 3), 1)
-		kit:Triangle("T", Vector3.new(0, 0, 0), Vector3.new(1, 0, 0), Vector3.new(0, 1, 0), 0.1, roblox.Color3.new(1, 0, 0))
+		kit:Triangle(
+			"T",
+			Vector3.new(0, 0, 0),
+			Vector3.new(1, 0, 0),
+			Vector3.new(0, 1, 0),
+			0.1,
+			roblox.Color3.new(1, 0, 0)
+		)
 		kit:Cylinder("C", Vector3.new(0, 0, 0), Vector3.new(0, 5, 0), 0.3, roblox.Color3.new(0, 1, 0))
 		local count = 0
 		for _, part in model:GetDescendants() do

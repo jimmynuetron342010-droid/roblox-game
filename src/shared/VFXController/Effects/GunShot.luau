@@ -45,7 +45,8 @@ local function fireOne(vfx, p, cfg, unitName: string, target: Vector3?)
 	local muzzleConfig = weaponConfig.Muzzle[unitName] or weaponConfig.Muzzle.Liz
 	local muzzle = muzzleOf(p.Weapon, unitName)
 	local root = Shared.Root(p)
-	local muzzleCF = muzzle and muzzle.WorldCFrame or (root and root.CFrame * CFrame.new(unitName == "Liz" and 0.8 or -0.8, 0.5, -2.2))
+	local muzzleCF = muzzle and muzzle.WorldCFrame
+		or (root and root.CFrame * CFrame.new(unitName == "Liz" and 0.8 or -0.8, 0.5, -2.2))
 	if not muzzleCF then
 		return
 	end
@@ -75,7 +76,11 @@ local function fireOne(vfx, p, cfg, unitName: string, target: Vector3?)
 	end)
 	tracer.Color = muzzleConfig.FlashColor:Lerp(Color3.new(1, 1, 1), 0.4)
 	tracer.Transparency = 0.2
-	tracer.Size = Vector3.new(weaponConfig.Projectile.TracerWidth, weaponConfig.Projectile.TracerWidth, weaponConfig.Projectile.TracerLength)
+	tracer.Size = Vector3.new(
+		weaponConfig.Projectile.TracerWidth,
+		weaponConfig.Projectile.TracerWidth,
+		weaponConfig.Projectile.TracerLength
+	)
 	local dir = distance > 0 and travel / distance or forward
 	local t = 0
 	vfx.AddTask(function(dt)

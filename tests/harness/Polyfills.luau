@@ -79,8 +79,16 @@ function Polyfills.RunService(opts)
 		IsStudio = function()
 			return opts.IsStudio == true
 		end,
-		Heartbeat = { Connect = function() return { Disconnect = function() end } end },
-		Stepped = { Connect = function() return { Disconnect = function() end } end },
+		Heartbeat = {
+			Connect = function()
+				return { Disconnect = function() end }
+			end,
+		},
+		Stepped = {
+			Connect = function()
+				return { Disconnect = function() end }
+			end,
+		},
 	}
 end
 

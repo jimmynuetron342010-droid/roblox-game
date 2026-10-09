@@ -24,7 +24,15 @@ return function(api)
 	for i = 0, segments - 1 do
 		local y0 = bottom + i * segLength
 		local y1 = y0 + segLength
-		kit:Cylinder("Bone", Vector3.new(0, y0 + 0.08, 0), Vector3.new(0, y1 - 0.08, 0), r, p.Shaft, Enum.Material.SmoothPlastic, shaft)
+		kit:Cylinder(
+			"Bone",
+			Vector3.new(0, y0 + 0.08, 0),
+			Vector3.new(0, y1 - 0.08, 0),
+			r,
+			p.Shaft,
+			Enum.Material.SmoothPlastic,
+			shaft
+		)
 		if i < segments - 1 then
 			-- Knuckled joint: two balls side by side, like a bone joint.
 			kit:Ball("Knuckle", r * 1.35, Vector3.new(r * 0.32, y1, 0), p.Joint, Enum.Material.SmoothPlastic, shaft)
@@ -37,16 +45,46 @@ return function(api)
 	local grips = kit:Group("Grips")
 	for i = 0, 3 do
 		local y = -0.4 + i * 0.27
-		kit:Cylinder("Wrap", Vector3.new(0, y - 0.07, 0), Vector3.new(0, y + 0.07, 0), r + 0.08, p.Grip, Enum.Material.Fabric, grips)
+		kit:Cylinder(
+			"Wrap",
+			Vector3.new(0, y - 0.07, 0),
+			Vector3.new(0, y + 0.07, 0),
+			r + 0.08,
+			p.Grip,
+			Enum.Material.Fabric,
+			grips
+		)
 	end
 
 	-- Head ---------------------------------------------------------------------------
 	local head = kit:Group("Head")
-	kit:Block("Housing", Vector3.new(0.55, 1.05, 0.95), CFrame.new(0, top + 0.2, -0.15) * CFrame.Angles(math.rad(-10), 0, 0), p.Accent, Enum.Material.Metal, head)
-	kit:Block("Crown", Vector3.new(0.6, 0.18, 0.7), CFrame.new(0, top + 0.78, -0.05), p.Joint, Enum.Material.SmoothPlastic, head)
+	kit:Block(
+		"Housing",
+		Vector3.new(0.55, 1.05, 0.95),
+		CFrame.new(0, top + 0.2, -0.15) * CFrame.Angles(math.rad(-10), 0, 0),
+		p.Accent,
+		Enum.Material.Metal,
+		head
+	)
+	kit:Block(
+		"Crown",
+		Vector3.new(0.6, 0.18, 0.7),
+		CFrame.new(0, top + 0.78, -0.05),
+		p.Joint,
+		Enum.Material.SmoothPlastic,
+		head
+	)
 	for _, side in { -1, 1 } do
 		local x = side * 0.29
-		kit:Cylinder("EyeRim", Vector3.new(x, top + 0.2, -0.2), Vector3.new(x + side * 0.04, top + 0.2, -0.2), 0.58, p.Shaft, Enum.Material.SmoothPlastic, head)
+		kit:Cylinder(
+			"EyeRim",
+			Vector3.new(x, top + 0.2, -0.2),
+			Vector3.new(x + side * 0.04, top + 0.2, -0.2),
+			0.58,
+			p.Shaft,
+			Enum.Material.SmoothPlastic,
+			head
+		)
 		kit:Ball("Eye", 0.36, Vector3.new(x + side * 0.08, top + 0.2, -0.2), p.Eye, Enum.Material.SmoothPlastic, head)
 	end
 

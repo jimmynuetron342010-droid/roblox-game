@@ -249,7 +249,12 @@ Kinds.Projectile = function(vfx, p)
 		Homing = p.Target and { Target = p.Target, Turn = p.Turn or 6 } or nil,
 		OnStep = function(position, direction)
 			part.CFrame = CFrame.lookAt(position, position + direction)
-			vfx.Emit("Soul", CFrame.new(position), 1, { Color = ColorSequence.new(color), Speed = NumberRange.new(0, 1) })
+			vfx.Emit(
+				"Soul",
+				CFrame.new(position),
+				1,
+				{ Color = ColorSequence.new(color), Speed = NumberRange.new(0, 1) }
+			)
 		end,
 		OnHit = function(result)
 			vfx.Emit("Soul", CFrame.new(result.Position), 12, { Color = ColorSequence.new(color) })
@@ -281,7 +286,12 @@ Kinds.Construct = function(vfx, p)
 	piece(Vector3.new(0.6, 1.6, 0.6), CFrame.new(0, 1.2, 0), Color3.fromRGB(90, 92, 100))
 	piece(Vector3.new(1.1, 1.1, 1.1), CFrame.new(0, 2.3, 0), Color3.fromRGB(70, 110, 140), Enum.PartType.Ball)
 	piece(Vector3.new(0.3, 0.3, 1.4), CFrame.new(0, 2.3, -0.7), Color3.fromRGB(50, 50, 56))
-	vfx.Emit("Soul", CFrame.new(point + Vector3.new(0, 1, 0)), 16, { Color = ColorSequence.new(Color3.fromRGB(80, 200, 255)) })
+	vfx.Emit(
+		"Soul",
+		CFrame.new(point + Vector3.new(0, 1, 0)),
+		16,
+		{ Color = ColorSequence.new(Color3.fromRGB(80, 200, 255)) }
+	)
 	vfx.Delay(p.Duration or 8, function()
 		vfx.Emit("Puff", CFrame.new(point + Vector3.new(0, 1, 0)), 10)
 		for _, part in parts do
@@ -334,7 +344,14 @@ end
 Kinds.Rooted = function(vfx, p)
 	local root = Shared.Root(p)
 	if root then
-		vfx.Ring(root.Position - Vector3.new(0, 2.6, 0), Vector3.yAxis, 2.2, p.Duration or 1.2, Color3.fromRGB(226, 210, 170), 0.25)
+		vfx.Ring(
+			root.Position - Vector3.new(0, 2.6, 0),
+			Vector3.yAxis,
+			2.2,
+			p.Duration or 1.2,
+			Color3.fromRGB(226, 210, 170),
+			0.25
+		)
 	end
 end
 

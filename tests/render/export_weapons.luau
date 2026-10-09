@@ -73,7 +73,8 @@ for _, id in WeaponConfig.Order do
 				},
 			})
 			if poseArg == "Idle" then
-				local solo = WeaponBuilder.Build(id, { Form = form or nil, Anchored = true, Origin = CFrame.new(0, 3.2, 0) })
+				local solo =
+					WeaponBuilder.Build(id, { Form = form or nil, Anchored = true, Origin = CFrame.new(0, 3.2, 0) })
 				table.insert(scenes, {
 					name = name .. "_model",
 					groundY = -1.5,

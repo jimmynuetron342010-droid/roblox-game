@@ -52,7 +52,14 @@ describe("Race probability table", function()
 		for id, p in EXPECTED do
 			local expectedCount = n * p
 			chi += ((counts[id] or 0) - expectedCount) ^ 2 / expectedCount
-			print(string.format("      %-12s expected %5.2f%%  observed %6.3f%%", id, p * 100, (counts[id] or 0) / n * 100))
+			print(
+				string.format(
+					"      %-12s expected %5.2f%%  observed %6.3f%%",
+					id,
+					p * 100,
+					(counts[id] or 0) / n * 100
+				)
+			)
 		end
 		-- 8 degrees of freedom: critical value at p = 0.001 is 26.12
 		expect(chi).toBeAtMost(26.12)
@@ -66,13 +73,29 @@ describe("Race probability table", function()
 	end)
 
 	it("picks deterministically at the boundaries of the cumulative table", function()
-		local fixed = { NextInteger = function(_, _, _) return 1 end }
+		local fixed = {
+			NextInteger = function(_, _, _)
+				return 1
+			end,
+		}
 		expect(WeightedRoll.Pick(RaceConfig.RollTable, fixed).Id).toBe("Human")
-		local last = { NextInteger = function(_, _, max) return max end }
+		local last = {
+			NextInteger = function(_, _, max)
+				return max
+			end,
+		}
 		expect(WeightedRoll.Pick(RaceConfig.RollTable, last).Id).toBe("Golem")
-		local edge = { NextInteger = function() return 4000 end }
+		local edge = {
+			NextInteger = function()
+				return 4000
+			end,
+		}
 		expect(WeightedRoll.Pick(RaceConfig.RollTable, edge).Id).toBe("Human")
-		local edge2 = { NextInteger = function() return 4001 end }
+		local edge2 = {
+			NextInteger = function()
+				return 4001
+			end,
+		}
 		expect(WeightedRoll.Pick(RaceConfig.RollTable, edge2).Id).toBe("DemonWeapon")
 	end)
 end)

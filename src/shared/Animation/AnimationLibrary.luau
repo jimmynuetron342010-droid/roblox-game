@@ -169,7 +169,14 @@ export type Action = {
 }
 
 -- Horizontal swing around the body. theta in degrees: + = right side, 0 = front, - = left.
-local function swingFrame(theta: number, radius: number, height: number, elevation: number, direction: number, tilt: number?)
+local function swingFrame(
+	theta: number,
+	radius: number,
+	height: number,
+	elevation: number,
+	direction: number,
+	tilt: number?
+)
 	local t = rad(theta)
 	local e = rad(elevation)
 	local shaft = V(math.sin(t) * math.cos(e), math.sin(e), -math.cos(t) * math.cos(e))
@@ -200,7 +207,14 @@ local function swingKeys(unit: string, from: number, to: number, opts)
 		local alpha = i / steps
 		local theta = from + (to - from) * alpha
 		local t = opts.T0 + (opts.T1 - opts.T0) * alpha
-		local frame = swingFrame(theta, opts.Radius or 0.5, opts.Height or -0.55, opts.Elevation or 8, to < from and -1 or 1, opts.Tilt)
+		local frame = swingFrame(
+			theta,
+			opts.Radius or 0.5,
+			opts.Height or -0.55,
+			opts.Elevation or 8,
+			to < from and -1 or 1,
+			opts.Tilt
+		)
 		table.insert(keys, {
 			T = t,
 			Ease = i == 0 and "Out" or "Linear",
@@ -269,13 +283,21 @@ local A = {}
 
 -- Scythes ---------------------------------------------------------------------
 A.ScytheSlashA = {
-	Keys = concat(swingKeys("Main", 95, 115, { T0 = 0.0, T1 = 0.28, Steps = 1, Radius = 0.45 }), swingKeys("Main", 115, -105, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.5 })),
+	Keys = concat(
+		swingKeys("Main", 95, 115, { T0 = 0.0, T1 = 0.28, Steps = 1, Radius = 0.45 }),
+		swingKeys("Main", 115, -105, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.5 })
+	),
 	Trail = { 0.3, 0.66 },
 }
 A.ScytheSlashB = {
 	Keys = concat(
 		swingKeys("Main", -80, -105, { T0 = 0.0, T1 = 0.26, Steps = 1, Radius = 0.45, Tilt = -28, Height = -0.85 }),
-		swingKeys("Main", -105, 110, { T0 = 0.28, T1 = 0.6, Steps = 6, Radius = 0.5, Tilt = -28, Height = -0.4, Elevation = 25 })
+		swingKeys(
+			"Main",
+			-105,
+			110,
+			{ T0 = 0.28, T1 = 0.6, Steps = 6, Radius = 0.5, Tilt = -28, Height = -0.4, Elevation = 25 }
+		)
 	),
 	Trail = { 0.28, 0.64 },
 }
@@ -291,20 +313,38 @@ do
 			Joints = { Root = E(0, -alpha * 360, 0), Waist = E(-8, 15, 0) },
 		})
 	end
-	table.insert(keys, 1, { T = 0, Weapon = { Main = swingFrame(95, 0.45, -0.6, 10, -1) }, Joints = { Waist = E(-6, 30, 0) } })
+	table.insert(
+		keys,
+		1,
+		{ T = 0, Weapon = { Main = swingFrame(95, 0.45, -0.6, 10, -1) }, Joints = { Waist = E(-6, 30, 0) } }
+	)
 	A.ScytheSpin = { Keys = keys, Trail = { 0.12, 0.78 } }
 end
 A.ScytheHeavy = {
-	Keys = concat(overheadKeys("Main", 95, 165, { T0 = 0.0, T1 = 0.4, Steps = 2 }), overheadKeys("Main", 165, -35, { T0 = 0.42, T1 = 0.62, Steps = 5, Crouch = 0.45 })),
+	Keys = concat(
+		overheadKeys("Main", 95, 165, { T0 = 0.0, T1 = 0.4, Steps = 2 }),
+		overheadKeys("Main", 165, -35, { T0 = 0.42, T1 = 0.62, Steps = 5, Crouch = 0.45 })
+	),
 	Trail = { 0.42, 0.66 },
 }
 A.ScytheSlam = {
-	Keys = concat(overheadKeys("Main", 95, 170, { T0 = 0.0, T1 = 0.45, Steps = 2 }), overheadKeys("Main", 170, -55, { T0 = 0.47, T1 = 0.62, Steps = 5, Crouch = 0.6 })),
+	Keys = concat(
+		overheadKeys("Main", 95, 170, { T0 = 0.0, T1 = 0.45, Steps = 2 }),
+		overheadKeys("Main", 170, -55, { T0 = 0.47, T1 = 0.62, Steps = 5, Crouch = 0.6 })
+	),
 	Trail = { 0.47, 0.64 },
 }
 A.DashSlash = {
 	Keys = concat(
-		{ pose(0, { Waist = E(-24, 20, 0), Root = E(-10, 0, 0), RightHip = E(30, 0, 0), LeftHip = E(-25, 0, 0), RightKnee = E(-30, 0, 0) }) },
+		{
+			pose(0, {
+				Waist = E(-24, 20, 0),
+				Root = E(-10, 0, 0),
+				RightHip = E(30, 0, 0),
+				LeftHip = E(-25, 0, 0),
+				RightKnee = E(-30, 0, 0),
+			}),
+		},
 		swingKeys("Main", 100, -80, { T0 = 0.08, T1 = 0.3, Steps = 4, Lean = -22, Radius = 0.5 }),
 		swingKeys("Main", -80, 95, { T0 = 0.32, T1 = 0.46, Steps = 4, Lean = -22, Tilt = 20, Radius = 0.5 }),
 		swingKeys("Main", 95, -70, { T0 = 0.48, T1 = 0.66, Steps = 4, Lean = -14, Radius = 0.5 })
@@ -315,22 +355,61 @@ A.DashSlash = {
 -- Swords ----------------------------------------------------------------------
 local SWORD = { Radius = 0.55, Height = -0.35, Elevation = 12, Release = nil }
 A.SwordSlashA = {
-	Keys = concat(swingKeys("Main", 85, 110, { T0 = 0, T1 = 0.25, Steps = 1, Radius = 0.5, Height = -0.3 }), swingKeys("Main", 110, -95, { T0 = 0.27, T1 = 0.58, Steps = 5, Radius = SWORD.Radius, Height = SWORD.Height, Elevation = SWORD.Elevation })),
+	Keys = concat(
+		swingKeys("Main", 85, 110, { T0 = 0, T1 = 0.25, Steps = 1, Radius = 0.5, Height = -0.3 }),
+		swingKeys("Main", 110, -95, {
+			T0 = 0.27,
+			T1 = 0.58,
+			Steps = 5,
+			Radius = SWORD.Radius,
+			Height = SWORD.Height,
+			Elevation = SWORD.Elevation,
+		})
+	),
 	Trail = { 0.27, 0.62 },
 }
 A.SwordSlashB = {
 	Keys = concat(
 		swingKeys("Main", -60, -95, { T0 = 0, T1 = 0.25, Steps = 1, Radius = 0.5, Height = -0.7, Tilt = -30 }),
-		swingKeys("Main", -95, 100, { T0 = 0.27, T1 = 0.58, Steps = 5, Radius = 0.55, Height = -0.2, Tilt = -30, Elevation = 30 })
+		swingKeys(
+			"Main",
+			-95,
+			100,
+			{ T0 = 0.27, T1 = 0.58, Steps = 5, Radius = 0.55, Height = -0.2, Tilt = -30, Elevation = 30 }
+		)
 	),
 	Trail = { 0.27, 0.62 },
 }
 A.SwordThrust = {
 	Keys = {
-		{ T = 0, Weapon = { Main = W(V(1.1, -0.5, 0.35), V(0, 0.15, -1), V(0, -1, -0.15)) }, Joints = { Waist = E(0, 25, 0), RightHip = E(-10, 0, 0) } },
-		{ T = 0.32, Ease = "Out", Weapon = { Main = W(V(1.15, -0.45, 0.5), V(0, 0.1, -1), V(0, -1, -0.1)) }, Joints = { Waist = E(-5, 30, 0) } },
-		{ T = 0.45, Ease = "In", Weapon = { Main = W(V(0.45, -0.25, -2.0), V(-0.05, 0.05, -1), V(0, -1, 0)) }, Joints = { Waist = E(-14, -20, 0), Root = E(-6, 0, 0), RightHip = E(35, 0, 0), RightKnee = E(-30, 0, 0), LeftHip = E(-20, 0, 0) } },
-		{ T = 0.7, Weapon = { Main = W(V(0.5, -0.3, -1.9), V(-0.05, 0.1, -1), V(0, -1, 0)) }, Joints = { Waist = E(-12, -18, 0) } },
+		{
+			T = 0,
+			Weapon = { Main = W(V(1.1, -0.5, 0.35), V(0, 0.15, -1), V(0, -1, -0.15)) },
+			Joints = { Waist = E(0, 25, 0), RightHip = E(-10, 0, 0) },
+		},
+		{
+			T = 0.32,
+			Ease = "Out",
+			Weapon = { Main = W(V(1.15, -0.45, 0.5), V(0, 0.1, -1), V(0, -1, -0.1)) },
+			Joints = { Waist = E(-5, 30, 0) },
+		},
+		{
+			T = 0.45,
+			Ease = "In",
+			Weapon = { Main = W(V(0.45, -0.25, -2.0), V(-0.05, 0.05, -1), V(0, -1, 0)) },
+			Joints = {
+				Waist = E(-14, -20, 0),
+				Root = E(-6, 0, 0),
+				RightHip = E(35, 0, 0),
+				RightKnee = E(-30, 0, 0),
+				LeftHip = E(-20, 0, 0),
+			},
+		},
+		{
+			T = 0.7,
+			Weapon = { Main = W(V(0.5, -0.3, -1.9), V(-0.05, 0.1, -1), V(0, -1, 0)) },
+			Joints = { Waist = E(-12, -18, 0) },
+		},
 	},
 	Trail = { 0.4, 0.62 },
 }
@@ -344,47 +423,112 @@ A.SwordMultiHit = {
 	Trail = { 0.0, 0.8 },
 }
 A.SwordHeavy = {
-	Keys = concat(overheadKeys("Main", 90, 165, { T0 = 0, T1 = 0.42, Steps = 2 }), overheadKeys("Main", 165, -40, { T0 = 0.45, T1 = 0.62, Steps = 5, Crouch = 0.45 })),
+	Keys = concat(
+		overheadKeys("Main", 90, 165, { T0 = 0, T1 = 0.42, Steps = 2 }),
+		overheadKeys("Main", 165, -40, { T0 = 0.45, T1 = 0.62, Steps = 5, Crouch = 0.45 })
+	),
 	Trail = { 0.45, 0.66 },
 }
 
 -- Shuriken --------------------------------------------------------------------
 A.StarSlashA = {
-	Keys = concat(swingKeys("Main", 80, 100, { T0 = 0, T1 = 0.2, Steps = 1, Radius = 0.6, Height = -0.3 }), swingKeys("Main", 100, -70, { T0 = 0.22, T1 = 0.55, Steps = 4, Radius = 0.65, Height = -0.25 })),
+	Keys = concat(
+		swingKeys("Main", 80, 100, { T0 = 0, T1 = 0.2, Steps = 1, Radius = 0.6, Height = -0.3 }),
+		swingKeys("Main", 100, -70, { T0 = 0.22, T1 = 0.55, Steps = 4, Radius = 0.65, Height = -0.25 })
+	),
 	Trail = { 0.22, 0.6 },
 }
 A.StarSlashB = {
-	Keys = concat(swingKeys("Main", -50, -70, { T0 = 0, T1 = 0.2, Steps = 1, Radius = 0.6, Height = -0.5, Tilt = -30 }), swingKeys("Main", -70, 95, { T0 = 0.22, T1 = 0.55, Steps = 4, Radius = 0.65, Height = -0.2, Tilt = -30 })),
+	Keys = concat(
+		swingKeys("Main", -50, -70, { T0 = 0, T1 = 0.2, Steps = 1, Radius = 0.6, Height = -0.5, Tilt = -30 }),
+		swingKeys("Main", -70, 95, { T0 = 0.22, T1 = 0.55, Steps = 4, Radius = 0.65, Height = -0.2, Tilt = -30 })
+	),
 	Trail = { 0.22, 0.6 },
 }
 A.Throw = {
 	Keys = {
-		{ T = 0, Weapon = { Main = W(V(1.3, 0.55, 0.65), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) }, Joints = { Waist = E(6, 35, 0), LeftShoulder = E(70, 0, -10), LeftElbow = E(20, 0, 0) } },
-		{ T = 0.3, Ease = "Out", Weapon = { Main = W(V(1.35, 0.7, 0.8), V(0.3, 0.35, 0.88), V(0, 1, -0.35)) }, Joints = { Waist = E(8, 40, 0), LeftShoulder = E(80, 0, -8) } },
-		{ T = 0.42, Ease = "In", Weapon = { Main = W(V(0.55, 0.15, -1.9), V(-0.1, 0.1, -1), V(0, 1, 0.1)) }, Joints = { Waist = E(-14, -25, 0), LeftShoulder = E(10, 0, -20), RightHip = E(25, 0, 0), LeftHip = E(-15, 0, 0) } },
-		{ T = 0.7, Weapon = { Main = W(V(0.6, -0.4, -1.5), V(0, -0.3, -1), V(0, 1, -0.3)) }, Joints = { Waist = E(-10, -20, 0) } },
+		{
+			T = 0,
+			Weapon = { Main = W(V(1.3, 0.55, 0.65), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) },
+			Joints = { Waist = E(6, 35, 0), LeftShoulder = E(70, 0, -10), LeftElbow = E(20, 0, 0) },
+		},
+		{
+			T = 0.3,
+			Ease = "Out",
+			Weapon = { Main = W(V(1.35, 0.7, 0.8), V(0.3, 0.35, 0.88), V(0, 1, -0.35)) },
+			Joints = { Waist = E(8, 40, 0), LeftShoulder = E(80, 0, -8) },
+		},
+		{
+			T = 0.42,
+			Ease = "In",
+			Weapon = { Main = W(V(0.55, 0.15, -1.9), V(-0.1, 0.1, -1), V(0, 1, 0.1)) },
+			Joints = {
+				Waist = E(-14, -25, 0),
+				LeftShoulder = E(10, 0, -20),
+				RightHip = E(25, 0, 0),
+				LeftHip = E(-15, 0, 0),
+			},
+		},
+		{
+			T = 0.7,
+			Weapon = { Main = W(V(0.6, -0.4, -1.5), V(0, -0.3, -1), V(0, 1, -0.3)) },
+			Joints = { Waist = E(-10, -20, 0) },
+		},
 	},
 	Trail = { 0.3, 0.5 },
 }
 A.ThrowMulti = {
 	Keys = {
-		{ T = 0, Weapon = { Main = W(V(1.3, 0.5, 0.6), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) }, Joints = { Waist = E(6, 35, 0) } },
-		{ T = 0.22, Ease = "In", Weapon = { Main = W(V(0.6, 0.2, -1.8), V(-0.1, 0.1, -1), V(0, 1, 0.1)) }, Joints = { Waist = E(-10, -15, 0) } },
-		{ T = 0.36, Weapon = { Main = W(V(1.25, 0.4, 0.5), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) }, Joints = { Waist = E(5, 30, 0) } },
-		{ T = 0.48, Ease = "In", Weapon = { Main = W(V(0.4, 0.1, -1.9), V(-0.2, 0.1, -1), V(0, 1, 0.1)) }, Joints = { Waist = E(-10, -25, 0) } },
-		{ T = 0.6, Weapon = { Main = W(V(1.2, 0.45, 0.5), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) }, Joints = { Waist = E(5, 25, 0) } },
-		{ T = 0.72, Ease = "In", Weapon = { Main = W(V(0.8, 0.0, -1.9), V(0.1, 0.1, -1), V(0, 1, 0.1)) }, Joints = { Waist = E(-12, -10, 0) } },
+		{
+			T = 0,
+			Weapon = { Main = W(V(1.3, 0.5, 0.6), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) },
+			Joints = { Waist = E(6, 35, 0) },
+		},
+		{
+			T = 0.22,
+			Ease = "In",
+			Weapon = { Main = W(V(0.6, 0.2, -1.8), V(-0.1, 0.1, -1), V(0, 1, 0.1)) },
+			Joints = { Waist = E(-10, -15, 0) },
+		},
+		{
+			T = 0.36,
+			Weapon = { Main = W(V(1.25, 0.4, 0.5), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) },
+			Joints = { Waist = E(5, 30, 0) },
+		},
+		{
+			T = 0.48,
+			Ease = "In",
+			Weapon = { Main = W(V(0.4, 0.1, -1.9), V(-0.2, 0.1, -1), V(0, 1, 0.1)) },
+			Joints = { Waist = E(-10, -25, 0) },
+		},
+		{
+			T = 0.6,
+			Weapon = { Main = W(V(1.2, 0.45, 0.5), V(0.3, 0.3, 0.9), V(0, 1, -0.3)) },
+			Joints = { Waist = E(5, 25, 0) },
+		},
+		{
+			T = 0.72,
+			Ease = "In",
+			Weapon = { Main = W(V(0.8, 0.0, -1.9), V(0.1, 0.1, -1), V(0, 1, 0.1)) },
+			Joints = { Waist = E(-12, -10, 0) },
+		},
 	},
 	Trail = { 0.15, 0.75 },
 }
 
 -- Chains / flails (the client chain simulator adds the physical whip) -------------
 A.ChainSwingA = {
-	Keys = concat(swingKeys("Main", 100, 125, { T0 = 0, T1 = 0.28, Steps = 1, Radius = 0.55, Height = 0.1, Elevation = 35 }), swingKeys("Main", 125, -110, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.6, Height = 0.1, Elevation = 10 })),
+	Keys = concat(
+		swingKeys("Main", 100, 125, { T0 = 0, T1 = 0.28, Steps = 1, Radius = 0.55, Height = 0.1, Elevation = 35 }),
+		swingKeys("Main", 125, -110, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.6, Height = 0.1, Elevation = 10 })
+	),
 	Trail = { 0.3, 0.7 },
 }
 A.ChainSwingB = {
-	Keys = concat(swingKeys("Main", -90, -115, { T0 = 0, T1 = 0.28, Steps = 1, Radius = 0.55, Height = 0.0, Elevation = 35 }), swingKeys("Main", -115, 115, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.6, Height = 0.1, Elevation = 10 })),
+	Keys = concat(
+		swingKeys("Main", -90, -115, { T0 = 0, T1 = 0.28, Steps = 1, Radius = 0.55, Height = 0.0, Elevation = 35 }),
+		swingKeys("Main", -115, 115, { T0 = 0.3, T1 = 0.62, Steps = 6, Radius = 0.6, Height = 0.1, Elevation = 10 })
+	),
 	Trail = { 0.3, 0.7 },
 }
 do
@@ -394,26 +538,44 @@ do
 		table.insert(keys, {
 			T = 0.08 + i * 0.055,
 			Ease = "Linear",
-			Weapon = { Main = W(V(0.4 + math.sin(rad(theta)) * 0.35, 1.3, -0.4 - math.cos(rad(theta)) * 0.35), V(math.sin(rad(theta)), 0.25, -math.cos(rad(theta))), V(-math.cos(rad(theta)), 0, -math.sin(rad(theta)))) },
+			Weapon = {
+				Main = W(
+					V(0.4 + math.sin(rad(theta)) * 0.35, 1.3, -0.4 - math.cos(rad(theta)) * 0.35),
+					V(math.sin(rad(theta)), 0.25, -math.cos(rad(theta))),
+					V(-math.cos(rad(theta)), 0, -math.sin(rad(theta)))
+				),
+			},
 			Joints = { Waist = E(4, -8, 0), LeftShoulder = E(20, 0, -30) },
 		})
 	end
 	A.ChainWhirl = { Keys = keys, Trail = { 0.08, 0.8 } }
 end
 A.ChainSlam = {
-	Keys = concat(overheadKeys("Main", 90, 175, { T0 = 0, T1 = 0.42, Steps = 2, High = 1.4 }), overheadKeys("Main", 175, -20, { T0 = 0.45, T1 = 0.58, Steps = 5, Crouch = 0.5, High = 1.4 })),
+	Keys = concat(
+		overheadKeys("Main", 90, 175, { T0 = 0, T1 = 0.42, Steps = 2, High = 1.4 }),
+		overheadKeys("Main", 175, -20, { T0 = 0.45, T1 = 0.58, Steps = 5, Crouch = 0.5, High = 1.4 })
+	),
 	Trail = { 0.45, 0.7 },
 }
 A.FlailSwing = {
-	Keys = concat(swingKeys("Main", 110, 135, { T0 = 0, T1 = 0.35, Steps = 1, Radius = 0.6, Height = 0.2, Elevation = 40 }), swingKeys("Main", 135, -100, { T0 = 0.38, T1 = 0.66, Steps = 6, Radius = 0.6, Height = 0.05, Elevation = 15 })),
+	Keys = concat(
+		swingKeys("Main", 110, 135, { T0 = 0, T1 = 0.35, Steps = 1, Radius = 0.6, Height = 0.2, Elevation = 40 }),
+		swingKeys("Main", 135, -100, { T0 = 0.38, T1 = 0.66, Steps = 6, Radius = 0.6, Height = 0.05, Elevation = 15 })
+	),
 	Trail = { 0.38, 0.72 },
 }
 A.FlailSwingB = {
-	Keys = concat(swingKeys("Main", -90, -120, { T0 = 0, T1 = 0.35, Steps = 1, Radius = 0.6, Height = 0.1, Elevation = 40 }), swingKeys("Main", -120, 110, { T0 = 0.38, T1 = 0.66, Steps = 6, Radius = 0.6, Height = 0.05, Elevation = 15 })),
+	Keys = concat(
+		swingKeys("Main", -90, -120, { T0 = 0, T1 = 0.35, Steps = 1, Radius = 0.6, Height = 0.1, Elevation = 40 }),
+		swingKeys("Main", -120, 110, { T0 = 0.38, T1 = 0.66, Steps = 6, Radius = 0.6, Height = 0.05, Elevation = 15 })
+	),
 	Trail = { 0.38, 0.72 },
 }
 A.FlailSlam = {
-	Keys = concat(overheadKeys("Main", 90, 180, { T0 = 0, T1 = 0.5, Steps = 2, High = 1.5 }), overheadKeys("Main", 180, -25, { T0 = 0.52, T1 = 0.64, Steps = 5, Crouch = 0.6, High = 1.5 })),
+	Keys = concat(
+		overheadKeys("Main", 90, 180, { T0 = 0, T1 = 0.5, Steps = 2, High = 1.5 }),
+		overheadKeys("Main", 180, -25, { T0 = 0.52, T1 = 0.64, Steps = 5, Crouch = 0.6, High = 1.5 })
+	),
 	Trail = { 0.52, 0.75 },
 }
 
@@ -429,45 +591,142 @@ local function withGuard(joints)
 end
 A.PunchA = {
 	Keys = {
-		pose(0, withGuard({ RightShoulder = E(40, 0, 15), RightElbow = E(95, 0, 0), Waist = E(0, 18, 0) }), { Extend = 0 }),
-		pose(0.32, withGuard({ RightShoulder = E(88, 0, 4), RightElbow = E(4, 0, 0), Waist = E(-4, -22, 0), RightHip = E(-10, 0, 0), LeftHip = E(15, 0, 0) }), { Ease = "In", Extend = 0.7 }),
-		pose(0.6, withGuard({ RightShoulder = E(80, 0, 6), RightElbow = E(12, 0, 0), Waist = E(-2, -18, 0) }), { Extend = 0.4 }),
+		pose(
+			0,
+			withGuard({ RightShoulder = E(40, 0, 15), RightElbow = E(95, 0, 0), Waist = E(0, 18, 0) }),
+			{ Extend = 0 }
+		),
+		pose(
+			0.32,
+			withGuard({
+				RightShoulder = E(88, 0, 4),
+				RightElbow = E(4, 0, 0),
+				Waist = E(-4, -22, 0),
+				RightHip = E(-10, 0, 0),
+				LeftHip = E(15, 0, 0),
+			}),
+			{ Ease = "In", Extend = 0.7 }
+		),
+		pose(
+			0.6,
+			withGuard({ RightShoulder = E(80, 0, 6), RightElbow = E(12, 0, 0), Waist = E(-2, -18, 0) }),
+			{ Extend = 0.4 }
+		),
 	},
 	Trail = { 0.2, 0.45 },
 }
 A.PunchB = {
 	Keys = {
-		pose(0, withGuard({ RightShoulder = E(20, 0, 30), RightElbow = E(100, 0, 0), Waist = E(0, 25, 0) }), { Extend = 0 }),
-		pose(0.34, withGuard({ RightShoulder = E(115, 0, 10), RightElbow = E(30, 0, 0), Waist = E(-10, -20, 0), Root = CFrame.new(0, 0.15, 0) }), { Ease = "In", Extend = 0.5 }),
-		pose(0.6, withGuard({ RightShoulder = E(100, 0, 10), RightElbow = E(40, 0, 0), Waist = E(-6, -15, 0) }), { Extend = 0.2 }),
+		pose(
+			0,
+			withGuard({ RightShoulder = E(20, 0, 30), RightElbow = E(100, 0, 0), Waist = E(0, 25, 0) }),
+			{ Extend = 0 }
+		),
+		pose(
+			0.34,
+			withGuard({
+				RightShoulder = E(115, 0, 10),
+				RightElbow = E(30, 0, 0),
+				Waist = E(-10, -20, 0),
+				Root = CFrame.new(0, 0.15, 0),
+			}),
+			{ Ease = "In", Extend = 0.5 }
+		),
+		pose(
+			0.6,
+			withGuard({ RightShoulder = E(100, 0, 10), RightElbow = E(40, 0, 0), Waist = E(-6, -15, 0) }),
+			{ Extend = 0.2 }
+		),
 	},
 	Trail = { 0.2, 0.45 },
 }
 A.PunchC = {
 	Keys = {
 		pose(0, withGuard({ RightShoulder = E(40, 0, 15), RightElbow = E(95, 0, 0) }), { Extend = 0 }),
-		pose(0.17, withGuard({ RightShoulder = E(88, 0, 4), RightElbow = E(4, 0, 0), Waist = E(0, -15, 0) }), { Ease = "In", Extend = 0.6 }),
+		pose(
+			0.17,
+			withGuard({ RightShoulder = E(88, 0, 4), RightElbow = E(4, 0, 0), Waist = E(0, -15, 0) }),
+			{ Ease = "In", Extend = 0.6 }
+		),
 		pose(0.27, withGuard({ RightShoulder = E(50, 0, 12), RightElbow = E(80, 0, 0) }), { Extend = 0.1 }),
-		pose(0.37, withGuard({ RightShoulder = E(90, 0, 2), RightElbow = E(2, 0, 0), Waist = E(0, -18, 0) }), { Ease = "In", Extend = 0.7 }),
+		pose(
+			0.37,
+			withGuard({ RightShoulder = E(90, 0, 2), RightElbow = E(2, 0, 0), Waist = E(0, -18, 0) }),
+			{ Ease = "In", Extend = 0.7 }
+		),
 		pose(0.47, withGuard({ RightShoulder = E(50, 0, 12), RightElbow = E(80, 0, 0) }), { Extend = 0.1 }),
-		pose(0.58, withGuard({ RightShoulder = E(92, 0, 0), RightElbow = E(0, 0, 0), Waist = E(-6, -25, 0), RightHip = E(-10, 0, 0) }), { Ease = "In", Extend = 1 }),
+		pose(
+			0.58,
+			withGuard({
+				RightShoulder = E(92, 0, 0),
+				RightElbow = E(0, 0, 0),
+				Waist = E(-6, -25, 0),
+				RightHip = E(-10, 0, 0),
+			}),
+			{ Ease = "In", Extend = 1 }
+		),
 	},
 	Trail = { 0.12, 0.65 },
 }
 A.PunchSlam = {
 	Keys = {
-		pose(0, { RightShoulder = E(160, 0, 10), RightElbow = E(30, 0, 0), LeftShoulder = E(150, 0, -10), Waist = E(10, 0, 0) }, { Extend = 0 }),
-		pose(0.45, { RightShoulder = E(170, 0, 5), RightElbow = E(10, 0, 0), LeftShoulder = E(160, 0, -5), Waist = E(14, 0, 0), Root = CFrame.new(0, 0.2, 0) }, { Ease = "Out", Extend = 0.2 }),
-		pose(0.58, { RightShoulder = E(40, 0, 5), RightElbow = E(0, 0, 0), LeftShoulder = E(30, 0, -5), Waist = E(-30, 0, 0), Root = CFrame.new(0, -0.5, 0), RightHip = E(40, 0, 0), LeftHip = E(40, 0, 0), RightKnee = E(-60, 0, 0), LeftKnee = E(-60, 0, 0) }, { Ease = "In", Extend = 1 }),
-		pose(0.8, { RightShoulder = E(45, 0, 5), RightElbow = E(10, 0, 0), Waist = E(-25, 0, 0), Root = CFrame.new(0, -0.4, 0) }, { Extend = 0.6 }),
+		pose(0, {
+			RightShoulder = E(160, 0, 10),
+			RightElbow = E(30, 0, 0),
+			LeftShoulder = E(150, 0, -10),
+			Waist = E(10, 0, 0),
+		}, { Extend = 0 }),
+		pose(0.45, {
+			RightShoulder = E(170, 0, 5),
+			RightElbow = E(10, 0, 0),
+			LeftShoulder = E(160, 0, -5),
+			Waist = E(14, 0, 0),
+			Root = CFrame.new(0, 0.2, 0),
+		}, { Ease = "Out", Extend = 0.2 }),
+		pose(0.58, {
+			RightShoulder = E(40, 0, 5),
+			RightElbow = E(0, 0, 0),
+			LeftShoulder = E(30, 0, -5),
+			Waist = E(-30, 0, 0),
+			Root = CFrame.new(0, -0.5, 0),
+			RightHip = E(40, 0, 0),
+			LeftHip = E(40, 0, 0),
+			RightKnee = E(-60, 0, 0),
+			LeftKnee = E(-60, 0, 0),
+		}, { Ease = "In", Extend = 1 }),
+		pose(0.8, {
+			RightShoulder = E(45, 0, 5),
+			RightElbow = E(10, 0, 0),
+			Waist = E(-25, 0, 0),
+			Root = CFrame.new(0, -0.4, 0),
+		}, { Extend = 0.6 }),
 	},
 	Trail = { 0.45, 0.65 },
 }
 A.DashPunch = {
 	Keys = {
-		pose(0, withGuard({ RightShoulder = E(30, 0, 20), RightElbow = E(100, 0, 0), Waist = E(-20, 25, 0) }), { Extend = 0 }),
-		pose(0.4, withGuard({ RightShoulder = E(90, 0, 0), RightElbow = E(0, 0, 0), Waist = E(-25, -20, 0), Root = E(-12, 0, 0), RightHip = E(40, 0, 0), LeftHip = E(-30, 0, 0) }), { Ease = "In", Extend = 1 }),
-		pose(0.7, withGuard({ RightShoulder = E(85, 0, 0), RightElbow = E(5, 0, 0), Waist = E(-15, -15, 0) }), { Extend = 0.7 }),
+		pose(
+			0,
+			withGuard({ RightShoulder = E(30, 0, 20), RightElbow = E(100, 0, 0), Waist = E(-20, 25, 0) }),
+			{ Extend = 0 }
+		),
+		pose(
+			0.4,
+			withGuard({
+				RightShoulder = E(90, 0, 0),
+				RightElbow = E(0, 0, 0),
+				Waist = E(-25, -20, 0),
+				Root = E(-12, 0, 0),
+				RightHip = E(40, 0, 0),
+				LeftHip = E(-30, 0, 0),
+			}),
+			{ Ease = "In", Extend = 1 }
+		),
+		pose(
+			0.7,
+			withGuard({ RightShoulder = E(85, 0, 0), RightElbow = E(5, 0, 0), Waist = E(-15, -15, 0) }),
+			{ Extend = 0.7 }
+		),
 	},
 	Trail = { 0.25, 0.6 },
 }
@@ -502,16 +761,34 @@ do
 	for i = 0, 5 do
 		local t = 0.05 + i * 0.12
 		local right = i % 2 == 0
-		table.insert(keys, { T = t, Weapon = { Liz = right and AIM_R or KICK_R:Lerp(AIM_R, 0.6), Patty = right and KICK_L:Lerp(AIM_L, 0.6) or AIM_L }, Recoil = right and "Liz" or "Patty" })
-		table.insert(keys, { T = t + 0.05, Weapon = { Liz = right and KICK_R or AIM_R, Patty = right and AIM_L or KICK_L } })
+		table.insert(keys, {
+			T = t,
+			Weapon = {
+				Liz = right and AIM_R or KICK_R:Lerp(AIM_R, 0.6),
+				Patty = right and KICK_L:Lerp(AIM_L, 0.6) or AIM_L,
+			},
+			Recoil = right and "Liz" or "Patty",
+		})
+		table.insert(
+			keys,
+			{ T = t + 0.05, Weapon = { Liz = right and KICK_R or AIM_R, Patty = right and AIM_L or KICK_L } }
+		)
 	end
 	table.insert(keys, { T = 0.85, Weapon = { Liz = AIM_R, Patty = AIM_L } })
 	A.PistolRapid = { Keys = keys, BlendIn = 0.06 }
 end
 A.PistolCharged = {
 	Keys = {
-		{ T = 0, Weapon = { Liz = AIM_R, Patty = AIM_L }, Joints = { Waist = E(-4, 0, 0), RightHip = E(10, 0, 0), LeftHip = E(-10, 0, 0) } },
-		{ T = 0.58, Weapon = { Liz = AIM_R * CFrame.new(0.1, 0, 0), Patty = AIM_L * CFrame.new(-0.1, 0, 0) }, Recoil = "Both" },
+		{
+			T = 0,
+			Weapon = { Liz = AIM_R, Patty = AIM_L },
+			Joints = { Waist = E(-4, 0, 0), RightHip = E(10, 0, 0), LeftHip = E(-10, 0, 0) },
+		},
+		{
+			T = 0.58,
+			Weapon = { Liz = AIM_R * CFrame.new(0.1, 0, 0), Patty = AIM_L * CFrame.new(-0.1, 0, 0) },
+			Recoil = "Both",
+		},
 		{ T = 0.66, Ease = "Out", Weapon = { Liz = KICK_R, Patty = KICK_L }, Joints = { Waist = E(6, 0, 0) } },
 		{ T = 0.9, Weapon = { Liz = AIM_R, Patty = AIM_L } },
 	},
@@ -521,14 +798,30 @@ A.PistolCharged = {
 local DRILL_FORWARD = W(V(0.6, -0.35, -1.85), V(0, 1, -0.05), V(0, -0.05, -1))
 A.DrillThrust = {
 	Keys = {
-		{ T = 0, Weapon = { Main = W(V(1.0, -0.6, -0.2), V(0, 1, 0), V(0, 0, -1)) }, Joints = { Waist = E(0, 22, 0) }, Drill = true },
-		{ T = 0.35, Ease = "In", Weapon = { Main = DRILL_FORWARD }, Joints = { Waist = E(-10, -15, 0), RightHip = E(25, 0, 0), RightKnee = E(-25, 0, 0) }, Drill = true },
+		{
+			T = 0,
+			Weapon = { Main = W(V(1.0, -0.6, -0.2), V(0, 1, 0), V(0, 0, -1)) },
+			Joints = { Waist = E(0, 22, 0) },
+			Drill = true,
+		},
+		{
+			T = 0.35,
+			Ease = "In",
+			Weapon = { Main = DRILL_FORWARD },
+			Joints = { Waist = E(-10, -15, 0), RightHip = E(25, 0, 0), RightKnee = E(-25, 0, 0) },
+			Drill = true,
+		},
 		{ T = 0.75, Weapon = { Main = DRILL_FORWARD * CFrame.new(0, 0, 0.1) }, Drill = true },
 	},
 }
 A.DrillGrind = {
 	Keys = {
-		{ T = 0, Weapon = { Main = DRILL_FORWARD }, Joints = { Waist = E(-8, -10, 0), RightHip = E(25, 0, 0), LeftHip = E(-10, 0, 0) }, Drill = true },
+		{
+			T = 0,
+			Weapon = { Main = DRILL_FORWARD },
+			Joints = { Waist = E(-8, -10, 0), RightHip = E(25, 0, 0), LeftHip = E(-10, 0, 0) },
+			Drill = true,
+		},
 		{ T = 0.3, Weapon = { Main = DRILL_FORWARD * CFrame.new(0.04, 0.03, 0) }, Drill = true },
 		{ T = 0.5, Weapon = { Main = DRILL_FORWARD * CFrame.new(-0.04, -0.03, 0) }, Drill = true },
 		{ T = 0.7, Weapon = { Main = DRILL_FORWARD * CFrame.new(0.03, -0.02, 0) }, Drill = true },
@@ -537,16 +830,34 @@ A.DrillGrind = {
 }
 A.DrillDash = {
 	Keys = {
-		{ T = 0, Weapon = { Main = DRILL_FORWARD }, Joints = { Waist = E(-25, -5, 0), Root = E(-12, 0, 0), RightHip = E(35, 0, 0), LeftHip = E(-30, 0, 0) }, Drill = true },
-		{ T = 0.6, Weapon = { Main = DRILL_FORWARD }, Joints = { Waist = E(-25, -5, 0), Root = E(-12, 0, 0) }, Drill = true },
+		{
+			T = 0,
+			Weapon = { Main = DRILL_FORWARD },
+			Joints = { Waist = E(-25, -5, 0), Root = E(-12, 0, 0), RightHip = E(35, 0, 0), LeftHip = E(-30, 0, 0) },
+			Drill = true,
+		},
+		{
+			T = 0.6,
+			Weapon = { Main = DRILL_FORWARD },
+			Joints = { Waist = E(-25, -5, 0), Root = E(-12, 0, 0) },
+			Drill = true,
+		},
 	},
 }
 
 -- Spider rig (arms gesture, legs animated by the weapon animator) -----------------
 A.SpiderStrikeA = {
 	Keys = {
-		pose(0, { RightShoulder = E(30, 0, 30), LeftShoulder = E(30, 0, -30), Waist = E(5, 0, 0) }, { Spider = "Rear" }),
-		pose(0.38, { RightShoulder = E(60, 0, 15), LeftShoulder = E(60, 0, -15), Waist = E(-12, 0, 0) }, { Ease = "In", Spider = "StrikeFront" }),
+		pose(
+			0,
+			{ RightShoulder = E(30, 0, 30), LeftShoulder = E(30, 0, -30), Waist = E(5, 0, 0) },
+			{ Spider = "Rear" }
+		),
+		pose(
+			0.38,
+			{ RightShoulder = E(60, 0, 15), LeftShoulder = E(60, 0, -15), Waist = E(-12, 0, 0) },
+			{ Ease = "In", Spider = "StrikeFront" }
+		),
 		pose(0.7, { Waist = E(-6, 0, 0) }, { Spider = "StrikeFront" }),
 	},
 	Trail = { 0.25, 0.5 },
@@ -562,17 +873,42 @@ A.SpiderStrikeB = {
 }
 A.SpiderSweep = {
 	Keys = {
-		pose(0, { Waist = E(0, 35, 0), RightShoulder = E(20, 0, 50), LeftShoulder = E(20, 0, -50) }, { Spider = "Raised" }),
-		pose(0.47, { Waist = E(-6, -45, 0), RightShoulder = E(20, 0, 60), LeftShoulder = E(20, 0, -60) }, { Ease = "In", Spider = "Sweep" }),
+		pose(
+			0,
+			{ Waist = E(0, 35, 0), RightShoulder = E(20, 0, 50), LeftShoulder = E(20, 0, -50) },
+			{ Spider = "Raised" }
+		),
+		pose(
+			0.47,
+			{ Waist = E(-6, -45, 0), RightShoulder = E(20, 0, 60), LeftShoulder = E(20, 0, -60) },
+			{ Ease = "In", Spider = "Sweep" }
+		),
 		pose(0.75, { Waist = E(-3, -30, 0) }, { Spider = "Sweep" }),
 	},
 	Trail = { 0.3, 0.65 },
 }
 A.SpiderSlam = {
 	Keys = {
-		pose(0, { Waist = E(10, 0, 0), RightShoulder = E(120, 0, 20), LeftShoulder = E(120, 0, -20) }, { Spider = "Raised" }),
-		pose(0.5, { Waist = E(14, 0, 0), RightShoulder = E(150, 0, 20), LeftShoulder = E(150, 0, -20) }, { Spider = "Raised" }),
-		pose(0.6, { Waist = E(-25, 0, 0), Root = CFrame.new(0, -0.45, 0), RightShoulder = E(40, 0, 20), LeftShoulder = E(40, 0, -20), RightKnee = E(-45, 0, 0), LeftKnee = E(-45, 0, 0), RightHip = E(30, 0, 0), LeftHip = E(30, 0, 0) }, { Ease = "In", Spider = "Slam" }),
+		pose(
+			0,
+			{ Waist = E(10, 0, 0), RightShoulder = E(120, 0, 20), LeftShoulder = E(120, 0, -20) },
+			{ Spider = "Raised" }
+		),
+		pose(
+			0.5,
+			{ Waist = E(14, 0, 0), RightShoulder = E(150, 0, 20), LeftShoulder = E(150, 0, -20) },
+			{ Spider = "Raised" }
+		),
+		pose(0.6, {
+			Waist = E(-25, 0, 0),
+			Root = CFrame.new(0, -0.45, 0),
+			RightShoulder = E(40, 0, 20),
+			LeftShoulder = E(40, 0, -20),
+			RightKnee = E(-45, 0, 0),
+			LeftKnee = E(-45, 0, 0),
+			RightHip = E(30, 0, 0),
+			LeftHip = E(30, 0, 0),
+		}, { Ease = "In", Spider = "Slam" }),
 		pose(0.85, { Waist = E(-15, 0, 0), Root = CFrame.new(0, -0.3, 0) }, { Spider = "Slam" }),
 	},
 	Trail = { 0.5, 0.66 },
@@ -582,42 +918,103 @@ A.SpiderSlam = {
 local FREE_LEFT = { Left = true }
 A.CastSpell = {
 	Keys = {
-		pose(0, { LeftShoulder = E(40, 0, -30), LeftElbow = E(60, 0, 0), Waist = E(0, 15, 0) }, { Release = FREE_LEFT }),
-		pose(0.4, { LeftShoulder = E(95, 0, -5), LeftElbow = E(5, 0, 0), LeftWrist = E(-30, 0, 0), Waist = E(-6, -20, 0) }, { Ease = "Out", Release = FREE_LEFT }),
-		pose(0.8, { LeftShoulder = E(90, 0, -5), LeftElbow = E(10, 0, 0), Waist = E(-4, -15, 0) }, { Release = FREE_LEFT }),
+		pose(
+			0,
+			{ LeftShoulder = E(40, 0, -30), LeftElbow = E(60, 0, 0), Waist = E(0, 15, 0) },
+			{ Release = FREE_LEFT }
+		),
+		pose(
+			0.4,
+			{ LeftShoulder = E(95, 0, -5), LeftElbow = E(5, 0, 0), LeftWrist = E(-30, 0, 0), Waist = E(-6, -20, 0) },
+			{ Ease = "Out", Release = FREE_LEFT }
+		),
+		pose(
+			0.8,
+			{ LeftShoulder = E(90, 0, -5), LeftElbow = E(10, 0, 0), Waist = E(-4, -15, 0) },
+			{ Release = FREE_LEFT }
+		),
 	},
 }
 A.Roar = {
 	Keys = {
 		pose(0, { Waist = E(-15, 0, 0), Neck = E(-15, 0, 0), LeftShoulder = E(20, 0, -20) }, { Release = FREE_LEFT }),
-		pose(0.35, { Waist = E(12, 0, 0), Neck = E(20, 0, 0), LeftShoulder = E(30, 0, -75), LeftElbow = E(30, 0, 0) }, { Ease = "Out", Release = FREE_LEFT }),
+		pose(
+			0.35,
+			{ Waist = E(12, 0, 0), Neck = E(20, 0, 0), LeftShoulder = E(30, 0, -75), LeftElbow = E(30, 0, 0) },
+			{ Ease = "Out", Release = FREE_LEFT }
+		),
 		pose(0.8, { Waist = E(8, 0, 0), Neck = E(10, 0, 0), LeftShoulder = E(25, 0, -60) }, { Release = FREE_LEFT }),
 	},
 }
 A.GolemSlam = {
 	Keys = {
-		pose(0, { RightShoulder = E(150, 0, 15), LeftShoulder = E(150, 0, -15), RightElbow = E(30, 0, 0), LeftElbow = E(30, 0, 0), Waist = E(10, 0, 0) }, { Release = { Left = true, Right = true } }),
-		pose(0.7, { RightShoulder = E(170, 0, 10), LeftShoulder = E(170, 0, -10), RightElbow = E(15, 0, 0), LeftElbow = E(15, 0, 0), Waist = E(16, 0, 0), Root = CFrame.new(0, 0.15, 0) }, { Release = { Left = true, Right = true } }),
-		pose(0.8, { RightShoulder = E(30, 0, 10), LeftShoulder = E(30, 0, -10), Waist = E(-35, 0, 0), Root = CFrame.new(0, -0.6, 0), RightHip = E(45, 0, 0), LeftHip = E(45, 0, 0), RightKnee = E(-70, 0, 0), LeftKnee = E(-70, 0, 0) }, { Ease = "In", Release = { Left = true, Right = true } }),
-		pose(0.95, { Waist = E(-25, 0, 0), Root = CFrame.new(0, -0.5, 0) }, { Release = { Left = true, Right = true } }),
+		pose(0, {
+			RightShoulder = E(150, 0, 15),
+			LeftShoulder = E(150, 0, -15),
+			RightElbow = E(30, 0, 0),
+			LeftElbow = E(30, 0, 0),
+			Waist = E(10, 0, 0),
+		}, { Release = { Left = true, Right = true } }),
+		pose(0.7, {
+			RightShoulder = E(170, 0, 10),
+			LeftShoulder = E(170, 0, -10),
+			RightElbow = E(15, 0, 0),
+			LeftElbow = E(15, 0, 0),
+			Waist = E(16, 0, 0),
+			Root = CFrame.new(0, 0.15, 0),
+		}, { Release = { Left = true, Right = true } }),
+		pose(0.8, {
+			RightShoulder = E(30, 0, 10),
+			LeftShoulder = E(30, 0, -10),
+			Waist = E(-35, 0, 0),
+			Root = CFrame.new(0, -0.6, 0),
+			RightHip = E(45, 0, 0),
+			LeftHip = E(45, 0, 0),
+			RightKnee = E(-70, 0, 0),
+			LeftKnee = E(-70, 0, 0),
+		}, { Ease = "In", Release = { Left = true, Right = true } }),
+		pose(
+			0.95,
+			{ Waist = E(-25, 0, 0), Root = CFrame.new(0, -0.5, 0) },
+			{ Release = { Left = true, Right = true } }
+		),
 	},
 }
 A.Pulse = {
 	Keys = {
-		pose(0, { LeftShoulder = E(30, 0, -20), RightShoulder = E(30, 0, 20), Waist = E(-10, 0, 0) }, { Release = { Left = true } }),
-		pose(0.35, { LeftShoulder = E(20, 0, -95), RightShoulder = E(20, 0, 95), Waist = E(10, 0, 0) }, { Ease = "Out", Release = { Left = true } }),
+		pose(
+			0,
+			{ LeftShoulder = E(30, 0, -20), RightShoulder = E(30, 0, 20), Waist = E(-10, 0, 0) },
+			{ Release = { Left = true } }
+		),
+		pose(
+			0.35,
+			{ LeftShoulder = E(20, 0, -95), RightShoulder = E(20, 0, 95), Waist = E(10, 0, 0) },
+			{ Ease = "Out", Release = { Left = true } }
+		),
 	},
 }
 A.Heal = {
 	Keys = {
 		pose(0, { LeftShoulder = E(60, 0, -10), LeftElbow = E(60, 0, 0) }, { Release = FREE_LEFT }),
-		pose(0.4, { LeftShoulder = E(150, 0, -15), LeftElbow = E(10, 0, 0), Neck = E(15, 0, 0) }, { Ease = "Out", Release = FREE_LEFT }),
+		pose(
+			0.4,
+			{ LeftShoulder = E(150, 0, -15), LeftElbow = E(10, 0, 0), Neck = E(15, 0, 0) },
+			{ Ease = "Out", Release = FREE_LEFT }
+		),
 		pose(0.85, { LeftShoulder = E(140, 0, -15), LeftElbow = E(15, 0, 0) }, { Release = FREE_LEFT }),
 	},
 }
 A.Blink = {
 	Keys = {
-		pose(0, { Waist = E(-20, 0, 0), Root = CFrame.new(0, -0.3, 0), RightKnee = E(-40, 0, 0), LeftKnee = E(-40, 0, 0), RightHip = E(30, 0, 0), LeftHip = E(30, 0, 0) }),
+		pose(0, {
+			Waist = E(-20, 0, 0),
+			Root = CFrame.new(0, -0.3, 0),
+			RightKnee = E(-40, 0, 0),
+			LeftKnee = E(-40, 0, 0),
+			RightHip = E(30, 0, 0),
+			LeftHip = E(30, 0, 0),
+		}),
 		pose(0.5, { Waist = E(-5, 0, 0) }, { Ease = "Out" }),
 	},
 }

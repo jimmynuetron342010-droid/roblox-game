@@ -41,7 +41,9 @@ return function(vfx, p, cfg)
 				vfx.Emit("Spark", spray, math.floor(sparkAcc))
 				sparkAcc -= math.floor(sparkAcc)
 			end
-			local hitsCharacter = result.Instance and result.Instance.Parent and result.Instance.Parent:FindFirstChildOfClass("Humanoid")
+			local hitsCharacter = result.Instance
+				and result.Instance.Parent
+				and result.Instance.Parent:FindFirstChildOfClass("Humanoid")
 			if dustAcc >= 1 and not hitsCharacter then
 				vfx.Emit("Dust", spray, math.floor(dustAcc), { Color = ColorSequence.new(vfx.SurfaceColor(result)) })
 				dustAcc -= math.floor(dustAcc)

@@ -269,8 +269,8 @@ function VFXController.Emit(template: string, cframe: CFrame, count: number, ove
 	local restore = {}
 	if overrides then
 		for key, value in overrides do
-			restore[key] = (emitter :: any)[key]
-			;(emitter :: any)[key] = value
+			restore[key] = (emitter :: any)[key];
+			(emitter :: any)[key] = value
 		end
 	end
 	emitter:Emit(VFXController.Count(count))
@@ -385,7 +385,15 @@ function VFXController.Flash(position: Vector3, color: Color3, brightness: numbe
 end
 
 -- Neon streak part that shrinks/fades (impact streaks, air slices).
-function VFXController.Streak(position: Vector3, direction: Vector3, length: number, width: number, color: Color3, lifetime: number, transparency: number?)
+function VFXController.Streak(
+	position: Vector3,
+	direction: Vector3,
+	length: number,
+	width: number,
+	color: Color3,
+	lifetime: number,
+	transparency: number?
+)
 	local part = acquirePart("Streak", function()
 		local p = Instance.new("Part")
 		p.Material = Enum.Material.Neon
@@ -446,7 +454,14 @@ function VFXController.SurfaceColor(result: RaycastResult?): Color3
 end
 
 -- Ballistic rock fragments.
-function VFXController.Debris(position: Vector3, normal: Vector3, color: Color3, count: number, speed: number, size: number?)
+function VFXController.Debris(
+	position: Vector3,
+	normal: Vector3,
+	color: Color3,
+	count: number,
+	speed: number,
+	size: number?
+)
 	local n = math.min(count, settings.Quality.Debris)
 	for _ = 1, n do
 		local rock = acquirePart("Rock", function()
@@ -462,7 +477,8 @@ function VFXController.Debris(position: Vector3, normal: Vector3, color: Color3,
 		local spread = Vector3.new(math.random() - 0.5, 0, math.random() - 0.5) * 1.6
 		local velocity = (up * (0.8 + math.random() * 0.6) + spread).Unit * speed * (0.6 + math.random() * 0.5)
 		local spin = Vector3.new(math.random() - 0.5, math.random() - 0.5, math.random() - 0.5) * 18
-		local cf = CFrame.new(position + up * 0.3) * CFrame.Angles(math.random() * 6, math.random() * 6, math.random() * 6)
+		local cf = CFrame.new(position + up * 0.3)
+			* CFrame.Angles(math.random() * 6, math.random() * 6, math.random() * 6)
 		local t, lifetime = 0, 0.9 + math.random() * 0.4
 		local floor = position.Y - 0.2
 		VFXController.AddTask(function(dt)
@@ -489,7 +505,14 @@ function VFXController.Debris(position: Vector3, normal: Vector3, color: Color3,
 end
 
 -- Expanding 3D shockwave ring built from thin segments (no flat decals).
-function VFXController.Ring(position: Vector3, normal: Vector3, radius: number, lifetime: number, color: Color3, thickness: number)
+function VFXController.Ring(
+	position: Vector3,
+	normal: Vector3,
+	radius: number,
+	lifetime: number,
+	color: Color3,
+	thickness: number
+)
 	local segments = settings.Quality.RingSegments
 	local up = normal.Magnitude > 0 and normal.Unit or Vector3.yAxis
 	local right = up:Cross(Vector3.zAxis)
@@ -593,7 +616,10 @@ function VFXController.MuzzleFlash(cframe: CFrame, size: number, color: Color3, 
 		petal.Transparency = 0.2
 		petal.Size = Vector3.new(size * 0.1, size * 0.1, size * (0.6 + (i % 2) * 0.3))
 		local angle = i * math.pi / 2 + math.random() * 0.4
-		petal.CFrame = cframe * CFrame.Angles(0, 0, angle) * CFrame.Angles(math.rad(18), 0, 0) * CFrame.new(0, 0, -size * 0.35)
+		petal.CFrame = cframe
+			* CFrame.Angles(0, 0, angle)
+			* CFrame.Angles(math.rad(18), 0, 0)
+			* CFrame.new(0, 0, -size * 0.35)
 		table.insert(parts, petal)
 	end
 	local t = 0

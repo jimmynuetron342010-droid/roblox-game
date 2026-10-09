@@ -11,12 +11,35 @@ local ChainKit = require(script.Parent.Parent.ChainKit)
 
 local function handleGroup(kit, p, length)
 	local group = kit:Group("Handle")
-	kit:Cylinder("HandleCore", Vector3.new(0, -length / 2, 0), Vector3.new(0, length / 2, 0), 0.25, p.Handle, Enum.Material.Fabric, group)
+	kit:Cylinder(
+		"HandleCore",
+		Vector3.new(0, -length / 2, 0),
+		Vector3.new(0, length / 2, 0),
+		0.25,
+		p.Handle,
+		Enum.Material.Fabric,
+		group
+	)
 	for i = 0, 4 do
 		local y = -length / 2 + 0.12 + i * (length - 0.24) / 4
-		kit:Block("WrapDiamond", Vector3.new(0.22, 0.12, 0.22), CFrame.new(0, y, 0) * CFrame.Angles(0, math.rad(45), 0), p.Wrap, Enum.Material.Fabric, group)
+		kit:Block(
+			"WrapDiamond",
+			Vector3.new(0.22, 0.12, 0.22),
+			CFrame.new(0, y, 0) * CFrame.Angles(0, math.rad(45), 0),
+			p.Wrap,
+			Enum.Material.Fabric,
+			group
+		)
 	end
-	kit:Cylinder("Pommel", Vector3.new(0, -length / 2 - 0.12, 0), Vector3.new(0, -length / 2, 0), 0.3, p.Metal, Enum.Material.Metal, group)
+	kit:Cylinder(
+		"Pommel",
+		Vector3.new(0, -length / 2 - 0.12, 0),
+		Vector3.new(0, -length / 2, 0),
+		0.3,
+		p.Metal,
+		Enum.Material.Metal,
+		group
+	)
 	return group
 end
 
@@ -51,10 +74,32 @@ return function(api)
 		local gl = d.GripLength
 		handleGroup(kit, p, gl)
 		local guard = kit:Group("Guard")
-		kit:Block("Tsuba", Vector3.new(0.72, 0.08, 0.72), CFrame.new(0, gl / 2 + 0.06, 0), p.Metal, Enum.Material.Metal, guard)
-		kit:Block("Habaki", Vector3.new(0.18, 0.18, 0.5), CFrame.new(0, gl / 2 + 0.18, 0.02), p.Accent, Enum.Material.Metal, guard)
+		kit:Block(
+			"Tsuba",
+			Vector3.new(0.72, 0.08, 0.72),
+			CFrame.new(0, gl / 2 + 0.06, 0),
+			p.Metal,
+			Enum.Material.Metal,
+			guard
+		)
+		kit:Block(
+			"Habaki",
+			Vector3.new(0.18, 0.18, 0.5),
+			CFrame.new(0, gl / 2 + 0.18, 0.02),
+			p.Accent,
+			Enum.Material.Metal,
+			guard
+		)
 		-- Red tassel from the pommel.
-		kit:Cylinder("Tassel", Vector3.new(0, -gl / 2 - 0.12, 0), Vector3.new(0.05, -gl / 2 - 0.65, 0.08), 0.06, p.Accent, Enum.Material.Fabric, guard)
+		kit:Cylinder(
+			"Tassel",
+			Vector3.new(0, -gl / 2 - 0.12, 0),
+			Vector3.new(0.05, -gl / 2 - 0.65, 0.08),
+			0.06,
+			p.Accent,
+			Enum.Material.Fabric,
+			guard
+		)
 		kit:Ball("TasselKnot", 0.14, Vector3.new(0.05, -gl / 2 - 0.68, 0.08), p.Accent, Enum.Material.Fabric, guard)
 
 		local blade = kit:Group("Blade")
@@ -82,20 +127,46 @@ return function(api)
 	local hl = 1.5
 	handleGroup(kit, p, hl)
 	local head = kit:Group("Sickle")
-	kit:Block("Socket", Vector3.new(0.3, 0.36, 0.34), CFrame.new(0, hl / 2 + 0.12, -0.05), p.Metal, Enum.Material.Metal, head)
+	kit:Block(
+		"Socket",
+		Vector3.new(0.3, 0.36, 0.34),
+		CFrame.new(0, hl / 2 + 0.12, -0.05),
+		p.Metal,
+		Enum.Material.Metal,
+		head
+	)
 	local spine, _, edge = sickle(kit, head, p, Vector3.new(0, hl / 2 + 0.2, -0.1), d.SickleRadius, d.Thickness)
 	kit:Attachment("SupportGrip", handle, CFrame.new(0, -0.2, 0))
 
 	-- Chain from the pommel, hanging down (-Y). Simulated on the client.
 	local chainGroup = kit:Group("Chain")
-	local chain = ChainKit.Build(kit, chainGroup, handle, Vector3.new(0, -hl / 2 - 0.15, 0), Vector3.new(0, -1, 0), d.ChainLinks, d.LinkLength, 0.22, p.Metal, p.Blade)
+	local chain = ChainKit.Build(
+		kit,
+		chainGroup,
+		handle,
+		Vector3.new(0, -hl / 2 - 0.15, 0),
+		Vector3.new(0, -1, 0),
+		d.ChainLinks,
+		d.LinkLength,
+		0.22,
+		p.Metal,
+		p.Blade
+	)
 	local last = chain.Links[#chain.Links]
 	local endGroup = kit:Group("ChainEnd")
 	local e = chain.EndFrame
 	if form == "Kusarigama" then
 		local weight = kit:Ball("Weight", 0.5, e * Vector3.new(0, 0.28, 0), p.Metal, Enum.Material.Metal, endGroup)
 		kit:Reweld(weight, last)
-		local band = kit:Cylinder("WeightBand", e * Vector3.new(0, 0.1, 0), e * Vector3.new(0, 0.2, 0), 0.36, p.Accent, Enum.Material.Metal, endGroup)
+		local band = kit:Cylinder(
+			"WeightBand",
+			e * Vector3.new(0, 0.1, 0),
+			e * Vector3.new(0, 0.2, 0),
+			0.36,
+			p.Accent,
+			Enum.Material.Metal,
+			endGroup
+		)
 		kit:Reweld(band, last)
 	else
 		-- Second, smaller sickle on the chain end.

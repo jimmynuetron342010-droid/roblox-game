@@ -45,7 +45,11 @@ local enemies: { EnemyDef } = {
 		Souls = 12,
 		IsBoss = false,
 		Tags = { KishinEgg = true },
-		Colors = { Body = Color3.fromRGB(30, 26, 36), Accent = Color3.fromRGB(80, 20, 30), Eyes = Color3.fromRGB(255, 40, 50) },
+		Colors = {
+			Body = Color3.fromRGB(30, 26, 36),
+			Accent = Color3.fromRGB(80, 20, 30),
+			Eyes = Color3.fromRGB(255, 40, 50),
+		},
 		Scale = 1,
 	},
 	{
@@ -64,7 +68,11 @@ local enemies: { EnemyDef } = {
 		IsBoss = false,
 		Hidden = true,
 		Tags = { KishinEgg = true },
-		Colors = { Body = Color3.fromRGB(40, 40, 60), Accent = Color3.fromRGB(70, 70, 110), Eyes = Color3.fromRGB(160, 160, 255) },
+		Colors = {
+			Body = Color3.fromRGB(40, 40, 60),
+			Accent = Color3.fromRGB(70, 70, 110),
+			Eyes = Color3.fromRGB(160, 160, 255),
+		},
 		Scale = 1,
 	},
 	{
@@ -84,7 +92,11 @@ local enemies: { EnemyDef } = {
 		Ranged = true,
 		MadnessAura = { Radius = 22, PerSecond = 6, Type = "Fear" },
 		Tags = { Madness = true },
-		Colors = { Body = Color3.fromRGB(20, 10, 24), Accent = Color3.fromRGB(120, 30, 140), Eyes = Color3.fromRGB(255, 120, 255) },
+		Colors = {
+			Body = Color3.fromRGB(20, 10, 24),
+			Accent = Color3.fromRGB(120, 30, 140),
+			Eyes = Color3.fromRGB(255, 120, 255),
+		},
 		Scale = 1.15,
 	},
 	{
@@ -102,7 +114,11 @@ local enemies: { EnemyDef } = {
 		Souls = 400,
 		IsBoss = true,
 		Tags = { Boss = true },
-		Colors = { Body = Color3.fromRGB(214, 196, 150), Accent = Color3.fromRGB(40, 90, 160), Eyes = Color3.fromRGB(255, 210, 80) },
+		Colors = {
+			Body = Color3.fromRGB(214, 196, 150),
+			Accent = Color3.fromRGB(40, 90, 160),
+			Eyes = Color3.fromRGB(255, 210, 80),
+		},
 		Scale = 1.8,
 	},
 	{
@@ -120,7 +136,11 @@ local enemies: { EnemyDef } = {
 		Souls = 0,
 		IsBoss = false,
 		Tags = { Dummy = true },
-		Colors = { Body = Color3.fromRGB(160, 120, 80), Accent = Color3.fromRGB(200, 40, 50), Eyes = Color3.fromRGB(30, 30, 30) },
+		Colors = {
+			Body = Color3.fromRGB(160, 120, 80),
+			Accent = Color3.fromRGB(200, 40, 50),
+			Eyes = Color3.fromRGB(30, 30, 30),
+		},
 		Scale = 1,
 	},
 }

@@ -309,7 +309,8 @@ end
 
 function StatService:RestoreStamina(player: Player, fraction: number)
 	local state = getState(player)
-	state.Stamina = math.min(state.Computed.Values.StaminaMax, state.Stamina + state.Computed.Values.StaminaMax * fraction)
+	state.Stamina =
+		math.min(state.Computed.Values.StaminaMax, state.Stamina + state.Computed.Values.StaminaMax * fraction)
 	player:SetAttribute("Stamina", state.Stamina)
 end
 
@@ -462,7 +463,8 @@ function StatService:Start()
 			local inCombat = t - state.LastCombat < GameConfig.Combat.CombatTagDuration
 			player:SetAttribute("InCombat", inCombat)
 			if humanoid and humanoid.Health > 0 and not inCombat and humanoid.Health < humanoid.MaxHealth then
-				humanoid.Health = math.min(humanoid.MaxHealth, humanoid.Health + humanoid.MaxHealth * values.HealthRegen * step)
+				humanoid.Health =
+					math.min(humanoid.MaxHealth, humanoid.Health + humanoid.MaxHealth * values.HealthRegen * step)
 			end
 		end
 	end)

@@ -94,7 +94,11 @@ function MadnessService:OnDamaged(player: Player, healthFraction: number)
 	end
 	local config = MadnessService.BlackBlood
 	local s = state(player)
-	if healthFraction <= config.HealthFraction and healthFraction > 0 and os.clock() - s.LastHardening >= config.Cooldown then
+	if
+		healthFraction <= config.HealthFraction
+		and healthFraction > 0
+		and os.clock() - s.LastHardening >= config.Cooldown
+	then
 		s.LastHardening = os.clock()
 		StatService:AddBuff(player, "BlackBlood", config.Duration, {
 			{ Stat = "Defense", Kind = "Multiplicative", Value = config.Defense },

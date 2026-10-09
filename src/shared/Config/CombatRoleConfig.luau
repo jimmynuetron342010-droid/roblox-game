@@ -81,7 +81,10 @@ function CombatRoleConfig.StatModifiers(id: string): { any }
 	local out = {}
 	if role then
 		for _, modifier in role.Modifiers do
-			table.insert(out, { Stat = modifier.Stat, Kind = "Additive", Value = modifier.Value, Source = "Role:" .. id })
+			table.insert(
+				out,
+				{ Stat = modifier.Stat, Kind = "Additive", Value = modifier.Value, Source = "Role:" .. id }
+			)
 		end
 	end
 	return out

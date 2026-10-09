@@ -65,7 +65,11 @@ local function unpair(player: Player, reason: string?)
 		if other.Parent then
 			other:SetAttribute("PartnerId", nil)
 			other:SetAttribute("SyncLevel", nil)
-			Notifier.Send(other, "Your resonance partner left" .. (reason and (" (" .. reason .. ")") or "") .. ".", "Info")
+			Notifier.Send(
+				other,
+				"Your resonance partner left" .. (reason and (" (" .. reason .. ")") or "") .. ".",
+				"Info"
+			)
 			StatService:Recompute(other)
 		end
 	end
@@ -92,9 +96,18 @@ local function action(player: Player, kind: any, targetUserId: any)
 			return { Ok = false, Reason = "Incompatible" }
 		end
 		invites[target] = { From = player, At = os.clock() }
-		Notifier.Send(target, string.format("%s wants to synchronize souls (compatibility %d%%). Open the Skills menu to accept.", player.DisplayName, math.floor(compat * 100)), "Info", {
-			Invite = player.UserId,
-		})
+		Notifier.Send(
+			target,
+			string.format(
+				"%s wants to synchronize souls (compatibility %d%%). Open the Skills menu to accept.",
+				player.DisplayName,
+				math.floor(compat * 100)
+			),
+			"Info",
+			{
+				Invite = player.UserId,
+			}
+		)
 		return { Ok = true, Compatibility = compat }
 	elseif kind == "Accept" then
 		local invite = invites[player]
@@ -164,7 +177,9 @@ function PartnerService:Start()
 	StatService:RegisterProvider("Synchronization", function(player)
 		local compat = synced[player]
 		if compat and not PartnerService:IsSyncedWeapon(player) then
-			return { { Stat = "WeaponMasteryGain", Kind = "Additive", Value = 0.05 * compat, Source = "Synchronization" } }
+			return {
+				{ Stat = "WeaponMasteryGain", Kind = "Additive", Value = 0.05 * compat, Source = "Synchronization" },
+			}
 		end
 		return {}
 	end)
@@ -178,7 +193,12 @@ function PartnerService:Start()
 				local b = partner.Character and partner.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
 				local humanoidA = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 				local humanoidB = partner.Character and partner.Character:FindFirstChildOfClass("Humanoid")
-				local inRange = a and b and humanoidA and humanoidB and humanoidA.Health > 0 and humanoidB.Health > 0
+				local inRange = a
+					and b
+					and humanoidA
+					and humanoidB
+					and humanoidA.Health > 0
+					and humanoidB.Health > 0
 					and (a.Position - b.Position).Magnitude <= PartnerService.Range
 				if inRange then
 					local ok, compat = compatible(player, partner)

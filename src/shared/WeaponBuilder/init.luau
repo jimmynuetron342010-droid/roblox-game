@@ -305,7 +305,8 @@ local function mountFor(character: Model, unit: Unit, config, drawn: boolean): (
 		if forearm and forearm.Name == "Right Arm" then
 			return forearm, CFrame.new(0, -0.6, 0)
 		end
-		return forearm, forearm and attachmentCFrame(forearm, "RightWristRigAttachment", CFrame.new(0, -0.5, 0)) or CFrame.new()
+		return forearm,
+			forearm and attachmentCFrame(forearm, "RightWristRigAttachment", CFrame.new(0, -0.5, 0)) or CFrame.new()
 	end
 	return nil, CFrame.new()
 end

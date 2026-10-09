@@ -51,7 +51,8 @@ describe("StatCalculator basics", function()
 	end)
 
 	it("clamps movement speed to safe absolute limits", function()
-		local fast = StatCalculator.Compute(1, { mod("MoveSpeed", "Additive", 3), mod("MoveSpeed", "Multiplicative", 2) })
+		local fast =
+			StatCalculator.Compute(1, { mod("MoveSpeed", "Additive", 3), mod("MoveSpeed", "Multiplicative", 2) })
 		expect(fast.Values.MoveSpeed).toBeAtMost(22)
 		local slow = StatCalculator.Compute(1, { mod("MoveSpeed", "Additive", -5) })
 		expect(slow.Values.MoveSpeed).toBeAtLeast(10)
@@ -190,13 +191,23 @@ describe("Race balance at equal level (initial tuning sanity)", function()
 			local mods = RaceConfig.StatModifiers(race.Id)
 			local s = StatCalculator.Compute(30, mods)
 			local ehp = s.Values.MaxHealth / (1 - s.DamageReduction)
-			local dps = StatCalculator.DamageMultiplier(s.Values, { Weapon = true, Melee = true }) * s.Values.AttackSpeed
+			local dps = StatCalculator.DamageMultiplier(s.Values, { Weapon = true, Melee = true })
+				* s.Values.AttackSpeed
 			local magic = StatCalculator.DamageMultiplier(s.Values, { Magic = true, Ability = true })
 			table.insert(rows, { race.Id, ehp, dps, magic, s.Values.MoveSpeed })
 		end
 		local minEhp, maxEhp = math.huge, 0
 		for _, r in rows do
-			print(string.format("      %-12s EHP %6.0f  weaponDPSx %.2f  magicx %.2f  speed %.1f", r[1], r[2], r[3], r[4], r[5]))
+			print(
+				string.format(
+					"      %-12s EHP %6.0f  weaponDPSx %.2f  magicx %.2f  speed %.1f",
+					r[1],
+					r[2],
+					r[3],
+					r[4],
+					r[5]
+				)
+			)
 			minEhp = math.min(minEhp, r[2])
 			maxEhp = math.max(maxEhp, r[2])
 		end

@@ -32,26 +32,77 @@ return function(api)
 	local gl = d.GripLength
 
 	local handleGroup = kit:Group("Handle")
-	kit:Cylinder("HandleCore", Vector3.new(0, -gl / 2, 0), Vector3.new(0, gl / 2, 0), 0.32, p.Grip, Enum.Material.Fabric, handleGroup)
+	kit:Cylinder(
+		"HandleCore",
+		Vector3.new(0, -gl / 2, 0),
+		Vector3.new(0, gl / 2, 0),
+		0.32,
+		p.Grip,
+		Enum.Material.Fabric,
+		handleGroup
+	)
 	for _, y in { -gl / 2 + 0.05, 0.1, gl / 2 - 0.05 } do
-		kit:Cylinder("Band", Vector3.new(0, y - 0.08, 0), Vector3.new(0, y + 0.08, 0), 0.42, p.Band, Enum.Material.Metal, handleGroup)
+		kit:Cylinder(
+			"Band",
+			Vector3.new(0, y - 0.08, 0),
+			Vector3.new(0, y + 0.08, 0),
+			0.42,
+			p.Band,
+			Enum.Material.Metal,
+			handleGroup
+		)
 	end
 	kit:Ball("Pommel", 0.44, Vector3.new(0, -gl / 2 - 0.12, 0), p.Band, Enum.Material.Metal, handleGroup)
 	crossSpike(kit, handleGroup, Vector3.new(0, -gl / 2 - 0.25, 0), Vector3.new(0, -gl / 2 - 0.7, 0), 0.22, p.Spike)
-	kit:Cylinder("HeadCap", Vector3.new(0, gl / 2, 0), Vector3.new(0, gl / 2 + 0.22, 0), 0.5, p.Band, Enum.Material.Metal, handleGroup)
-	kit:Cylinder("Eyelet", Vector3.new(-0.12, gl / 2 + 0.32, 0), Vector3.new(0.12, gl / 2 + 0.32, 0), 0.22, p.Link, Enum.Material.Metal, handleGroup)
+	kit:Cylinder(
+		"HeadCap",
+		Vector3.new(0, gl / 2, 0),
+		Vector3.new(0, gl / 2 + 0.22, 0),
+		0.5,
+		p.Band,
+		Enum.Material.Metal,
+		handleGroup
+	)
+	kit:Cylinder(
+		"Eyelet",
+		Vector3.new(-0.12, gl / 2 + 0.32, 0),
+		Vector3.new(0.12, gl / 2 + 0.32, 0),
+		0.22,
+		p.Link,
+		Enum.Material.Metal,
+		handleGroup
+	)
 
 	-- The chain leaves the head of the handle, like a real flail, and is simulated on the client.
 	local chainGroup = kit:Group("Chain")
 	local chainStart = Vector3.new(0, gl / 2 + 0.32, 0)
-	local chain = ChainKit.Build(kit, chainGroup, handle, chainStart, Vector3.new(0, 1, 0), d.Links, d.LinkLength, d.LinkWidth, p.Link, p.Link:Lerp(Color3.new(0, 0, 0), 0.2))
+	local chain = ChainKit.Build(
+		kit,
+		chainGroup,
+		handle,
+		chainStart,
+		Vector3.new(0, 1, 0),
+		d.Links,
+		d.LinkLength,
+		d.LinkWidth,
+		p.Link,
+		p.Link:Lerp(Color3.new(0, 0, 0), 0.2)
+	)
 
 	-- Spiked collars on two links (centered on the chain axis).
 	local collars = kit:Group("SpikedCollars")
 	for _, index in { 2, 4 } do
 		local link = chain.Links[index]
 		local localCenter = chainStart + Vector3.new(0, 1, 0) * ((index - 1) * chain.Spacing + d.LinkLength * 0.5)
-		local band = kit:Cylinder("CollarBand", localCenter + Vector3.new(0, 0.12, 0), localCenter - Vector3.new(0, 0.12, 0), 0.62, p.Band, Enum.Material.Metal, collars)
+		local band = kit:Cylinder(
+			"CollarBand",
+			localCenter + Vector3.new(0, 0.12, 0),
+			localCenter - Vector3.new(0, 0.12, 0),
+			0.62,
+			p.Band,
+			Enum.Material.Metal,
+			collars
+		)
 		kit:Reweld(band, link)
 		for k = 0, 3 do
 			local a = math.rad(k * 90 + 45)
@@ -68,7 +119,15 @@ return function(api)
 	local center = e * Vector3.new(0, radius * 0.9, 0)
 	local ball = kit:Ball("Ball", radius * 2, center, p.Ball, Enum.Material.Metal, ballGroup)
 	kit:Reweld(ball, last)
-	local band = kit:Cylinder("BallBand", center + e.UpVector * 0.08, center - e.UpVector * 0.08, radius * 2.08, p.Band, Enum.Material.Metal, ballGroup)
+	local band = kit:Cylinder(
+		"BallBand",
+		center + e.UpVector * 0.08,
+		center - e.UpVector * 0.08,
+		radius * 2.08,
+		p.Band,
+		Enum.Material.Metal,
+		ballGroup
+	)
 	kit:Reweld(band, last)
 	-- Evenly distributed spikes (golden-angle spiral).
 	local count = d.Spikes

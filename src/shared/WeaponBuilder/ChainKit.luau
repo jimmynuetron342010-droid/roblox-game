@@ -42,10 +42,42 @@ function ChainKit.Build(
 		local color = (i % 2 == 0) and colorB or colorA
 		local half = linkWidth / 2
 		local y0, y1 = linkLength * 0.08, linkLength * 0.92
-		local root = kit:Cylinder("Link", frame * Vector3.new(-half, y0, 0), frame * Vector3.new(-half, y1, 0), bar, color, Enum.Material.Metal, group)
-		local side = kit:Cylinder("LinkSide", frame * Vector3.new(half, y0, 0), frame * Vector3.new(half, y1, 0), bar, color, Enum.Material.Metal, group)
-		local capA = kit:Cylinder("LinkCap", frame * Vector3.new(-half - bar * 0.4, y0, 0), frame * Vector3.new(half + bar * 0.4, y0, 0), bar, color, Enum.Material.Metal, group)
-		local capB = kit:Cylinder("LinkCap", frame * Vector3.new(-half - bar * 0.4, y1, 0), frame * Vector3.new(half + bar * 0.4, y1, 0), bar, color, Enum.Material.Metal, group)
+		local root = kit:Cylinder(
+			"Link",
+			frame * Vector3.new(-half, y0, 0),
+			frame * Vector3.new(-half, y1, 0),
+			bar,
+			color,
+			Enum.Material.Metal,
+			group
+		)
+		local side = kit:Cylinder(
+			"LinkSide",
+			frame * Vector3.new(half, y0, 0),
+			frame * Vector3.new(half, y1, 0),
+			bar,
+			color,
+			Enum.Material.Metal,
+			group
+		)
+		local capA = kit:Cylinder(
+			"LinkCap",
+			frame * Vector3.new(-half - bar * 0.4, y0, 0),
+			frame * Vector3.new(half + bar * 0.4, y0, 0),
+			bar,
+			color,
+			Enum.Material.Metal,
+			group
+		)
+		local capB = kit:Cylinder(
+			"LinkCap",
+			frame * Vector3.new(-half - bar * 0.4, y1, 0),
+			frame * Vector3.new(half + bar * 0.4, y1, 0),
+			bar,
+			color,
+			Enum.Material.Metal,
+			group
+		)
 		for _, part in { side, capA, capB } do
 			kit:Reweld(part, root)
 		end

@@ -68,7 +68,9 @@ local function resolveStore()
 		warn("[DataService] GetDataStore failed: " .. tostring(store))
 	end
 	if RunService:IsStudio() and GameConfig.Debug.UseMockDataStoreWhenUnavailable then
-		warn("[DataService] Using in-memory MockDataStore (Studio). Enable 'Studio Access to API Services' to test real saves.")
+		warn(
+			"[DataService] Using in-memory MockDataStore (Studio). Enable 'Studio Access to API Services' to test real saves."
+		)
 		usingMock = true
 		return SessionStore.new(MockDataStore.new(), jobId, GameConfig.Data.SessionLockStaleAfter)
 	end

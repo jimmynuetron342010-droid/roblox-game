@@ -75,7 +75,7 @@ function RigMath.SolveArm(torsoWorld: CFrame, arm: ArmJoints, gripTarget: CFrame
 	local sinA = math.sqrt(1 - cosA * cosA)
 	local poleDir = pole - dir * pole:Dot(dir)
 	if poleDir.Magnitude < EPS then
-		poleDir = Vector3.new(0, -1, 0) - dir * (-dir.Y)
+		poleDir = Vector3.new(0, -1, 0) - dir * -dir.Y
 		if poleDir.Magnitude < EPS then
 			poleDir = Vector3.zAxis
 		end
@@ -129,7 +129,7 @@ function RigMath.WeaponFrame(position: Vector3, shaft: Vector3, facing: Vector3)
 	local y = shaft.Unit
 	local f = facing - y * facing:Dot(y)
 	if f.Magnitude < EPS then
-		f = Vector3.new(0, 0, -1) - y * (-y.Z)
+		f = Vector3.new(0, 0, -1) - y * -y.Z
 		if f.Magnitude < EPS then
 			f = Vector3.xAxis
 		end

@@ -92,7 +92,10 @@ function AnimatorCore.new(character: Model)
 			self.Motors[joint] = motor
 		end
 	end
-	self.Valid = self.Root ~= nil and self.Motors.Root ~= nil and self.Motors.Waist ~= nil and self.Motors.RightShoulder ~= nil
+	self.Valid = self.Root ~= nil
+		and self.Motors.Root ~= nil
+		and self.Motors.Waist ~= nil
+		and self.Motors.RightShoulder ~= nil
 	local function gripCF(handName, attachmentName)
 		local hand = character:FindFirstChild(handName)
 		local attachment = hand and hand:FindFirstChild(attachmentName)
@@ -190,6 +193,12 @@ function AnimatorCore:StopAction()
 	self.Action = nil
 end
 
+-- Pushes the outer half of any simulated chain (whip at the strike of a chain swing).
+function AnimatorCore:AddChainImpulse(impulse: Vector3, duration: number)
+	self.ExternalImpulse = impulse
+	self.ExternalImpulseUntil = self.Time + duration
+end
+
 function AnimatorCore:IsTrailActive(): boolean
 	local action = self.Action
 	if not action or not action.Def.Trail then
@@ -246,8 +255,10 @@ function AnimatorCore:_locomotion(dt: number, ctx): Pose
 	pose.LeftHip = E({ -hipAmp * s * w + idleKnee * (1 - w) - air * 8, 0, -spread * (1 - w) })
 	pose.RightKnee = E({ -(kneeAmp * swingR * w) - idleKnee * 1.6 * (1 - w) - 6 * w - air * 45, 0, 0 })
 	pose.LeftKnee = E({ -(kneeAmp * swingL * w) - idleKnee * 1.6 * (1 - w) - 6 * w - air * 30, 0, 0 })
-	pose.RightAnkle = E({ (kneeAmp * swingR * w) * 0.35 + idleKnee * 0.6 * (1 - w) - (hipAmp * s * w) * 0.3, 0, -spread * (1 - w) })
-	pose.LeftAnkle = E({ (kneeAmp * swingL * w) * 0.35 + idleKnee * 0.6 * (1 - w) + (hipAmp * s * w) * 0.3, 0, spread * (1 - w) })
+	pose.RightAnkle =
+		E({ (kneeAmp * swingR * w) * 0.35 + idleKnee * 0.6 * (1 - w) - (hipAmp * s * w) * 0.3, 0, -spread * (1 - w) })
+	pose.LeftAnkle =
+		E({ (kneeAmp * swingL * w) * 0.35 + idleKnee * 0.6 * (1 - w) + (hipAmp * s * w) * 0.3, 0, spread * (1 - w) })
 
 	-- Loose, slightly lagging arm swing (springs give the overshoot).
 	local armTarget = (32 + r * 25) * loco.ArmSwing * w
@@ -377,6 +388,9 @@ function AnimatorCore:Update(dt: number, ctx)
 			end
 		end
 	end
+	if self.ExternalImpulse and self.Time < (self.ExternalImpulseUntil or 0) then
+		actionParams.Impulse = self.ExternalImpulse
+	end
 	self.LastActionParams = actionParams
 
 	-- Write body joints.
@@ -435,7 +449,8 @@ function AnimatorCore:_solveWeapon(torsoWorld: CFrame, targets: { [string]: CFra
 				local arm = self:_armJoints(side)
 				if arm.Shoulder and arm.Elbow and arm.Wrist then
 					local targetWorld = torsoWorld * target
-					local solution = RigMath.SolveArm(torsoWorld, arm, targetWorld, side == "Right" and poleRight or poleLeft)
+					local solution =
+						RigMath.SolveArm(torsoWorld, arm, targetWorld, side == "Right" and poleRight or poleLeft)
 					applyArm(arm, solution, presence)
 					-- Absorb any residual (unreachable target) on the weapon's own joint.
 					mountJoint.Transform = (solution.Hand * mountJoint.C0):Inverse() * targetWorld
@@ -456,7 +471,9 @@ function AnimatorCore:_solveWeapon(torsoWorld: CFrame, targets: { [string]: CFra
 			if unit.Name == hold.Support.Unit and unit.World and unit.Support then
 				local arm = self:_armJoints("Left")
 				if arm.Shoulder then
-					local gripWorld = unit.World * unit.Support.CFrame * CFrame.Angles(0, rad(hold.Support.Twist or 0), 0)
+					local gripWorld = unit.World
+						* unit.Support.CFrame
+						* CFrame.Angles(0, rad(hold.Support.Twist or 0), 0)
 					local solution = RigMath.SolveArm(torsoWorld, arm, gripWorld, poleLeft)
 					applyArm(arm, solution, presence)
 				end
@@ -521,7 +538,10 @@ function AnimatorCore:_animateSpider(unit, params)
 		local knee = unit.Knees[index]
 		local mirror = hip:GetAttribute("Side") or ((index % 2 == 1) and 1 or -1)
 		local isFront = index <= 4
-		local group = (isFront and preset.Front) or (mirror == 1 and preset.Right) or (mirror == -1 and preset.Left) or nil
+		local group = (isFront and preset.Front)
+			or (mirror == 1 and preset.Right)
+			or (mirror == -1 and preset.Left)
+			or nil
 		local hipOffset = (group and group.Hip) or preset.Hip or { 0, 0 }
 		local kneeOffset = (group and group.Knee) or preset.Knee or { 0 }
 		local idle = math.sin(self.Time * 2.1 + index * 0.9) * 5

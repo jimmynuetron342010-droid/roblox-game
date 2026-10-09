@@ -171,7 +171,16 @@ function WeaponService:Start()
 			profile.Weapons.Mastery[id] = (profile.Weapons.Mastery[id] or 0) + gain
 			local after = WeaponConfig.MasteryLevel(profile.Weapons.Mastery[id])
 			if after > before then
-				Notifier.Send(player, string.format("%s mastery %d (+%d%% weapon damage)", WeaponConfig.Weapons[id].DisplayName, after, after), "Reward")
+				Notifier.Send(
+					player,
+					string.format(
+						"%s mastery %d (+%d%% weapon damage)",
+						WeaponConfig.Weapons[id].DisplayName,
+						after,
+						after
+					),
+					"Reward"
+				)
 				StatService:Recompute(player)
 			end
 			DataService:MarkDirty(player)

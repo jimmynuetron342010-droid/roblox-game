@@ -135,6 +135,7 @@ local function createStudent(player: Player, payload: any)
 		profile.Student.Name = filtered
 		profile.Loadout.Role = clean.Role
 		profile.Loadout.Weapon = clean.Weapon
+		player:SetAttribute("Role", clean.Role)
 		for _, weaponId in StudentConfig.StarterWeapons do
 			profile.Weapons.Owned[weaponId] = true
 		end
@@ -153,7 +154,11 @@ local function createStudent(player: Player, payload: any)
 	StatService:Recompute(player)
 
 	if first then
-		Notifier.Send(player, "Welcome to the DWMA, " .. profile.Student.Name .. "! Visit the Soul Altar to awaken your origin.", "Success")
+		Notifier.Send(
+			player,
+			"Welcome to the DWMA, " .. profile.Student.Name .. "! Visit the Soul Altar to awaken your origin.",
+			"Success"
+		)
 		if player.Character then
 			WeaponService:EquipFromProfile(player)
 		end
@@ -234,7 +239,8 @@ function CharacterService:ApplyAppearance(player: Player)
 	end
 	local raceId = profile.Race.Active
 	if profile.Student.Created then
-		local ok, err = pcall(StudentAppearance.Apply, character, profile.Student, raceId ~= "" and raceId or nil, false)
+		local ok, err =
+			pcall(StudentAppearance.Apply, character, profile.Student, raceId ~= "" and raceId or nil, false)
 		if not ok then
 			warn("[CharacterService] student appearance: " .. tostring(err))
 		end

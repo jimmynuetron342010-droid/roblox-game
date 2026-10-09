@@ -66,8 +66,22 @@ Features.WolfEars = function(character, folder, anchored)
 	local inner = Color3.fromRGB(196, 150, 150)
 	for _, side in { -1, 1 } do
 		local base = Vector3.new(0.38 * side, -0.05, 0.05)
-		kit:Triangle("Ear", base + Vector3.new(-0.2, 0, 0), base + Vector3.new(0.2, 0, 0), base + Vector3.new(0.12 * side, 0.55, 0.08), 0.14, fur)
-		kit:Triangle("EarInner", base + Vector3.new(-0.11, 0.03, -0.06), base + Vector3.new(0.11, 0.03, -0.06), base + Vector3.new(0.1 * side, 0.4, 0.02), 0.05, inner)
+		kit:Triangle(
+			"Ear",
+			base + Vector3.new(-0.2, 0, 0),
+			base + Vector3.new(0.2, 0, 0),
+			base + Vector3.new(0.12 * side, 0.55, 0.08),
+			0.14,
+			fur
+		)
+		kit:Triangle(
+			"EarInner",
+			base + Vector3.new(-0.11, 0.03, -0.06),
+			base + Vector3.new(0.11, 0.03, -0.06),
+			base + Vector3.new(0.1 * side, 0.4, 0.02),
+			0.05,
+			inner
+		)
 	end
 end
 
@@ -99,7 +113,13 @@ Features.WitchHat = function(character, folder, anchored, stage, appearance)
 		kit:Cylinder("Cone", Vector3.new(0, tier[2], 0) + lean, Vector3.new(0, tier[3], 0) + lean, tier[1], hat)
 	end
 	kit:Spike("Tip", Vector3.new(0, 1.45, 0.32), Vector3.new(0, 1.55, 0.9), 0.32, 0.18, hat, Vector3.yAxis)
-	kit:Cylinder("Band", Vector3.new(0, 0.0, 0.01), Vector3.new(0, 0.14, 0.01), 1.04, stage >= 2 and band or Color3.fromRGB(110, 70, 150))
+	kit:Cylinder(
+		"Band",
+		Vector3.new(0, 0.0, 0.01),
+		Vector3.new(0, 0.14, 0.01),
+		1.04,
+		stage >= 2 and band or Color3.fromRGB(110, 70, 150)
+	)
 end
 
 Features.Stitches = function(character, folder, anchored)
@@ -110,7 +130,12 @@ Features.Stitches = function(character, folder, anchored)
 	local thread = Color3.fromRGB(40, 30, 30)
 	kit:Block("Stitch", Vector3.new(0.5, 0.04, 0.03), CFrame.new(-0.25, -0.2, -0.01) * CFrame.Angles(0, 0, 0.5), thread)
 	for i = 0, 3 do
-		kit:Block("StitchCross", Vector3.new(0.03, 0.14, 0.03), CFrame.new(-0.42 + i * 0.12, -0.2 + i * 0.065, -0.01) * CFrame.Angles(0, 0, 0.5), thread)
+		kit:Block(
+			"StitchCross",
+			Vector3.new(0.03, 0.14, 0.03),
+			CFrame.new(-0.42 + i * 0.12, -0.2 + i * 0.065, -0.01) * CFrame.Angles(0, 0, 0.5),
+			thread
+		)
 	end
 end
 
@@ -121,7 +146,14 @@ Features.Bolt = function(character, folder, anchored)
 	end
 	local metal = Color3.fromRGB(150, 150, 160)
 	for _, side in { -1, 1 } do
-		kit:Cylinder("Bolt", Vector3.new(0.45 * side, 0.2, 0), Vector3.new(0.75 * side, 0.2, 0), 0.18, metal, Enum.Material.Metal)
+		kit:Cylinder(
+			"Bolt",
+			Vector3.new(0.45 * side, 0.2, 0),
+			Vector3.new(0.75 * side, 0.2, 0),
+			0.18,
+			metal,
+			Enum.Material.Metal
+		)
 	end
 end
 
@@ -130,14 +162,26 @@ Features.Wrappings = function(character, folder, anchored, stage)
 	local kit = kitAt(character, folder, "BodyFrontAttachment", anchored)
 	if kit then
 		for i = 0, 3 do
-			kit:Block("Wrap", Vector3.new(2.1, 0.16, 0.06), CFrame.new(0, -0.6 + i * 0.4, -0.02) * CFrame.Angles(0, 0, (i % 2 == 0) and 0.18 or -0.18), cloth, Enum.Material.Fabric)
+			kit:Block(
+				"Wrap",
+				Vector3.new(2.1, 0.16, 0.06),
+				CFrame.new(0, -0.6 + i * 0.4, -0.02) * CFrame.Angles(0, 0, (i % 2 == 0) and 0.18 or -0.18),
+				cloth,
+				Enum.Material.Fabric
+			)
 		end
 	end
 	for _, name in { "RightShoulderAttachment", "LeftShoulderAttachment" } do
 		local armKit = kitAt(character, folder, name, anchored)
 		if armKit then
 			for i = 0, 2 do
-				armKit:Block("ArmWrap", Vector3.new(1.06, 0.14, 1.06), CFrame.new(0, -0.35 - i * 0.32, 0) * CFrame.Angles(0, 0, 0.12), cloth, Enum.Material.Fabric)
+				armKit:Block(
+					"ArmWrap",
+					Vector3.new(1.06, 0.14, 1.06),
+					CFrame.new(0, -0.35 - i * 0.32, 0) * CFrame.Angles(0, 0, 0.12),
+					cloth,
+					Enum.Material.Fabric
+				)
 			end
 		end
 	end
@@ -152,7 +196,13 @@ Features.Hood = function(character, folder, anchored, stage, appearance)
 	kit:Block("HoodBack", Vector3.new(1.45, 1.35, 0.14), CFrame.new(0, -0.55, 0.68), cloth, Enum.Material.Fabric)
 	kit:Block("HoodTop", Vector3.new(1.45, 0.14, 1.4), CFrame.new(0, 0.1, 0.05), cloth, Enum.Material.Fabric)
 	for _, side in { -1, 1 } do
-		kit:Block("HoodSide", Vector3.new(0.14, 1.2, 1.3), CFrame.new(0.72 * side, -0.5, 0.05), cloth, Enum.Material.Fabric)
+		kit:Block(
+			"HoodSide",
+			Vector3.new(0.14, 1.2, 1.3),
+			CFrame.new(0.72 * side, -0.5, 0.05),
+			cloth,
+			Enum.Material.Fabric
+		)
 	end
 	if stage >= 2 then
 		kit:Block("HoodTrim", Vector3.new(1.5, 0.08, 0.08), CFrame.new(0, 0.12, -0.66), appearance.AuraColor)
@@ -191,14 +241,26 @@ Features.StonePlates = function(character, folder, anchored, stage, appearance)
 	for _, name in { "RightShoulderAttachment", "LeftShoulderAttachment" } do
 		local kit = kitAt(character, folder, name, anchored)
 		if kit then
-			kit:Block("ShoulderStone", Vector3.new(1.25, 0.45, 1.2), CFrame.new(0, 0.05, 0) * CFrame.Angles(0, 0, 0.1), stone, Enum.Material.Slate)
+			kit:Block(
+				"ShoulderStone",
+				Vector3.new(1.25, 0.45, 1.2),
+				CFrame.new(0, 0.05, 0) * CFrame.Angles(0, 0, 0.1),
+				stone,
+				Enum.Material.Slate
+			)
 		end
 	end
 	local chest = kitAt(character, folder, "BodyFrontAttachment", anchored)
 	if chest then
 		chest:Block("ChestStone", Vector3.new(1.5, 1.1, 0.25), CFrame.new(0, 0.1, -0.08), stone, Enum.Material.Slate)
 		local coreColor = appearance.AuraColor
-		chest:Ball("Core", 0.42, Vector3.new(0, 0.15, -0.24), coreColor, stage >= 2 and Enum.Material.Neon or Enum.Material.SmoothPlastic)
+		chest:Ball(
+			"Core",
+			0.42,
+			Vector3.new(0, 0.15, -0.24),
+			coreColor,
+			stage >= 2 and Enum.Material.Neon or Enum.Material.SmoothPlastic
+		)
 	end
 end
 
@@ -213,7 +275,15 @@ Features.BladeFin = function(character, folder, anchored, stage)
 	local base0, base1 = Vector3.new(0, -0.1, 0.5), Vector3.new(0, -0.9, 0.5)
 	local tip = Vector3.new(0, 0.3, 1.25 + 0.15 * stage)
 	kit:Triangle("Fin", base0, base1, tip, 0.08, black, Enum.Material.Metal)
-	kit:Triangle("FinEdge", base0 + Vector3.new(0, 0.05, 0.25), tip, tip + Vector3.new(0, -0.35, -0.1), 0.06, red, Enum.Material.Metal)
+	kit:Triangle(
+		"FinEdge",
+		base0 + Vector3.new(0, 0.05, 0.25),
+		tip,
+		tip + Vector3.new(0, -0.35, -0.1),
+		0.06,
+		red,
+		Enum.Material.Metal
+	)
 end
 
 RaceAppearance.Features = Features
@@ -268,7 +338,10 @@ function RaceAppearance.Clear(character: Model)
 		folder:Destroy()
 	end
 	for _, descendant in character:GetDescendants() do
-		if descendant:IsA("ParticleEmitter") and string.sub(descendant.Name, 1, #RaceAppearance.AuraName) == RaceAppearance.AuraName then
+		if
+			descendant:IsA("ParticleEmitter")
+			and string.sub(descendant.Name, 1, #RaceAppearance.AuraName) == RaceAppearance.AuraName
+		then
 			descendant:Destroy()
 		end
 	end

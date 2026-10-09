@@ -27,7 +27,12 @@ return function(vfx, p, cfg)
 		local normal = ground and ground.Normal or Vector3.yAxis
 		local color = vfx.SurfaceColor(ground)
 		vfx.EmitRing(point, normal, radius * 0.35, cfg.DustCount, color)
-		vfx.Emit("Dust", CFrame.lookAt(point, point + normal), math.floor(cfg.DustCount * 0.4), { Color = ColorSequence.new(color) })
+		vfx.Emit(
+			"Dust",
+			CFrame.lookAt(point, point + normal),
+			math.floor(cfg.DustCount * 0.4),
+			{ Color = ColorSequence.new(color) }
+		)
 		vfx.Debris(point, normal, color, cfg.DebrisCount, cfg.DebrisSpeed, 0.6)
 		vfx.Ring(point, normal, radius, cfg.RingLifetime, color:Lerp(Color3.new(1, 1, 1), 0.35), cfg.RingThickness)
 		vfx.Flash(point + normal * 1.5, Color3.fromRGB(255, 200, 150), 2.5, radius, 0.15)

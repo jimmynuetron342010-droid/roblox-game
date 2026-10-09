@@ -119,11 +119,25 @@ function GeometryKit:Part(spec: PartSpec): BasePart
 	return part
 end
 
-function GeometryKit:Block(name: string, size: Vector3, cf: CFrame, color: Color3, material: Enum.Material?, parent: Instance?): BasePart
+function GeometryKit:Block(
+	name: string,
+	size: Vector3,
+	cf: CFrame,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+): BasePart
 	return self:Part({ Name = name, Size = size, CFrame = cf, Color = color, Material = material, Parent = parent })
 end
 
-function GeometryKit:Ball(name: string, diameter: number, position: Vector3, color: Color3, material: Enum.Material?, parent: Instance?): BasePart
+function GeometryKit:Ball(
+	name: string,
+	diameter: number,
+	position: Vector3,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+): BasePart
 	return self:Part({
 		Name = name,
 		Shape = Enum.PartType.Ball,
@@ -159,7 +173,15 @@ function GeometryKit.FrameAlong(origin: Vector3, direction: Vector3, axis: strin
 end
 
 -- Cylinder spanning p0 -> p1 (Roblox cylinders run along their X axis).
-function GeometryKit:Cylinder(name: string, p0: Vector3, p1: Vector3, diameter: number, color: Color3, material: Enum.Material?, parent: Instance?): BasePart
+function GeometryKit:Cylinder(
+	name: string,
+	p0: Vector3,
+	p1: Vector3,
+	diameter: number,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+): BasePart
 	local length = (p1 - p0).Magnitude
 	local cf = GeometryKit.FrameAlong((p0 + p1) / 2, p1 - p0, "X")
 	return self:Part({
@@ -174,7 +196,17 @@ function GeometryKit:Cylinder(name: string, p0: Vector3, p1: Vector3, diameter: 
 end
 
 -- Rectangular bar spanning p0 -> p1 with the given cross-section; `up` orients the width.
-function GeometryKit:Bar(name: string, p0: Vector3, p1: Vector3, width: number, depth: number, color: Color3, up: Vector3?, material: Enum.Material?, parent: Instance?): BasePart
+function GeometryKit:Bar(
+	name: string,
+	p0: Vector3,
+	p1: Vector3,
+	width: number,
+	depth: number,
+	color: Color3,
+	up: Vector3?,
+	material: Enum.Material?,
+	parent: Instance?
+): BasePart
 	local length = (p1 - p0).Magnitude
 	local cf = GeometryKit.FrameAlong((p0 + p1) / 2, p1 - p0, "Y", up)
 	return self:Part({
@@ -252,13 +284,31 @@ function GeometryKit:Triangle(
 end
 
 -- Quad a-b-c-d (in order around the outline) as two triangles.
-function GeometryKit:Quad(name: string, a: Vector3, b: Vector3, c: Vector3, d: Vector3, thickness: number, color: Color3, material: Enum.Material?, parent: Instance?)
+function GeometryKit:Quad(
+	name: string,
+	a: Vector3,
+	b: Vector3,
+	c: Vector3,
+	d: Vector3,
+	thickness: number,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+)
 	self:Triangle(name, a, b, c, thickness, color, material, parent)
 	self:Triangle(name, a, c, d, thickness, color, material, parent)
 end
 
 -- Fills the surface between two polylines with matching sample counts.
-function GeometryKit:Strip(name: string, lineA: { Vector3 }, lineB: { Vector3 }, thickness: number, color: Color3, material: Enum.Material?, parent: Instance?)
+function GeometryKit:Strip(
+	name: string,
+	lineA: { Vector3 },
+	lineB: { Vector3 },
+	thickness: number,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+)
 	assert(#lineA == #lineB, "Strip: polylines must have the same number of points")
 	for i = 1, #lineA - 1 do
 		self:Quad(name, lineA[i], lineA[i + 1], lineB[i + 1], lineB[i], thickness, color, material, parent)
@@ -266,7 +316,17 @@ function GeometryKit:Strip(name: string, lineA: { Vector3 }, lineB: { Vector3 },
 end
 
 -- Isosceles spike: flat triangular blade from `base` to `tip`, `width` wide across `side`.
-function GeometryKit:Spike(name: string, base: Vector3, tip: Vector3, width: number, thickness: number, color: Color3, side: Vector3?, material: Enum.Material?, parent: Instance?)
+function GeometryKit:Spike(
+	name: string,
+	base: Vector3,
+	tip: Vector3,
+	width: number,
+	thickness: number,
+	color: Color3,
+	side: Vector3?,
+	material: Enum.Material?,
+	parent: Instance?
+)
 	local axis = tip - base
 	local s = side or GeometryKit.FrameAlong(base, axis, "Y").RightVector
 	s = (s - axis.Unit * s:Dot(axis.Unit)).Unit
@@ -276,7 +336,16 @@ function GeometryKit:Spike(name: string, base: Vector3, tip: Vector3, width: num
 end
 
 -- Ring of short cylinders (torus approximation) around `frame`'s Y axis.
-function GeometryKit:Ring(name: string, frame: CFrame, radius: number, tube: number, segments: number, color: Color3, material: Enum.Material?, parent: Instance?)
+function GeometryKit:Ring(
+	name: string,
+	frame: CFrame,
+	radius: number,
+	tube: number,
+	segments: number,
+	color: Color3,
+	material: Enum.Material?,
+	parent: Instance?
+)
 	local points = {}
 	for i = 0, segments do
 		local angle = (i / segments) * math.pi * 2

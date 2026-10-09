@@ -122,9 +122,23 @@ function Enemy:StartAttack(targetModel: Model)
 	self.Model:SetAttribute("AttackWindUp", windUp)
 	local root = self.Root
 	if pattern == "Slam" then
-		FXBroadcast.Broadcast({ Type = "Ability", Kind = "Telegraph", Position = root.Position, Radius = 12, Duration = windUp, Color = Color3.fromRGB(255, 60, 60) }, root.Position)
+		FXBroadcast.Broadcast({
+			Type = "Ability",
+			Kind = "Telegraph",
+			Position = root.Position,
+			Radius = 12,
+			Duration = windUp,
+			Color = Color3.fromRGB(255, 60, 60),
+		}, root.Position)
 	elseif pattern == "Sweep" then
-		FXBroadcast.Broadcast({ Type = "Ability", Kind = "Telegraph", Position = root.Position + root.CFrame.LookVector * 5, Radius = 8, Duration = windUp, Color = Color3.fromRGB(255, 120, 60) }, root.Position)
+		FXBroadcast.Broadcast({
+			Type = "Ability",
+			Kind = "Telegraph",
+			Position = root.Position + root.CFrame.LookVector * 5,
+			Radius = 8,
+			Duration = windUp,
+			Color = Color3.fromRGB(255, 120, 60),
+		}, root.Position)
 	end
 	task.delay(windUp, function()
 		self.Busy = false
@@ -159,12 +173,24 @@ function Enemy:StartAttack(targetModel: Model)
 					OnHit = function(result)
 						local hit = CombatService:GetCombatant(result.Instance:FindFirstAncestorOfClass("Model"))
 						if hit and hit.Player then
-							CombatService:ApplyDamage(attacker, hit, { Base = damage, Tags = { Magic = true }, Ranged = true, Stagger = 0.15 })
+							CombatService:ApplyDamage(
+								attacker,
+								hit,
+								{ Base = damage, Tags = { Magic = true }, Ranged = true, Stagger = 0.15 }
+							)
 						end
 						return false
 					end,
 				})
-				FXBroadcast.Broadcast({ Type = "Ability", Kind = "Projectile", Origin = origin, Direction = dir, Speed = 55, Range = def.AttackRange + 10, Color = Color3.fromRGB(200, 80, 255) }, origin)
+				FXBroadcast.Broadcast({
+					Type = "Ability",
+					Kind = "Projectile",
+					Origin = origin,
+					Direction = dir,
+					Speed = 55,
+					Range = def.AttackRange + 10,
+					Color = Color3.fromRGB(200, 80, 255),
+				}, origin)
 			end
 		elseif pattern == "Slam" then
 			for _, target in CombatService:QueryCircle(attacker, root.Position, 12) do
@@ -176,7 +202,10 @@ function Enemy:StartAttack(targetModel: Model)
 					Direction = target.Root.Position - root.Position,
 				})
 			end
-			FXBroadcast.Broadcast({ Type = "Ability", Kind = "Slam", Position = root.Position, Radius = 12 }, root.Position)
+			FXBroadcast.Broadcast(
+				{ Type = "Ability", Kind = "Slam", Position = root.Position, Radius = 12 },
+				root.Position
+			)
 		elseif pattern == "Sweep" then
 			for _, target in CombatService:QueryArc(attacker, root.CFrame.LookVector, 11, 200, 8) do
 				CombatService:ApplyDamage(attacker, target, {
@@ -212,7 +241,10 @@ function Enemy:StartAttack(targetModel: Model)
 						return false
 					end,
 				})
-				FXBroadcast.Broadcast({ Type = "Ability", Kind = "Wrap", Origin = origin, Direction = dir, Speed = 70, Range = 60 }, origin)
+				FXBroadcast.Broadcast(
+					{ Type = "Ability", Kind = "Wrap", Origin = origin, Direction = dir, Speed = 70, Range = 60 },
+					origin
+				)
 			end
 		end
 	end)
@@ -237,7 +269,10 @@ function Enemy:ReactToTelegraph(position: Vector3, radius: number, windUp: numbe
 		self.Humanoid.WalkSpeed = 42
 		self.Humanoid:MoveTo(destination)
 		self.SidestepUntil = os.clock() + 0.6
-		FXBroadcast.Broadcast({ Type = "Dash", Character = self.Model, Origin = self.Root.Position, Direction = away }, self.Root.Position)
+		FXBroadcast.Broadcast(
+			{ Type = "Dash", Character = self.Model, Origin = self.Root.Position, Direction = away },
+			self.Root.Position
+		)
 	end)
 end
 
@@ -260,7 +295,13 @@ function EnemyService:OnKilled(enemy, attacker, info)
 	end
 	local position = enemy.Root.Position
 	local killer = attacker and attacker.Player
-	FXBroadcast.Broadcast({ Type = "EnemyDeath", Character = enemy.Model, Position = position, Killer = killer and killer.UserId or 0, Boss = def.IsBoss }, position)
+	FXBroadcast.Broadcast({
+		Type = "EnemyDeath",
+		Character = enemy.Model,
+		Position = position,
+		Killer = killer and killer.UserId or 0,
+		Boss = def.IsBoss,
+	}, position)
 	local levelScale = 1 + (enemy.Level - 1) * 0.08
 	for player, damage in enemy.Contributors do
 		if player.Parent and damage > 0 then
@@ -346,7 +387,11 @@ end
 local function think(enemy, dt: number)
 	local def = enemy.Def
 	if enemy.Dead or def.Id == "TrainingDummy" then
-		if def.Id == "TrainingDummy" and os.clock() - enemy.LastDamaged > 4 and enemy.Humanoid.Health < enemy.Humanoid.MaxHealth then
+		if
+			def.Id == "TrainingDummy"
+			and os.clock() - enemy.LastDamaged > 4
+			and enemy.Humanoid.Health < enemy.Humanoid.MaxHealth
+		then
 			enemy.Humanoid.Health = enemy.Humanoid.MaxHealth
 		end
 		return
@@ -412,7 +457,8 @@ local function think(enemy, dt: number)
 	end
 	local distance = (targetRoot.Position - root.Position).Magnitude
 	if enemy.Busy then
-		root.CFrame = CFrame.lookAt(root.Position, Vector3.new(targetRoot.Position.X, root.Position.Y, targetRoot.Position.Z))
+		root.CFrame =
+			CFrame.lookAt(root.Position, Vector3.new(targetRoot.Position.X, root.Position.Y, targetRoot.Position.Z))
 		humanoid:MoveTo(root.Position)
 		return
 	end
@@ -490,7 +536,11 @@ function EnemyService:Start()
 					local range = player:GetAttribute("SoulPerception") or 60
 					if proot then
 						for _, enemy in enemies do
-							if enemy.Def.Hidden and not enemy.Revealed[player] and (enemy.Root.Position - proot.Position).Magnitude <= range then
+							if
+								enemy.Def.Hidden
+								and not enemy.Revealed[player]
+								and (enemy.Root.Position - proot.Position).Magnitude <= range
+							then
 								enemy.Revealed[player] = true
 								GameEvents.Fire(player, "HiddenRevealed", { EnemyType = enemy.Def.Id })
 							end

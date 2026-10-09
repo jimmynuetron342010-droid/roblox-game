@@ -61,10 +61,16 @@ function RaceService:OnRaceChanged(player: Player, previous: string?)
 		return
 	end
 	local raceId = profile.Race.Active
-	local role, school, changes =
-		BuildRules.Sanitize(raceId, profile.Loadout.Role, profile.Loadout.School ~= "" and profile.Loadout.School or nil, profile.Level)
+	local role, school, changes = BuildRules.Sanitize(
+		raceId,
+		profile.Loadout.Role,
+		profile.Loadout.School ~= "" and profile.Loadout.School or nil,
+		profile.Level
+	)
 	profile.Loadout.Role = role
 	profile.Loadout.School = school or ""
+	player:SetAttribute("Role", role)
+	player:SetAttribute("School", profile.Loadout.School)
 	for _, change in changes do
 		Notifier.Send(player, change, "Info")
 	end
@@ -114,9 +120,13 @@ local function roll(player: Player, requestId: any, payment: any)
 		if rarity.Order >= 5 then
 			-- Legendary and Mythic pulls are announced server-wide (after the reveal delay).
 			task.delay(rarity.RevealBuildUp + 0.5, function()
-				Notifier.All(string.format("%s awakened as a %s %s!", player.DisplayName, rarity.DisplayName, race.DisplayName), "Rare", {
-					Rarity = race.Rarity,
-				})
+				Notifier.All(
+					string.format("%s awakened as a %s %s!", player.DisplayName, rarity.DisplayName, race.DisplayName),
+					"Rare",
+					{
+						Rarity = race.Rarity,
+					}
+				)
 			end)
 		end
 	end

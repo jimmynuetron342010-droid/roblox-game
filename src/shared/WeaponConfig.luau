@@ -55,7 +55,18 @@ WeaponConfig.Attacks = {
 		Stamina = 4,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash" },
-		Hits = { { Time = 0.22, Shape = "Arc", Range = 10, Angle = 150, Height = 7, Damage = 22, Stagger = 0.2, Knockback = 6 } },
+		Hits = {
+			{
+				Time = 0.22,
+				Shape = "Arc",
+				Range = 10,
+				Angle = 150,
+				Height = 7,
+				Damage = 22,
+				Stagger = 0.2,
+				Knockback = 6,
+			},
+		},
 	},
 	Scythe_SlashB = {
 		Animation = "ScytheSlashB",
@@ -63,7 +74,18 @@ WeaponConfig.Attacks = {
 		Stamina = 4,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash", Params = { Mirror = true } },
-		Hits = { { Time = 0.2, Shape = "Arc", Range = 10, Angle = 150, Height = 7, Damage = 22, Stagger = 0.2, Knockback = 6 } },
+		Hits = {
+			{
+				Time = 0.2,
+				Shape = "Arc",
+				Range = 10,
+				Angle = 150,
+				Height = 7,
+				Damage = 22,
+				Stagger = 0.2,
+				Knockback = 6,
+			},
+		},
 	},
 	Scythe_SlashC = {
 		Animation = "ScytheSpin",
@@ -71,7 +93,18 @@ WeaponConfig.Attacks = {
 		Stamina = 6,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash", Params = { Spin = true } },
-		Hits = { { Time = 0.32, Shape = "Arc", Range = 10.5, Angle = 360, Height = 7, Damage = 30, Stagger = 0.3, Knockback = 18 } },
+		Hits = {
+			{
+				Time = 0.32,
+				Shape = "Arc",
+				Range = 10.5,
+				Angle = 360,
+				Height = 7,
+				Damage = 30,
+				Stagger = 0.3,
+				Knockback = 18,
+			},
+		},
 	},
 	Scythe_Heavy = {
 		Animation = "ScytheHeavy",
@@ -80,7 +113,18 @@ WeaponConfig.Attacks = {
 		Stamina = 16,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "HeavySlash" },
-		Hits = { { Time = 0.55, Shape = "Arc", Range = 11.5, Angle = 120, Height = 9, Damage = 60, Stagger = 0.5, Knockback = 30 } },
+		Hits = {
+			{
+				Time = 0.55,
+				Shape = "Arc",
+				Range = 11.5,
+				Angle = 120,
+				Height = 9,
+				Damage = 60,
+				Stagger = 0.5,
+				Knockback = 30,
+			},
+		},
 	},
 	Scythe_DashSlash = {
 		Animation = "DashSlash",
@@ -93,7 +137,16 @@ WeaponConfig.Attacks = {
 		Hits = {
 			{ Time = 0.18, Shape = "Line", Length = 24, Width = 7, Damage = 20, Stagger = 0.2 },
 			{ Time = 0.32, Shape = "Line", Length = 24, Width = 7, Damage = 20, Stagger = 0.2 },
-			{ Time = 0.46, Shape = "Arc", Range = 9, Angle = 160, Height = 7, Damage = 26, Stagger = 0.3, Knockback = 12 },
+			{
+				Time = 0.46,
+				Shape = "Arc",
+				Range = 9,
+				Angle = 160,
+				Height = 7,
+				Damage = 26,
+				Stagger = 0.3,
+				Knockback = 12,
+			},
 		},
 	},
 	Scythe_GroundSlam = {
@@ -113,7 +166,18 @@ WeaponConfig.Attacks = {
 		Stamina = 3,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash" },
-		Hits = { { Time = 0.16, Shape = "Arc", Range = 8, Angle = 120, Height = 6, Damage = 17, Stagger = 0.15, Knockback = 4 } },
+		Hits = {
+			{
+				Time = 0.16,
+				Shape = "Arc",
+				Range = 8,
+				Angle = 120,
+				Height = 6,
+				Damage = 17,
+				Stagger = 0.15,
+				Knockback = 4,
+			},
+		},
 	},
 	Sword_SlashB = {
 		Animation = "SwordSlashB",
@@ -121,7 +185,18 @@ WeaponConfig.Attacks = {
 		Stamina = 3,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash", Params = { Mirror = true } },
-		Hits = { { Time = 0.15, Shape = "Arc", Range = 8, Angle = 120, Height = 6, Damage = 17, Stagger = 0.15, Knockback = 4 } },
+		Hits = {
+			{
+				Time = 0.15,
+				Shape = "Arc",
+				Range = 8,
+				Angle = 120,
+				Height = 6,
+				Damage = 17,
+				Stagger = 0.15,
+				Knockback = 4,
+			},
+		},
 	},
 	Sword_SlashC = {
 		Animation = "SwordThrust",
@@ -129,7 +204,18 @@ WeaponConfig.Attacks = {
 		Stamina = 4,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "BasicSlash", Params = { Thrust = true } },
-		Hits = { { Time = 0.22, Shape = "Arc", Range = 9.5, Angle = 50, Height = 6, Damage = 24, Stagger = 0.25, Knockback = 14 } },
+		Hits = {
+			{
+				Time = 0.22,
+				Shape = "Arc",
+				Range = 9.5,
+				Angle = 50,
+				Height = 6,
+				Damage = 24,
+				Stagger = 0.25,
+				Knockback = 14,
+			},
+		},
 	},
 	Sword_MultiHit = {
 		Animation = "SwordMultiHit",
@@ -142,7 +228,16 @@ WeaponConfig.Attacks = {
 			{ Time = 0.12, Shape = "Arc", Range = 8.5, Angle = 130, Height = 6, Damage = 12, Stagger = 0.12 },
 			{ Time = 0.3, Shape = "Arc", Range = 8.5, Angle = 130, Height = 6, Damage = 12, Stagger = 0.12 },
 			{ Time = 0.48, Shape = "Arc", Range = 8.5, Angle = 130, Height = 6, Damage = 12, Stagger = 0.12 },
-			{ Time = 0.7, Shape = "Arc", Range = 9.5, Angle = 140, Height = 6, Damage = 20, Stagger = 0.3, Knockback = 16 },
+			{
+				Time = 0.7,
+				Shape = "Arc",
+				Range = 9.5,
+				Angle = 140,
+				Height = 6,
+				Damage = 20,
+				Stagger = 0.3,
+				Knockback = 16,
+			},
 		},
 	},
 	Sword_DashSlash = {
@@ -165,7 +260,18 @@ WeaponConfig.Attacks = {
 		Stamina = 15,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "HeavySlash" },
-		Hits = { { Time = 0.5, Shape = "Arc", Range = 9.5, Angle = 110, Height = 8, Damage = 52, Stagger = 0.45, Knockback = 24 } },
+		Hits = {
+			{
+				Time = 0.5,
+				Shape = "Arc",
+				Range = 9.5,
+				Angle = 110,
+				Height = 8,
+				Damage = 52,
+				Stagger = 0.45,
+				Knockback = 24,
+			},
+		},
 	},
 
 	-- ── Shuriken ────────────────────────────────────────────────────────────────
@@ -192,7 +298,17 @@ WeaponConfig.Attacks = {
 		Stamina = 8,
 		Tags = { Weapon = true },
 		VFX = { Effect = "ShurikenThrow" },
-		Hits = { { Time = 0.2, Shape = "Projectile", Projectile = "Shuriken", Speed = 120, Range = 90, Damage = 26, Stagger = 0.2 } },
+		Hits = {
+			{
+				Time = 0.2,
+				Shape = "Projectile",
+				Projectile = "Shuriken",
+				Speed = 120,
+				Range = 90,
+				Damage = 26,
+				Stagger = 0.2,
+			},
+		},
 		Ranged = true,
 	},
 	Star_MultiThrow = {
@@ -203,7 +319,17 @@ WeaponConfig.Attacks = {
 		Tags = { Weapon = true },
 		VFX = { Effect = "ShurikenThrow", Params = { Count = 3 } },
 		Hits = {
-			{ Time = 0.25, Shape = "Projectile", Projectile = "Shuriken", Speed = 120, Range = 80, Damage = 18, Count = 3, Spread = 14, Stagger = 0.15 },
+			{
+				Time = 0.25,
+				Shape = "Projectile",
+				Projectile = "Shuriken",
+				Speed = 120,
+				Range = 80,
+				Damage = 18,
+				Count = 3,
+				Spread = 14,
+				Stagger = 0.15,
+			},
 		},
 		Ranged = true,
 	},
@@ -215,7 +341,18 @@ WeaponConfig.Attacks = {
 		Stamina = 5,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "ChainSwing" },
-		Hits = { { Time = 0.28, Shape = "Arc", Range = 13, Angle = 140, Height = 7, Damage = 20, Stagger = 0.2, Knockback = 8 } },
+		Hits = {
+			{
+				Time = 0.28,
+				Shape = "Arc",
+				Range = 13,
+				Angle = 140,
+				Height = 7,
+				Damage = 20,
+				Stagger = 0.2,
+				Knockback = 8,
+			},
+		},
 	},
 	Chain_SwingB = {
 		Animation = "ChainSwingB",
@@ -223,7 +360,18 @@ WeaponConfig.Attacks = {
 		Stamina = 5,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "ChainSwing", Params = { Mirror = true } },
-		Hits = { { Time = 0.28, Shape = "Arc", Range = 13, Angle = 140, Height = 7, Damage = 20, Stagger = 0.2, Knockback = 8 } },
+		Hits = {
+			{
+				Time = 0.28,
+				Shape = "Arc",
+				Range = 13,
+				Angle = 140,
+				Height = 7,
+				Damage = 20,
+				Stagger = 0.2,
+				Knockback = 8,
+			},
+		},
 	},
 	Chain_Multi = {
 		Animation = "ChainWhirl",
@@ -235,7 +383,16 @@ WeaponConfig.Attacks = {
 		Hits = {
 			{ Time = 0.25, Shape = "Arc", Range = 12, Angle = 360, Height = 7, Damage = 14, Stagger = 0.15 },
 			{ Time = 0.5, Shape = "Arc", Range = 12, Angle = 360, Height = 7, Damage = 14, Stagger = 0.15 },
-			{ Time = 0.75, Shape = "Arc", Range = 12, Angle = 360, Height = 7, Damage = 20, Stagger = 0.3, Knockback = 20 },
+			{
+				Time = 0.75,
+				Shape = "Arc",
+				Range = 12,
+				Angle = 360,
+				Height = 7,
+				Damage = 20,
+				Stagger = 0.3,
+				Knockback = 20,
+			},
 		},
 	},
 	Chain_Slam = {
@@ -245,7 +402,9 @@ WeaponConfig.Attacks = {
 		Stamina = 18,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "GroundSlam", Params = { Radius = 10 } },
-		Hits = { { Time = 0.55, Shape = "Circle", Radius = 10, Offset = 10, Damage = 50, Stagger = 0.5, Knockback = 22 } },
+		Hits = {
+			{ Time = 0.55, Shape = "Circle", Radius = 10, Offset = 10, Damage = 50, Stagger = 0.5, Knockback = 22 },
+		},
 	},
 	Flail_Swing = {
 		Animation = "FlailSwing",
@@ -253,7 +412,18 @@ WeaponConfig.Attacks = {
 		Stamina = 7,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "ChainSwing", Params = { Heavy = true } },
-		Hits = { { Time = 0.42, Shape = "Arc", Range = 12, Angle = 150, Height = 7, Damage = 32, Stagger = 0.35, Knockback = 18 } },
+		Hits = {
+			{
+				Time = 0.42,
+				Shape = "Arc",
+				Range = 12,
+				Angle = 150,
+				Height = 7,
+				Damage = 32,
+				Stagger = 0.35,
+				Knockback = 18,
+			},
+		},
 	},
 	Flail_SwingB = {
 		Animation = "FlailSwingB",
@@ -261,7 +431,18 @@ WeaponConfig.Attacks = {
 		Stamina = 7,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "ChainSwing", Params = { Heavy = true, Mirror = true } },
-		Hits = { { Time = 0.42, Shape = "Arc", Range = 12, Angle = 150, Height = 7, Damage = 32, Stagger = 0.35, Knockback = 18 } },
+		Hits = {
+			{
+				Time = 0.42,
+				Shape = "Arc",
+				Range = 12,
+				Angle = 150,
+				Height = 7,
+				Damage = 32,
+				Stagger = 0.35,
+				Knockback = 18,
+			},
+		},
 	},
 	Flail_Slam = {
 		Animation = "FlailSlam",
@@ -270,7 +451,9 @@ WeaponConfig.Attacks = {
 		Stamina = 20,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "GroundSlam", Params = { Radius = 13, Heavy = true } },
-		Hits = { { Time = 0.72, Shape = "Circle", Radius = 13, Offset = 10, Damage = 70, Stagger = 0.6, Knockback = 34 } },
+		Hits = {
+			{ Time = 0.72, Shape = "Circle", Radius = 13, Offset = 10, Damage = 70, Stagger = 0.6, Knockback = 34 },
+		},
 	},
 
 	-- ── Arm weapon ──────────────────────────────────────────────────────────────
@@ -280,7 +463,18 @@ WeaponConfig.Attacks = {
 		Stamina = 3,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "MultiHitCombo", Params = { Count = 1, Punch = true } },
-		Hits = { { Time = 0.14, Shape = "Arc", Range = 7.5, Angle = 70, Height = 6, Damage = 16, Stagger = 0.2, Knockback = 6 } },
+		Hits = {
+			{
+				Time = 0.14,
+				Shape = "Arc",
+				Range = 7.5,
+				Angle = 70,
+				Height = 6,
+				Damage = 16,
+				Stagger = 0.2,
+				Knockback = 6,
+			},
+		},
 	},
 	Arm_PunchB = {
 		Animation = "PunchB",
@@ -288,7 +482,18 @@ WeaponConfig.Attacks = {
 		Stamina = 3,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "MultiHitCombo", Params = { Count = 1, Punch = true, Mirror = true } },
-		Hits = { { Time = 0.14, Shape = "Arc", Range = 7.5, Angle = 70, Height = 6, Damage = 16, Stagger = 0.2, Knockback = 6 } },
+		Hits = {
+			{
+				Time = 0.14,
+				Shape = "Arc",
+				Range = 7.5,
+				Angle = 70,
+				Height = 6,
+				Damage = 16,
+				Stagger = 0.2,
+				Knockback = 6,
+			},
+		},
 	},
 	Arm_PunchC = {
 		Animation = "PunchC",
@@ -299,7 +504,16 @@ WeaponConfig.Attacks = {
 		Hits = {
 			{ Time = 0.1, Shape = "Arc", Range = 7.5, Angle = 70, Height = 6, Damage = 9, Stagger = 0.1 },
 			{ Time = 0.22, Shape = "Arc", Range = 7.5, Angle = 70, Height = 6, Damage = 9, Stagger = 0.1 },
-			{ Time = 0.34, Shape = "Arc", Range = 8, Angle = 70, Height = 6, Damage = 14, Stagger = 0.25, Knockback = 16 },
+			{
+				Time = 0.34,
+				Shape = "Arc",
+				Range = 8,
+				Angle = 70,
+				Height = 6,
+				Damage = 14,
+				Stagger = 0.25,
+				Knockback = 16,
+			},
 		},
 	},
 	Arm_Slam = {
@@ -309,7 +523,9 @@ WeaponConfig.Attacks = {
 		Stamina = 18,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "GroundSlam", Params = { Radius = 11 } },
-		Hits = { { Time = 0.55, Shape = "Circle", Radius = 11, Offset = 4, Damage = 58, Stagger = 0.5, Knockback = 28 } },
+		Hits = {
+			{ Time = 0.55, Shape = "Circle", Radius = 11, Offset = 4, Damage = 58, Stagger = 0.5, Knockback = 28 },
+		},
 	},
 	Arm_DashPunch = {
 		Animation = "DashPunch",
@@ -329,7 +545,9 @@ WeaponConfig.Attacks = {
 		Stamina = 2,
 		Tags = { Weapon = true },
 		VFX = { Effect = "GunShot", Params = { Hand = "Right" } },
-		Hits = { { Time = 0.04, Shape = "Hitscan", Range = 110, Spread = 1.2, Hand = "Right", Damage = 11, Stagger = 0.08 } },
+		Hits = {
+			{ Time = 0.04, Shape = "Hitscan", Range = 110, Spread = 1.2, Hand = "Right", Damage = 11, Stagger = 0.08 },
+		},
 		Ranged = true,
 	},
 	Gun_ShotL = {
@@ -338,7 +556,9 @@ WeaponConfig.Attacks = {
 		Stamina = 2,
 		Tags = { Weapon = true },
 		VFX = { Effect = "GunShot", Params = { Hand = "Left" } },
-		Hits = { { Time = 0.04, Shape = "Hitscan", Range = 110, Spread = 1.2, Hand = "Left", Damage = 11, Stagger = 0.08 } },
+		Hits = {
+			{ Time = 0.04, Shape = "Hitscan", Range = 110, Spread = 1.2, Hand = "Left", Damage = 11, Stagger = 0.08 },
+		},
 		Ranged = true,
 	},
 	Gun_Rapid = {
@@ -366,8 +586,26 @@ WeaponConfig.Attacks = {
 		Tags = { Weapon = true, Charged = true },
 		VFX = { Effect = "GunShot", Params = { Charged = true } },
 		Hits = {
-			{ Time = 0.55, Shape = "Hitscan", Range = 140, Spread = 0.2, Hand = "Right", Damage = 30, Stagger = 0.3, Knockback = 12 },
-			{ Time = 0.58, Shape = "Hitscan", Range = 140, Spread = 0.2, Hand = "Left", Damage = 30, Stagger = 0.3, Knockback = 12 },
+			{
+				Time = 0.55,
+				Shape = "Hitscan",
+				Range = 140,
+				Spread = 0.2,
+				Hand = "Right",
+				Damage = 30,
+				Stagger = 0.3,
+				Knockback = 12,
+			},
+			{
+				Time = 0.58,
+				Shape = "Hitscan",
+				Range = 140,
+				Spread = 0.2,
+				Hand = "Left",
+				Damage = 30,
+				Stagger = 0.3,
+				Knockback = 12,
+			},
 		},
 		Ranged = true,
 	},
@@ -379,7 +617,18 @@ WeaponConfig.Attacks = {
 		Stamina = 5,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "DrillAttack", Params = { Duration = 0.4 } },
-		Hits = { { Time = 0.2, Shape = "Ticks", Range = 8.5, Angle = 45, Count = 3, Interval = 0.08, Damage = 8, Stagger = 0.1 } },
+		Hits = {
+			{
+				Time = 0.2,
+				Shape = "Ticks",
+				Range = 8.5,
+				Angle = 45,
+				Count = 3,
+				Interval = 0.08,
+				Damage = 8,
+				Stagger = 0.1,
+			},
+		},
 	},
 	Drill_Grind = {
 		Animation = "DrillGrind",
@@ -388,7 +637,18 @@ WeaponConfig.Attacks = {
 		Stamina = 16,
 		Tags = { Weapon = true, Melee = true },
 		VFX = { Effect = "DrillAttack", Params = { Duration = 1.05, Heavy = true } },
-		Hits = { { Time = 0.15, Shape = "Ticks", Range = 9, Angle = 50, Count = 10, Interval = 0.1, Damage = 7, Stagger = 0.1 } },
+		Hits = {
+			{
+				Time = 0.15,
+				Shape = "Ticks",
+				Range = 9,
+				Angle = 50,
+				Count = 10,
+				Interval = 0.1,
+				Damage = 7,
+				Stagger = 0.1,
+			},
+		},
 	},
 	Drill_Dash = {
 		Animation = "DrillDash",
@@ -428,7 +688,18 @@ WeaponConfig.Attacks = {
 		Stamina = 16,
 		Tags = { Weapon = true, Melee = true, Charged = true },
 		VFX = { Effect = "HeavySlash", Params = { Wide = true } },
-		Hits = { { Time = 0.45, Shape = "Arc", Range = 12, Angle = 300, Height = 7, Damage = 42, Stagger = 0.4, Knockback = 20 } },
+		Hits = {
+			{
+				Time = 0.45,
+				Shape = "Arc",
+				Range = 12,
+				Angle = 300,
+				Height = 7,
+				Damage = 42,
+				Stagger = 0.4,
+				Knockback = 20,
+			},
+		},
 	},
 	Spider_Slam = {
 		Animation = "SpiderSlam",
@@ -461,7 +732,14 @@ WeaponConfig.Weapons = {
 		UnlockLevel = 1,
 		Starter = true,
 		Scale = 1,
-		Dimensions = { ShaftLength = 7.4, GripFromBottom = 2.1, BladeLength = 5.6, BladeWidth = 1.85, Thickness = 0.14, ShaftDiameter = 0.32 },
+		Dimensions = {
+			ShaftLength = 7.4,
+			GripFromBottom = 2.1,
+			BladeLength = 5.6,
+			BladeWidth = 1.85,
+			Thickness = 0.14,
+			ShaftDiameter = 0.32,
+		},
 		Palette = {
 			Shaft = Color3.fromRGB(56, 52, 66),
 			Metal = Color3.fromRGB(124, 126, 138),
@@ -472,7 +750,11 @@ WeaponConfig.Weapons = {
 			Pupil = Color3.fromRGB(190, 20, 30),
 		},
 		Trail = { Color = Color3.fromRGB(255, 120, 120), Width = 1.0, Lifetime = 0.16, Transparency = 0.35 },
-		Moveset = { M1 = { "Scythe_SlashA", "Scythe_SlashB", "Scythe_SlashC" }, Z = "Scythe_Heavy", X = "Scythe_DashSlash" },
+		Moveset = {
+			M1 = { "Scythe_SlashA", "Scythe_SlashB", "Scythe_SlashC" },
+			Z = "Scythe_Heavy",
+			X = "Scythe_DashSlash",
+		},
 		ComboWindow = 0.9,
 		Sounds = { Swing = PH, Hit = PH, Equip = PH },
 		AnimationIds = { Idle = PH, Walk = PH, Run = PH },
@@ -487,7 +769,15 @@ WeaponConfig.Weapons = {
 		ImpactType = "Blade",
 		UnlockLevel = 6,
 		Scale = 1,
-		Dimensions = { ShaftLength = 7.6, GripFromBottom = 2.2, BladeLength = 5.8, BladeWidth = 1.6, Thickness = 0.15, ShaftDiameter = 0.34, Segments = 7 },
+		Dimensions = {
+			ShaftLength = 7.6,
+			GripFromBottom = 2.2,
+			BladeLength = 5.8,
+			BladeWidth = 1.6,
+			Thickness = 0.15,
+			ShaftDiameter = 0.34,
+			Segments = 7,
+		},
 		Palette = {
 			Shaft = Color3.fromRGB(226, 220, 204),
 			Joint = Color3.fromRGB(196, 188, 170),
@@ -498,7 +788,11 @@ WeaponConfig.Weapons = {
 			Eye = Color3.fromRGB(190, 20, 30),
 		},
 		Trail = { Color = Color3.fromRGB(255, 160, 160), Width = 1.1, Lifetime = 0.16, Transparency = 0.35 },
-		Moveset = { M1 = { "Scythe_SlashA", "Scythe_SlashB", "Scythe_SlashC" }, Z = "Scythe_Heavy", X = "Scythe_GroundSlam" },
+		Moveset = {
+			M1 = { "Scythe_SlashA", "Scythe_SlashB", "Scythe_SlashC" },
+			Z = "Scythe_Heavy",
+			X = "Scythe_GroundSlam",
+		},
 		ComboWindow = 0.9,
 		Sounds = { Swing = PH, Hit = PH, Equip = PH },
 		AnimationIds = { Idle = PH, Walk = PH, Run = PH },
@@ -548,7 +842,11 @@ WeaponConfig.Weapons = {
 			Grip = Color3.fromRGB(20, 20, 24),
 		},
 		Trail = { Color = Color3.fromRGB(235, 235, 255), Width = 0.8, Lifetime = 0.14, Transparency = 0.35 },
-		Moveset = { M1 = { "Sword_SlashA", "Sword_SlashB", "Sword_SlashC" }, Z = "Sword_MultiHit", X = "Sword_DashSlash" },
+		Moveset = {
+			M1 = { "Sword_SlashA", "Sword_SlashB", "Sword_SlashC" },
+			Z = "Sword_MultiHit",
+			X = "Sword_DashSlash",
+		},
 		ComboWindow = 0.8,
 		Sounds = { Swing = PH, Hit = PH, Equip = PH },
 		AnimationIds = { Idle = PH, Walk = PH, Run = PH },
@@ -569,7 +867,11 @@ WeaponConfig.Weapons = {
 				DisplayName = "Ninja Blade",
 				HoldStyle = "SwordOneHand",
 				ImpactType = "Blade",
-				Moveset = { M1 = { "Sword_SlashA", "Sword_SlashB", "Sword_SlashC" }, Z = "Sword_Heavy", X = "Sword_DashSlash" },
+				Moveset = {
+					M1 = { "Sword_SlashA", "Sword_SlashB", "Sword_SlashC" },
+					Z = "Sword_Heavy",
+					X = "Sword_DashSlash",
+				},
 			},
 			Kusarigama = {
 				DisplayName = "Kusarigama",
@@ -586,7 +888,15 @@ WeaponConfig.Weapons = {
 		},
 		FormOrder = { "Blade", "Kusarigama", "ChainSickle" },
 		DefaultForm = "Blade",
-		Dimensions = { BladeLength = 3.8, BladeWidth = 0.42, Thickness = 0.12, GripLength = 1.2, ChainLinks = 10, LinkLength = 0.42, SickleRadius = 1.1 },
+		Dimensions = {
+			BladeLength = 3.8,
+			BladeWidth = 0.42,
+			Thickness = 0.12,
+			GripLength = 1.2,
+			ChainLinks = 10,
+			LinkLength = 0.42,
+			SickleRadius = 1.1,
+		},
 		Palette = {
 			Blade = Color3.fromRGB(30, 28, 34),
 			Edge = Color3.fromRGB(206, 210, 220),
@@ -611,7 +921,14 @@ WeaponConfig.Weapons = {
 		ImpactType = "Blade",
 		UnlockLevel = 10,
 		Scale = 1,
-		Dimensions = { ShaftLength = 4.6, GripFromBottom = 1.2, BladeLength = 3.4, BladeWidth = 0.95, Thickness = 0.14, ShaftDiameter = 0.28 },
+		Dimensions = {
+			ShaftLength = 4.6,
+			GripFromBottom = 1.2,
+			BladeLength = 3.4,
+			BladeWidth = 0.95,
+			Thickness = 0.14,
+			ShaftDiameter = 0.28,
+		},
 		Palette = {
 			Shaft = Color3.fromRGB(222, 216, 202),
 			Joint = Color3.fromRGB(150, 144, 132),
@@ -660,7 +977,14 @@ WeaponConfig.Weapons = {
 		ImpactType = "Heavy",
 		UnlockLevel = 14,
 		Scale = 1,
-		Dimensions = { Links = 6, LinkLength = 0.55, LinkWidth = 0.32, BallRadius = 0.75, GripLength = 1.3, Spikes = 10 },
+		Dimensions = {
+			Links = 6,
+			LinkLength = 0.55,
+			LinkWidth = 0.32,
+			BallRadius = 0.75,
+			GripLength = 1.3,
+			Spikes = 10,
+		},
 		Palette = {
 			Link = Color3.fromRGB(116, 118, 128),
 			Ball = Color3.fromRGB(64, 66, 74),

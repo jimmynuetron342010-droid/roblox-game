@@ -90,7 +90,11 @@ describe("Profile migrations", function()
 			Level = 9,
 			Weapon = "Ragnarok",
 			Currency = { Souls = 10, RaceRolls = 0 },
-			Race = { Active = "Witch", Discovered = { Witch = 1 }, Progress = { Witch = { XP = 5, Stage = 2, Objectives = {} } } },
+			Race = {
+				Active = "Witch",
+				Discovered = { Witch = 1 },
+				Progress = { Witch = { XP = 5, Stage = 2, Objectives = {} } },
+			},
 		}
 		local migrated = ProfileCore.Migrate(v1)
 		expect(migrated.Version).toBe(ProfileCore.CurrentVersion)

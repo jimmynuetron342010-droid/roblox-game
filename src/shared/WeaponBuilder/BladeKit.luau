@@ -79,7 +79,17 @@ end
 
 -- Faceted diamond blade (kunai / spear head) pointing from `base` to `tip`, lying in the plane
 -- spanned by `widthDir`; `ridge` raises the center line for a bevelled 3D look.
-function BladeKit.Diamond(kit, group: Instance, base: Vector3, tip: Vector3, width: number, widthDir: Vector3, ridge: number, darkColor: Color3, lightColor: Color3)
+function BladeKit.Diamond(
+	kit,
+	group: Instance,
+	base: Vector3,
+	tip: Vector3,
+	width: number,
+	widthDir: Vector3,
+	ridge: number,
+	darkColor: Color3,
+	lightColor: Color3
+)
 	local axis = (tip - base).Unit
 	local w = (widthDir - axis * widthDir:Dot(axis)).Unit
 	local up = axis:Cross(w).Unit
@@ -87,8 +97,26 @@ function BladeKit.Diamond(kit, group: Instance, base: Vector3, tip: Vector3, wid
 	local left, right = shoulder + w * width / 2, shoulder - w * width / 2
 	for _, face in { 1, -1 } do
 		local ridgePoint = shoulder + up * ridge * face
-		kit:Triangle("Facet", left, tip, ridgePoint, 0.04, face == 1 and lightColor or darkColor, Enum.Material.Metal, group)
-		kit:Triangle("Facet", ridgePoint, tip, right, 0.04, face == 1 and darkColor or lightColor, Enum.Material.Metal, group)
+		kit:Triangle(
+			"Facet",
+			left,
+			tip,
+			ridgePoint,
+			0.04,
+			face == 1 and lightColor or darkColor,
+			Enum.Material.Metal,
+			group
+		)
+		kit:Triangle(
+			"Facet",
+			ridgePoint,
+			tip,
+			right,
+			0.04,
+			face == 1 and darkColor or lightColor,
+			Enum.Material.Metal,
+			group
+		)
 		kit:Triangle("Facet", left, ridgePoint, base, 0.04, darkColor, Enum.Material.Metal, group)
 		kit:Triangle("Facet", ridgePoint, right, base, 0.04, darkColor, Enum.Material.Metal, group)
 	end

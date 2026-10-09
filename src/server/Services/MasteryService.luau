@@ -83,7 +83,12 @@ local function onEvent(player: Player, eventName: string, payload)
 		local stage = MasteryConfig.StageDef(raceId, progress.Stage)
 		Notifier.Send(
 			player,
-			string.format("%s Mastery %s — %s!", RaceConfig.ById[raceId].DisplayName, MasteryConfig.StageNumerals[progress.Stage], stage.Name),
+			string.format(
+				"%s Mastery %s — %s!",
+				RaceConfig.ById[raceId].DisplayName,
+				MasteryConfig.StageNumerals[progress.Stage],
+				stage.Name
+			),
 			"Rare",
 			{ Rarity = RaceConfig.ById[raceId].Rarity }
 		)
@@ -93,7 +98,10 @@ local function onEvent(player: Player, eventName: string, payload)
 		local character = player.Character
 		local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
 		if root then
-			FXBroadcast.Broadcast({ Type = "MasteryUp", Character = character, Race = raceId, Stage = progress.Stage }, root.Position)
+			FXBroadcast.Broadcast(
+				{ Type = "MasteryUp", Character = character, Race = raceId, Stage = progress.Stage },
+				root.Position
+			)
 		end
 	end
 	if changed then

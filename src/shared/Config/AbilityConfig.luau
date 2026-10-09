@@ -71,7 +71,10 @@ local abilities: { Ability } = {
 			Modifiers = { { Stat = "AttackSpeed", Kind = "Multiplicative", Value = 0.10 } },
 		},
 		Stages = {
-			[2] = { Description = "Lasts 10s and the meter fills 15% faster.", Params = { Duration = 10, MeterPerHit = 9.2 } },
+			[2] = {
+				Description = "Lasts 10s and the meter fills 15% faster.",
+				Params = { Duration = 10, MeterPerHit = 9.2 },
+			},
 			[3] = {
 				Name = "Death Scythe Surge",
 				Description = "Lasts 10s, +20% weapon damage.",
@@ -100,7 +103,10 @@ local abilities: { Ability } = {
 			Lifesteal = 0,
 		},
 		Stages = {
-			[2] = { Description = "Melee hits during Beast Shift heal 5% of damage dealt.", Params = { Lifesteal = 0.05 } },
+			[2] = {
+				Description = "Melee hits during Beast Shift heal 5% of damage dealt.",
+				Params = { Lifesteal = 0.05 },
+			},
 			[3] = {
 				Name = "Moonlit Frenzy",
 				Description = "Lasts 9s and heals 6% of melee damage dealt.",
@@ -120,7 +126,11 @@ local abilities: { Ability } = {
 		Params = { SchoolGroup = "Witch" },
 		Stages = {
 			[2] = { Description = "Costs 25 Soul Energy.", Params = {} },
-			[3] = { Name = "High Witchcraft", Description = "Costs 25 Soul Energy and school effects are 20% stronger.", Params = { Potency = 1.2 } },
+			[3] = {
+				Name = "High Witchcraft",
+				Description = "Costs 25 Soul Energy and school effects are 20% stronger.",
+				Params = { Potency = 1.2 },
+			},
 		},
 	},
 	{
@@ -140,7 +150,11 @@ local abilities: { Ability } = {
 		},
 		Stages = {
 			[2] = { Description = "Also cleanses poison and burns.", Params = { CleansePoison = true } },
-			[3] = { Name = "Grave Rise", Description = "Heals 40% and cleanses poison.", Params = { HealFraction = 0.40, CleansePoison = true } },
+			[3] = {
+				Name = "Grave Rise",
+				Description = "Heals 40% and cleanses poison.",
+				Params = { HealFraction = 0.40, CleansePoison = true },
+			},
 		},
 	},
 	{
@@ -166,7 +180,11 @@ local abilities: { Ability } = {
 		},
 		Stages = {
 			[2] = { Description = "Cursed targets also lose 15% Defense for 4s.", Params = { DefenseShred = 0.15 } },
-			[3] = { Name = "Pharaoh's Binding", Description = "Chains to a second nearby enemy.", Params = { DefenseShred = 0.15, Chains = 1 } },
+			[3] = {
+				Name = "Pharaoh's Binding",
+				Description = "Chains to a second nearby enemy.",
+				Params = { DefenseShred = 0.15, Chains = 1 },
+			},
 		},
 	},
 	{
@@ -181,7 +199,11 @@ local abilities: { Ability } = {
 		Params = { SchoolGroup = "Sorcerer" },
 		Stages = {
 			[2] = { Description = "School effects are 10% stronger.", Params = { Potency = 1.1 } },
-			[3] = { Name = "Grand Sorcery", Description = "School effects are 20% stronger.", Params = { Potency = 1.2 } },
+			[3] = {
+				Name = "Grand Sorcery",
+				Description = "School effects are 20% stronger.",
+				Params = { Potency = 1.2 },
+			},
 		},
 	},
 	{
@@ -202,7 +224,10 @@ local abilities: { Ability } = {
 			JudgedDuration = 0,
 		},
 		Stages = {
-			[2] = { Description = "Radius 16; targets are Judged (-10% damage dealt) for 4s.", Params = { Radius = 16, JudgedDuration = 4 } },
+			[2] = {
+				Description = "Radius 16; targets are Judged (-10% damage dealt) for 4s.",
+				Params = { Radius = 16, JudgedDuration = 4 },
+			},
 			[3] = {
 				Name = "Lines of Sanzu",
 				Description = "Radius 16, Judged, and two aftershocks at 40% damage.",

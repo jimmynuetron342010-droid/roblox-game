@@ -29,7 +29,13 @@ return function(vfx, p, cfg)
 				Color = ColorSequence.new(color),
 			})
 			vfx.Debris(ground.Position, ground.Normal, color, cfg.DebrisCount, 26, 0.45)
-			vfx.Flash(ground.Position + ground.Normal, Color3.fromRGB(255, 210, 160), cfg.FlashBrightness, cfg.FlashRange, 0.12)
+			vfx.Flash(
+				ground.Position + ground.Normal,
+				Color3.fromRGB(255, 210, 160),
+				cfg.FlashBrightness,
+				cfg.FlashRange,
+				0.12
+			)
 			vfx.Shake(cfg.Shake, ground.Position, 50)
 		else
 			vfx.Shake(cfg.Shake * 0.5, tip, 40)

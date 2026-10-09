@@ -236,11 +236,7 @@ export type MitigationOptions = {
 }
 
 -- Incoming damage after the target's defenses.
-function StatCalculator.Mitigate(
-	rawDamage: number,
-	target: ComputedStats,
-	options: MitigationOptions?
-): number
+function StatCalculator.Mitigate(rawDamage: number, target: ComputedStats, options: MitigationOptions?): number
 	if type(rawDamage) ~= "number" or rawDamage ~= rawDamage or rawDamage <= 0 then
 		return 0
 	end
@@ -276,7 +272,10 @@ function StatCalculator.StatusDuration(
 end
 
 -- Human readable diff used by the before/after comparison UI.
-function StatCalculator.Diff(before: ComputedStats, after: ComputedStats): { { Stat: string, Before: number, After: number, Delta: number } }
+function StatCalculator.Diff(
+	before: ComputedStats,
+	after: ComputedStats
+): { { Stat: string, Before: number, After: number, Delta: number } }
 	local changes = {}
 	for _, def in StatDefinitions.List do
 		local a, b = before.Values[def.Id], after.Values[def.Id]

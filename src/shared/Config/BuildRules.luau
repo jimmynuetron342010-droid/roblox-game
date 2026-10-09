@@ -67,7 +67,12 @@ end
 
 -- Repairs a loadout after a race change (e.g. the new race cannot use the old role or school).
 -- Returns the corrected role/school and a list of human readable changes.
-function BuildRules.Sanitize(raceId: string?, roleId: string?, schoolId: string?, level: number): (string, string?, { string })
+function BuildRules.Sanitize(
+	raceId: string?,
+	roleId: string?,
+	schoolId: string?,
+	level: number
+): (string, string?, { string })
 	local changes = {}
 	local role = roleId
 	if not BuildRules.IsRoleAllowed(raceId, role) then

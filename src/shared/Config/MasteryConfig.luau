@@ -58,7 +58,14 @@ end
 
 local trees: { [string]: { StageDef } } = {
 	Human = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Adaptive Potential passive", "Student soul aura" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Adaptive Potential passive", "Student soul aura" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
@@ -91,14 +98,33 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	DemonWeapon = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Weapon Resonance passive", "Resonance Surge (C)", "Crimson edge aura" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Weapon Resonance passive", "Resonance Surge (C)", "Crimson edge aura" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "D2a", Text = "Activate Resonance Surge 8 times", Event = "AbilityUsed", Count = 8, Match = { AbilityId = "ResonanceSurge" } },
-				{ Id = "D2b", Text = "Land 100 weapon hits during Resonance Surge", Event = "WeaponHit", Count = 100, Match = { Surge = true } },
+				{
+					Id = "D2a",
+					Text = "Activate Resonance Surge 8 times",
+					Event = "AbilityUsed",
+					Count = 8,
+					Match = { AbilityId = "ResonanceSurge" },
+				},
+				{
+					Id = "D2b",
+					Text = "Land 100 weapon hits during Resonance Surge",
+					Event = "WeaponHit",
+					Count = 100,
+					Match = { Surge = true },
+				},
 			},
 			Modifiers = { { Stat = "WeaponDamage", Value = 0.03 } },
 			Unlocks = { "Resonance Surge lasts longer, meter fills faster", "Sharper blade VFX" },
@@ -108,7 +134,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "D3a", Text = "Defeat 25 enemies while synchronized or surging", Event = "EnemyKilled", Count = 25, Match = { Empowered = true } },
+				{
+					Id = "D3a",
+					Text = "Defeat 25 enemies while synchronized or surging",
+					Event = "EnemyKilled",
+					Count = 25,
+					Match = { Empowered = true },
+				},
 				pharaoh("D3b"),
 			},
 			Modifiers = { { Stat = "WeaponDamage", Value = 0.03 }, { Stat = "AttackSpeed", Value = 0.03 } },
@@ -117,14 +149,33 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Werewolf = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Predator Instinct passive", "Beast Shift (C)", "Wolf ears and claws" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Predator Instinct passive", "Beast Shift (C)", "Wolf ears and claws" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "W2a", Text = "Activate Beast Shift 8 times", Event = "AbilityUsed", Count = 8, Match = { AbilityId = "BeastShift" } },
-				{ Id = "W2b", Text = "Land 120 melee hits", Event = "WeaponHit", Count = 120, Match = { Melee = true } },
+				{
+					Id = "W2a",
+					Text = "Activate Beast Shift 8 times",
+					Event = "AbilityUsed",
+					Count = 8,
+					Match = { AbilityId = "BeastShift" },
+				},
+				{
+					Id = "W2b",
+					Text = "Land 120 melee hits",
+					Event = "WeaponHit",
+					Count = 120,
+					Match = { Melee = true },
+				},
 			},
 			Modifiers = { { Stat = "MeleeDamage", Value = 0.03 } },
 			Unlocks = { "Beast Shift lifesteal", "Moonlit eye glow" },
@@ -134,7 +185,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "W3a", Text = "Defeat 30 enemies during Beast Shift", Event = "EnemyKilled", Count = 30, Match = { Buff = "BeastShift" } },
+				{
+					Id = "W3a",
+					Text = "Defeat 30 enemies during Beast Shift",
+					Event = "EnemyKilled",
+					Count = 30,
+					Match = { Buff = "BeastShift" },
+				},
 				pharaoh("W3b"),
 			},
 			Modifiers = { { Stat = "MoveSpeed", Value = 0.02 }, { Stat = "MeleeDamage", Value = 0.03 } },
@@ -143,13 +200,26 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Witch = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Arcane Affinity passive", "Witchcraft (C)", "Witch hat" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Arcane Affinity passive", "Witchcraft (C)", "Witch hat" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "X2a", Text = "Cast Witchcraft 25 times", Event = "AbilityUsed", Count = 25, Match = { AbilityId = "Witchcraft" } },
+				{
+					Id = "X2a",
+					Text = "Cast Witchcraft 25 times",
+					Event = "AbilityUsed",
+					Count = 25,
+					Match = { AbilityId = "Witchcraft" },
+				},
 				{ Id = "X2b", Text = "Apply 20 status effects", Event = "StatusApplied", Count = 20 },
 			},
 			Modifiers = { { Stat = "MagicDamage", Value = 0.03 } },
@@ -160,7 +230,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "X3a", Text = "Defeat 40 enemies with magic", Event = "EnemyKilled", Count = 40, Match = { Magic = true } },
+				{
+					Id = "X3a",
+					Text = "Defeat 40 enemies with magic",
+					Event = "EnemyKilled",
+					Count = 40,
+					Match = { Magic = true },
+				},
 				pharaoh("X3b"),
 			},
 			Modifiers = { { Stat = "MagicDamage", Value = 0.03 }, { Stat = "SoulEnergyRegen", Value = 0.05 } },
@@ -169,7 +245,14 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Zombie = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Undying Persistence passive", "Gravebound Recovery (C)", "Stitches" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Undying Persistence passive", "Gravebound Recovery (C)", "Stitches" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
@@ -195,14 +278,34 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Mummy = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Ancient Wrappings passive", "Binding Curse (C)", "Wrappings" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Ancient Wrappings passive", "Binding Curse (C)", "Wrappings" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "M2a", Text = "Bind 20 enemies with Binding Curse", Event = "StatusApplied", Count = 20, Match = { Source = "BindingCurse" } },
-				{ Id = "M2b", Text = "Take 2,000 ranged damage", Event = "DamageTaken", Count = 2000, Amount = "Amount", Match = { Ranged = true } },
+				{
+					Id = "M2a",
+					Text = "Bind 20 enemies with Binding Curse",
+					Event = "StatusApplied",
+					Count = 20,
+					Match = { Source = "BindingCurse" },
+				},
+				{
+					Id = "M2b",
+					Text = "Take 2,000 ranged damage",
+					Event = "DamageTaken",
+					Count = 2000,
+					Amount = "Amount",
+					Match = { Ranged = true },
+				},
 			},
 			Modifiers = { { Stat = "StatusResistance", Value = 0.03 } },
 			Unlocks = { "Binding Curse shreds Defense", "Drifting sand VFX" },
@@ -212,7 +315,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "M3a", Text = "Bind 60 enemies with Binding Curse", Event = "StatusApplied", Count = 60, Match = { Source = "BindingCurse" } },
+				{
+					Id = "M3a",
+					Text = "Bind 60 enemies with Binding Curse",
+					Event = "StatusApplied",
+					Count = 60,
+					Match = { Source = "BindingCurse" },
+				},
 				pharaoh("M3b"),
 			},
 			Modifiers = { { Stat = "Defense", Value = 0.04 }, { Stat = "MoveSpeed", Value = 0.03 } },
@@ -221,14 +330,34 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Sorcerer = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Arcane Mastery passive", "Sorcery Specialization (C)", "Hood" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Arcane Mastery passive", "Sorcery Specialization (C)", "Hood" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "S2a", Text = "Cast Sorcery 30 times", Event = "AbilityUsed", Count = 30, Match = { AbilityId = "Sorcery" } },
-				{ Id = "S2b", Text = "Deal 8,000 magic damage", Event = "DamageDealt", Count = 8000, Amount = "Amount", Match = { Magic = true } },
+				{
+					Id = "S2a",
+					Text = "Cast Sorcery 30 times",
+					Event = "AbilityUsed",
+					Count = 30,
+					Match = { AbilityId = "Sorcery" },
+				},
+				{
+					Id = "S2b",
+					Text = "Deal 8,000 magic damage",
+					Event = "DamageDealt",
+					Count = 8000,
+					Amount = "Amount",
+					Match = { Magic = true },
+				},
 			},
 			Modifiers = { { Stat = "SoulEnergyMax", Value = 0.05 } },
 			Unlocks = { "Sorcery 10% stronger", "Orbiting glyph-free sparks VFX" },
@@ -238,7 +367,14 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "S3a", Text = "Deal 30,000 magic damage", Event = "DamageDealt", Count = 30000, Amount = "Amount", Match = { Magic = true } },
+				{
+					Id = "S3a",
+					Text = "Deal 30,000 magic damage",
+					Event = "DamageDealt",
+					Count = 30000,
+					Amount = "Amount",
+					Match = { Magic = true },
+				},
 				pharaoh("S3b"),
 			},
 			Modifiers = { { Stat = "MagicDamage", Value = 0.03 }, { Stat = "CooldownReduction", Value = 0.02 } },
@@ -247,14 +383,32 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Shinigami = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Divine Soul Perception passive", "Death's Authority (C)", "Faint white aura" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Divine Soul Perception passive", "Death's Authority (C)", "Faint white aura" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "G2a", Text = "Reveal 10 hidden souls with Soul Perception", Event = "HiddenRevealed", Count = 10 },
-				{ Id = "G2b", Text = "Hit 25 enemies with Death's Authority", Event = "AbilityHit", Count = 25, Match = { AbilityId = "DeathsAuthority" } },
+				{
+					Id = "G2a",
+					Text = "Reveal 10 hidden souls with Soul Perception",
+					Event = "HiddenRevealed",
+					Count = 10,
+				},
+				{
+					Id = "G2b",
+					Text = "Hit 25 enemies with Death's Authority",
+					Event = "AbilityHit",
+					Count = 25,
+					Match = { AbilityId = "DeathsAuthority" },
+				},
 			},
 			Modifiers = { { Stat = "AbilityDamage", Value = 0.03 } },
 			Unlocks = { "Death's Authority judges targets", "First Line of Sanzu (cosmetic)" },
@@ -264,7 +418,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "G3a", Text = "Defeat 10 Shrouded Kishin Eggs", Event = "EnemyKilled", Count = 10, Match = { EnemyType = "ShroudedKishinEgg" } },
+				{
+					Id = "G3a",
+					Text = "Defeat 10 Shrouded Kishin Eggs",
+					Event = "EnemyKilled",
+					Count = 10,
+					Match = { EnemyType = "ShroudedKishinEgg" },
+				},
 				pharaoh("G3b"),
 			},
 			Modifiers = { { Stat = "AbilityDamage", Value = 0.03 }, { Stat = "SoulEnergyMax", Value = 0.05 } },
@@ -273,13 +433,26 @@ local trees: { [string]: { StageDef } } = {
 		},
 	},
 	Golem = {
-		{ Stage = 1, Name = "Awakening", XP = 0, Objectives = {}, Modifiers = {}, Unlocks = { "Living Fortress passive", "Colossus Slam (C)", "Stone plating" } },
+		{
+			Stage = 1,
+			Name = "Awakening",
+			XP = 0,
+			Objectives = {},
+			Modifiers = {},
+			Unlocks = { "Living Fortress passive", "Colossus Slam (C)", "Stone plating" },
+		},
 		{
 			Stage = 2,
 			Name = "Synchronization",
 			XP = STAGE2_XP,
 			Objectives = {
-				{ Id = "O2a", Text = "Hit 30 enemies with Colossus Slam", Event = "AbilityHit", Count = 30, Match = { AbilityId = "ColossusSlam" } },
+				{
+					Id = "O2a",
+					Text = "Hit 30 enemies with Colossus Slam",
+					Event = "AbilityHit",
+					Count = 30,
+					Match = { AbilityId = "ColossusSlam" },
+				},
 				{ Id = "O2b", Text = "Absorb 5,000 damage", Event = "DamageTaken", Count = 5000, Amount = "Amount" },
 			},
 			Modifiers = { { Stat = "ChargedDamage", Value = 0.03 } },
@@ -290,7 +463,13 @@ local trees: { [string]: { StageDef } } = {
 			Name = "Transcendence",
 			XP = STAGE3_XP,
 			Objectives = {
-				{ Id = "O3a", Text = "Hit 100 enemies with Colossus Slam", Event = "AbilityHit", Count = 100, Match = { AbilityId = "ColossusSlam" } },
+				{
+					Id = "O3a",
+					Text = "Hit 100 enemies with Colossus Slam",
+					Event = "AbilityHit",
+					Count = 100,
+					Match = { AbilityId = "ColossusSlam" },
+				},
 				pharaoh("O3b"),
 			},
 			Modifiers = {

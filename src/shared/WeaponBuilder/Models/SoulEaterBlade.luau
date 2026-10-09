@@ -16,10 +16,26 @@ return function(api)
 	-- Grip -------------------------------------------------------------------------------
 	local grip = kit:Group("Grip")
 	local gl = d.GripLength
-	kit:Cylinder("GripCore", Vector3.new(0, -gl / 2 - 0.05, 0), Vector3.new(0, gl / 2 + 0.05, 0), 0.26, p.Grip, Enum.Material.Fabric, grip)
+	kit:Cylinder(
+		"GripCore",
+		Vector3.new(0, -gl / 2 - 0.05, 0),
+		Vector3.new(0, gl / 2 + 0.05, 0),
+		0.26,
+		p.Grip,
+		Enum.Material.Fabric,
+		grip
+	)
 	for i = 0, 3 do
 		local y = -gl / 2 + 0.15 + i * (gl - 0.3) / 3
-		kit:Cylinder("Wrap", Vector3.new(0, y - 0.04, 0), Vector3.new(0, y + 0.04, 0), 0.3, p.Guard, Enum.Material.Metal, grip)
+		kit:Cylinder(
+			"Wrap",
+			Vector3.new(0, y - 0.04, 0),
+			Vector3.new(0, y + 0.04, 0),
+			0.3,
+			p.Guard,
+			Enum.Material.Metal,
+			grip
+		)
 	end
 	kit:Ball("Pommel", 0.38, Vector3.new(0, -gl / 2 - 0.2, 0), p.Skull, Enum.Material.SmoothPlastic, grip)
 	kit:Ball("PommelEye", 0.1, Vector3.new(0, -gl / 2 - 0.2, -0.17), p.Eye, Enum.Material.SmoothPlastic, grip)
@@ -27,11 +43,48 @@ return function(api)
 	-- Guard with skull ------------------------------------------------------------------------
 	local guard = kit:Group("Guard")
 	local gy = gl / 2 + 0.12
-	kit:Bar("Crossguard", Vector3.new(0, gy, 0.75), Vector3.new(0, gy, -0.95), 0.32, 0.26, p.Guard, Vector3.xAxis, Enum.Material.Metal, guard)
-	kit:Spike("Quillon", Vector3.new(0, gy, -0.9), Vector3.new(0, gy - 0.35, -1.45), 0.28, 0.2, p.Guard, Vector3.yAxis, Enum.Material.Metal, guard)
-	kit:Spike("Quillon", Vector3.new(0, gy, 0.7), Vector3.new(0, gy - 0.3, 1.15), 0.26, 0.2, p.Guard, Vector3.yAxis, Enum.Material.Metal, guard)
+	kit:Bar(
+		"Crossguard",
+		Vector3.new(0, gy, 0.75),
+		Vector3.new(0, gy, -0.95),
+		0.32,
+		0.26,
+		p.Guard,
+		Vector3.xAxis,
+		Enum.Material.Metal,
+		guard
+	)
+	kit:Spike(
+		"Quillon",
+		Vector3.new(0, gy, -0.9),
+		Vector3.new(0, gy - 0.35, -1.45),
+		0.28,
+		0.2,
+		p.Guard,
+		Vector3.yAxis,
+		Enum.Material.Metal,
+		guard
+	)
+	kit:Spike(
+		"Quillon",
+		Vector3.new(0, gy, 0.7),
+		Vector3.new(0, gy - 0.3, 1.15),
+		0.26,
+		0.2,
+		p.Guard,
+		Vector3.yAxis,
+		Enum.Material.Metal,
+		guard
+	)
 	kit:Ball("Skull", 0.62, Vector3.new(0, gy + 0.05, -0.1), p.Skull, Enum.Material.SmoothPlastic, guard)
-	kit:Block("SkullJaw", Vector3.new(0.4, 0.18, 0.36), CFrame.new(0, gy - 0.22, -0.12), p.Skull, Enum.Material.SmoothPlastic, guard)
+	kit:Block(
+		"SkullJaw",
+		Vector3.new(0.4, 0.18, 0.36),
+		CFrame.new(0, gy - 0.22, -0.12),
+		p.Skull,
+		Enum.Material.SmoothPlastic,
+		guard
+	)
 	for _, side in { -1, 1 } do
 		kit:Ball("Socket", 0.17, Vector3.new(side * 0.25, gy + 0.1, -0.22), p.Grip, Enum.Material.SmoothPlastic, guard)
 	end
@@ -55,7 +108,14 @@ return function(api)
 	local mid = BladeKit.Between(kit, blade, back, front, 0.55, p.Blade, p.Edge, d.Thickness, d.Thickness * 0.7)
 	-- Red eye notch near the base, on both faces.
 	for _, side in { -1, 1 } do
-		kit:Ball("BladeEye", 0.26, Vector3.new(side * 0.04, base + 0.55, back[2].Z - 0.35), p.Eye, Enum.Material.SmoothPlastic, blade)
+		kit:Ball(
+			"BladeEye",
+			0.26,
+			Vector3.new(side * 0.04, base + 0.55, back[2].Z - 0.35),
+			p.Eye,
+			Enum.Material.SmoothPlastic,
+			blade
+		)
 	end
 
 	kit:Attachment("TrailA", handle, CFrame.new(mid[2]))

@@ -11,10 +11,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Modules = ReplicatedStorage.Modules
 local AbilityConfig = require(Modules.Config.AbilityConfig)
-local CombatRoleConfig = require(Modules.Config.CombatRoleConfig)
+local AbilitySlots = require(Modules.Core.AbilitySlots)
 local MagicConfig = require(Modules.Config.MagicConfig)
 local ProjectileController = require(Modules.ProjectileController)
-local RaceConfig = require(Modules.Config.RaceConfig)
 local StatCalculator = require(Modules.Core.StatCalculator)
 local Validate = require(Modules.Core.Validate)
 
@@ -45,38 +44,9 @@ local function flat(v: Vector3): Vector3
 	return f.Magnitude > 1e-4 and f.Unit or Vector3.new(0, 0, -1)
 end
 
--- Which ability does this slot resolve to for this build? Returns (abilityId, stage, reason).
+-- Which ability does this slot resolve to for this build? (shared with the client)
 function AbilityService.ResolveSlot(profile, slot: string): (string?, number, string?)
-	local raceId = profile.Race.Active
-	local stage = 1
-	if raceId ~= "" and profile.Race.Progress[raceId] then
-		stage = profile.Race.Progress[raceId].Stage
-	end
-	if slot == "C" then
-		local race = RaceConfig.ById[raceId]
-		if not race then
-			return nil, stage, "NoRace"
-		end
-		if not race.AbilityId then
-			return nil, stage, "NoAbility"
-		end
-		if stage < race.AbilityUnlockStage then
-			return nil, stage, "Locked"
-		end
-		return race.AbilityId, stage, nil
-	elseif slot == "V" then
-		local role = CombatRoleConfig.ById[profile.Loadout.Role]
-		if not role then
-			return nil, stage, "NoRole"
-		end
-		return role.TechniqueId, 1, nil
-	elseif slot == "B" then
-		if not profile.Unlocks.KishinAwakening then
-			return nil, stage, "Locked"
-		end
-		return "KishinAwakening", 1, nil
-	end
-	return nil, stage, "BadSlot"
+	return AbilitySlots.Resolve(profile, slot)
 end
 
 local function broadcast(payload, position: Vector3)
@@ -104,7 +74,11 @@ local function nearestTarget(caster, direction: Vector3, range: number, coneDegr
 		if CombatService:CanDamage(caster, target) then
 			local offset = target.Root.Position - caster.Root.Position
 			local distance = offset.Magnitude
-			if distance <= range and (distance < 4 or flat(offset):Dot(flat(direction)) >= cosLimit) and distance < bestDistance then
+			if
+				distance <= range
+				and (distance < 4 or flat(offset):Dot(flat(direction)) >= cosLimit)
+				and distance < bestDistance
+			then
 				best, bestDistance = target, distance
 			end
 		end
@@ -137,7 +111,13 @@ Kinds.SelfBuff = function(ctx)
 	if params.Cleanse then
 		StatusService:Cleanse(ctx.Caster.Model)
 	end
-	broadcast({ Type = "Ability", Kind = "Buff", Character = ctx.Caster.Model, Color = AbilityConfig.Colors[id], Duration = params.Duration }, ctx.Caster.Root.Position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Buff",
+		Character = ctx.Caster.Model,
+		Color = AbilityConfig.Colors[id],
+		Duration = params.Duration,
+	}, ctx.Caster.Root.Position)
 	return true
 end
 
@@ -171,7 +151,13 @@ Kinds.HealOverTime = function(ctx)
 			GameEvents.Fire(player, "Healed", { Amount = amount })
 		end
 	end)
-	broadcast({ Type = "Ability", Kind = "Heal", Character = ctx.Caster.Model, Duration = params.Duration, Color = AbilityConfig.Colors[ctx.AbilityId] }, ctx.Caster.Root.Position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Heal",
+		Character = ctx.Caster.Model,
+		Duration = params.Duration,
+		Color = AbilityConfig.Colors[ctx.AbilityId],
+	}, ctx.Caster.Root.Position)
 	return true
 end
 
@@ -184,15 +170,31 @@ Kinds.Projectile = function(ctx)
 		local isBoss = target.Enemy and target.Enemy.Def.IsBoss
 		local status
 		if isBoss then
-			status = { Name = "Slow", Duration = params.BossSlowDuration, Magnitude = params.BossSlow, Source = ctx.AbilityId }
+			status = {
+				Name = "Slow",
+				Duration = params.BossSlowDuration,
+				Magnitude = params.BossSlow,
+				Source = ctx.AbilityId,
+			}
 		else
-			status = { Name = "Root", Duration = target.Player and params.PlayerRootDuration or params.RootDuration, Source = ctx.AbilityId }
+			status = {
+				Name = "Root",
+				Duration = target.Player and params.PlayerRootDuration or params.RootDuration,
+				Source = ctx.AbilityId,
+			}
 		end
 		abilityDamage(caster, target, params.Damage, ctx.Ability, ctx.AbilityId, { Status = status })
 		if params.DefenseShred and params.DefenseShred > 0 then
-			StatusService:Apply(target.Model, "Cursed", { Duration = 4, Magnitude = params.DefenseShred, Source = ctx.AbilityId })
+			StatusService:Apply(
+				target.Model,
+				"Cursed",
+				{ Duration = 4, Magnitude = params.DefenseShred, Source = ctx.AbilityId }
+			)
 		end
-		broadcast({ Type = "Ability", Kind = "Rooted", Character = target.Model, Duration = status.Duration }, target.Root.Position)
+		broadcast(
+			{ Type = "Ability", Kind = "Rooted", Character = target.Model, Duration = status.Duration },
+			target.Root.Position
+		)
 		if chained < (params.Chains or 0) then
 			chained += 1
 			local nextTarget = nil
@@ -222,7 +224,15 @@ Kinds.Projectile = function(ctx)
 			return false
 		end,
 	})
-	broadcast({ Type = "Ability", Kind = "Wrap", Character = caster.Model, Origin = origin, Direction = direction, Speed = params.Speed, Range = params.Range }, origin)
+	broadcast({
+		Type = "Ability",
+		Kind = "Wrap",
+		Character = caster.Model,
+		Origin = origin,
+		Direction = direction,
+		Speed = params.Speed,
+		Range = params.Range,
+	}, origin)
 	return true
 end
 
@@ -245,9 +255,15 @@ Kinds.DelayedArea = function(ctx)
 			for _, target in CombatService:QueryCircle(caster, center, params.Radius) do
 				local status = nil
 				if params.JudgedDuration and params.JudgedDuration > 0 then
-					status = { Name = "Judged", Duration = params.JudgedDuration, Magnitude = 0.1, Source = ctx.AbilityId }
+					status =
+						{ Name = "Judged", Duration = params.JudgedDuration, Magnitude = 0.1, Source = ctx.AbilityId }
 				elseif params.Slow then
-					status = { Name = "Slow", Duration = params.SlowDuration, Magnitude = params.Slow, Source = ctx.AbilityId }
+					status = {
+						Name = "Slow",
+						Duration = params.SlowDuration,
+						Magnitude = params.Slow,
+						Source = ctx.AbilityId,
+					}
 				end
 				abilityDamage(caster, target, params.Damage * potency * scale, ctx.Ability, ctx.AbilityId, {
 					Status = status,
@@ -261,7 +277,13 @@ Kinds.DelayedArea = function(ctx)
 		for i = 1, params.Aftershocks or 0 do
 			task.delay(i * 0.35, function()
 				blast(0.4)
-				broadcast({ Type = "Ability", Kind = "Pulse", Position = center, Radius = params.Radius, Color = Color3.fromRGB(240, 240, 255) }, center)
+				broadcast({
+					Type = "Ability",
+					Kind = "Pulse",
+					Position = center,
+					Radius = params.Radius,
+					Color = Color3.fromRGB(240, 240, 255),
+				}, center)
 			end)
 		end
 	end)
@@ -273,7 +295,14 @@ Kinds.TelegraphedSlam = function(ctx)
 	local position = caster.Root.Position
 	caster.Model:SetAttribute("MovementLock", workspace:GetServerTimeNow() + params.WindUp)
 	StatService:UpdateWalkSpeed(player)
-	broadcast({ Type = "Ability", Kind = "Telegraph", Character = caster.Model, Position = position, Radius = params.Radius, Duration = params.WindUp }, position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Telegraph",
+		Character = caster.Model,
+		Position = position,
+		Radius = params.Radius,
+		Duration = params.WindUp,
+	}, position)
 	EnemyService:OnTelegraph(position, params.Radius, params.WindUp)
 	task.delay(params.WindUp, function()
 		caster.Model:SetAttribute("MovementLock", nil)
@@ -296,7 +325,14 @@ Kinds.TelegraphedSlam = function(ctx)
 				Stagger = 0.6,
 			})
 		end
-		broadcast({ Type = "Ability", Kind = "Slam", Character = caster.Model, Position = center, Radius = params.Radius, Aftershock = params.AftershockRadius ~= 0 and params.AftershockRadius or nil }, center)
+		broadcast({
+			Type = "Ability",
+			Kind = "Slam",
+			Character = caster.Model,
+			Position = center,
+			Radius = params.Radius,
+			Aftershock = params.AftershockRadius ~= 0 and params.AftershockRadius or nil,
+		}, center)
 		if params.AftershockRadius and params.AftershockRadius > 0 then
 			task.delay(0.35, function()
 				for _, target in CombatService:QueryCircle(caster, center, params.AftershockRadius) do
@@ -356,7 +392,10 @@ Kinds.Blink = function(ctx)
 	end
 	caster.Model:PivotTo(destination)
 	StatService:AddBuff(player, "ShadowStepNext", params.BuffWindow, {}, params.NextHitBuff)
-	broadcast({ Type = "Ability", Kind = "Blink", Character = caster.Model, From = from, To = destination.Position }, from)
+	broadcast(
+		{ Type = "Ability", Kind = "Blink", Character = caster.Model, From = from, To = destination.Position },
+		from
+	)
 	return true
 end
 
@@ -369,7 +408,13 @@ Kinds.SelfArea = function(ctx)
 			Direction = target.Root.Position - caster.Root.Position,
 		})
 	end
-	broadcast({ Type = "Ability", Kind = "Pulse", Character = caster.Model, Radius = params.Radius, Color = AbilityConfig.Colors[ctx.AbilityId] }, caster.Root.Position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Pulse",
+		Character = caster.Model,
+		Radius = params.Radius,
+		Color = AbilityConfig.Colors[ctx.AbilityId],
+	}, caster.Root.Position)
 	return true
 end
 
@@ -392,7 +437,14 @@ Kinds.HomingProjectiles = function(ctx)
 				OnHit = function(result)
 					local hit = CombatService:GetCombatant(result.Instance:FindFirstAncestorOfClass("Model"))
 					if hit and CombatService:CanDamage(caster, hit) then
-						abilityDamage(caster, hit, params.Damage * ctx.Potency, ctx.Ability, ctx.AbilityId, { Stagger = 0.15 })
+						abilityDamage(
+							caster,
+							hit,
+							params.Damage * ctx.Potency,
+							ctx.Ability,
+							ctx.AbilityId,
+							{ Stagger = 0.15 }
+						)
 					end
 					return false
 				end,
@@ -436,14 +488,28 @@ Kinds.AreaHeal = function(ctx)
 			end
 		end
 	end)
-	broadcast({ Type = "Ability", Kind = "Heal", Character = caster.Model, Radius = params.Radius, Duration = params.Duration, Color = Color3.fromRGB(255, 190, 110) }, caster.Root.Position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Heal",
+		Character = caster.Model,
+		Radius = params.Radius,
+		Duration = params.Duration,
+		Color = Color3.fromRGB(255, 190, 110),
+	}, caster.Root.Position)
 	return true
 end
 
 Kinds.PullArea = function(ctx)
 	local params, caster = ctx.Params, ctx.Caster
 	local center = clampTargetPosition(caster, ctx.TargetPosition, ctx.Direction, params.Range)
-	broadcast({ Type = "Ability", Kind = "Well", Character = caster.Model, Position = center, Radius = params.Radius, Duration = params.Duration }, center)
+	broadcast({
+		Type = "Ability",
+		Kind = "Well",
+		Character = caster.Model,
+		Position = center,
+		Radius = params.Radius,
+		Duration = params.Duration,
+	}, center)
 	local ticks = math.floor(params.Duration / 0.25)
 	task.spawn(function()
 		for _ = 1, ticks do
@@ -454,10 +520,18 @@ Kinds.PullArea = function(ctx)
 					if target.Player then
 						FXBroadcast.To(target.Player, { Type = "Knockback", Velocity = pull })
 					elseif not target.Enemy.Def.IsBoss then
-						target.Root.AssemblyLinearVelocity = Vector3.new(pull.X, target.Root.AssemblyLinearVelocity.Y, pull.Z)
+						target.Root.AssemblyLinearVelocity =
+							Vector3.new(pull.X, target.Root.AssemblyLinearVelocity.Y, pull.Z)
 					end
 				end
-				abilityDamage(caster, target, params.Damage * ctx.Potency / ticks, ctx.Ability, ctx.AbilityId, { Stagger = 0 })
+				abilityDamage(
+					caster,
+					target,
+					params.Damage * ctx.Potency / ticks,
+					ctx.Ability,
+					ctx.AbilityId,
+					{ Stagger = 0 }
+				)
 			end
 			task.wait(0.25)
 		end
@@ -468,7 +542,13 @@ end
 Kinds.Summon = function(ctx)
 	local params, caster = ctx.Params, ctx.Caster
 	local position = caster.Root.Position + flat(ctx.Direction) * 4
-	broadcast({ Type = "Ability", Kind = "Construct", Character = caster.Model, Position = position, Duration = params.Duration }, position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Construct",
+		Character = caster.Model,
+		Position = position,
+		Duration = params.Duration,
+	}, position)
 	task.spawn(function()
 		local elapsed = 0
 		while elapsed < params.Duration and caster.Humanoid.Health > 0 do
@@ -485,7 +565,16 @@ Kinds.Summon = function(ctx)
 			if best then
 				local dir = (best.Root.Position - muzzle).Unit
 				abilityDamage(caster, best, params.Damage * ctx.Potency, ctx.Ability, ctx.AbilityId, { Stagger = 0.1 })
-				broadcast({ Type = "Ability", Kind = "Projectile", Origin = muzzle, Direction = dir, Speed = 140, Range = bestDistance, Color = Color3.fromRGB(80, 200, 255), Character = caster.Model }, muzzle)
+				broadcast({
+					Type = "Ability",
+					Kind = "Projectile",
+					Origin = muzzle,
+					Direction = dir,
+					Speed = 140,
+					Range = bestDistance,
+					Color = Color3.fromRGB(80, 200, 255),
+					Character = caster.Model,
+				}, muzzle)
 			end
 		end
 	end)
@@ -520,7 +609,14 @@ Kinds.Transformation = function(ctx)
 		return false, "NotEnoughMadness"
 	end
 	StatService:AddBuff(player, "KishinAwakening", params.Duration, params.Modifiers, params.DamageBuff)
-	broadcast({ Type = "Ability", Kind = "Buff", Character = ctx.Caster.Model, Color = AbilityConfig.Colors.KishinAwakening, Duration = params.Duration, Rate = 30 }, ctx.Caster.Root.Position)
+	broadcast({
+		Type = "Ability",
+		Kind = "Buff",
+		Character = ctx.Caster.Model,
+		Color = AbilityConfig.Colors.KishinAwakening,
+		Duration = params.Duration,
+		Rate = 30,
+	}, ctx.Caster.Root.Position)
 	local humanoid = ctx.Caster.Humanoid
 	task.spawn(function()
 		local elapsed = 0

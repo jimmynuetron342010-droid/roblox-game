@@ -14,15 +14,38 @@ return function(api)
 	local harness = kit:Group("Harness")
 	kit:Block("Plate", Vector3.new(1.3, 1.5, 0.2), CFrame.new(0, 0.1, 0.12), p.Joint, Enum.Material.Metal, harness)
 	for _, x in { -0.45, 0.45 } do
-		kit:Block("Strap", Vector3.new(0.2, 1.7, 0.08), CFrame.new(x, 0.15, 0.03), p.Body, Enum.Material.Fabric, harness)
+		kit:Block(
+			"Strap",
+			Vector3.new(0.2, 1.7, 0.08),
+			CFrame.new(x, 0.15, 0.03),
+			p.Body,
+			Enum.Material.Fabric,
+			harness
+		)
 	end
 
 	local body = kit:Group("Body")
 	local center = Vector3.new(0, 0.2, 0.95)
 	kit:Ball("Abdomen", d.BodyRadius * 2, center, p.Body, Enum.Material.Metal, body)
-	kit:Ring("Ring", CFrame.fromMatrix(center, Vector3.xAxis, Vector3.zAxis), d.BodyRadius * 1.02, 0.12, 14, p.Ring, Enum.Material.SmoothPlastic, body)
+	kit:Ring(
+		"Ring",
+		CFrame.fromMatrix(center, Vector3.xAxis, Vector3.zAxis),
+		d.BodyRadius * 1.02,
+		0.12,
+		14,
+		p.Ring,
+		Enum.Material.SmoothPlastic,
+		body
+	)
 	kit:Ball("Sclera", 0.62, center + Vector3.new(0, 0, d.BodyRadius * 0.82), p.Ring, Enum.Material.SmoothPlastic, body)
-	kit:Ball("Eye", 0.36, center + Vector3.new(0, 0, d.BodyRadius * 0.82 + 0.18), p.Eye, Enum.Material.SmoothPlastic, body)
+	kit:Ball(
+		"Eye",
+		0.36,
+		center + Vector3.new(0, 0, d.BodyRadius * 0.82 + 0.18),
+		p.Eye,
+		Enum.Material.SmoothPlastic,
+		body
+	)
 	kit:Cylinder("Mount", Vector3.new(0, 0.2, 0.2), center, 0.4, p.Joint, Enum.Material.Metal, body)
 
 	local legs = kit:Group("Legs")
@@ -46,10 +69,12 @@ return function(api)
 			hipMotor:SetAttribute("Side", side)
 			local kneeBall = kit:Ball("KneeJoint", 0.34, knee, p.Joint, Enum.Material.Metal, legs)
 			kit:Reweld(kneeBall, upper)
-			local lower = kit:Bar("Lower", knee, tip - lowerDir * 0.45, 0.2, 0.2, p.Leg, Vector3.zAxis, Enum.Material.Metal, legs)
+			local lower =
+				kit:Bar("Lower", knee, tip - lowerDir * 0.45, 0.2, 0.2, p.Leg, Vector3.zAxis, Enum.Material.Metal, legs)
 			kit:Motor("Knee" .. index, upper, lower, CFrame.new(knee))
 			for _, axis in { Vector3.xAxis, Vector3.zAxis } do
-				local w1, w2 = kit:Spike("Tip", tip - lowerDir * 0.5, tip, 0.22, 0.08, p.Tip, axis, Enum.Material.Metal, legs)
+				local w1, w2 =
+					kit:Spike("Tip", tip - lowerDir * 0.5, tip, 0.22, 0.08, p.Tip, axis, Enum.Material.Metal, legs)
 				for _, wedge in { w1, w2 } do
 					if wedge then
 						kit:Reweld(wedge, lower)

@@ -16,9 +16,14 @@ return function(vfx, p, cfg)
 	local function dust(position: Vector3)
 		local ground = vfx.GroundAt(position, 6)
 		if ground then
-			vfx.Emit("Dust", CFrame.lookAt(ground.Position, ground.Position + ground.Normal + root.CFrame.LookVector * -0.6), cfg.DustCount, {
-				Color = ColorSequence.new(vfx.SurfaceColor(ground)),
-			})
+			vfx.Emit(
+				"Dust",
+				CFrame.lookAt(ground.Position, ground.Position + ground.Normal + root.CFrame.LookVector * -0.6),
+				cfg.DustCount,
+				{
+					Color = ColorSequence.new(vfx.SurfaceColor(ground)),
+				}
+			)
 		end
 	end
 	dust(root.Position)
@@ -29,7 +34,12 @@ return function(vfx, p, cfg)
 		ghostTimer += dt
 		if t < dashWindow and ghostTimer >= cfg.AfterimageInterval and p.Character and p.Character.Parent then
 			ghostTimer = 0
-			vfx.Afterimage(p.Character, Color3.fromRGB(200, 205, 225), cfg.AfterimageTransparency, cfg.AfterimageLifetime)
+			vfx.Afterimage(
+				p.Character,
+				Color3.fromRGB(200, 205, 225),
+				cfg.AfterimageTransparency,
+				cfg.AfterimageLifetime
+			)
 		end
 		if t >= dashWindow then
 			if root.Parent then

@@ -73,8 +73,22 @@ end
 Hairstyles.Swept = function(kit, color)
 	kit:Block("HairCap", Vector3.new(1.34, 0.34, 1.34), CFrame.new(0, -0.06, 0.04), color)
 	kit:Block("HairBack", Vector3.new(1.3, 0.7, 0.24), CFrame.new(0, -0.4, 0.6), color)
-	kit:Triangle("Fringe", Vector3.new(-0.66, 0.02, -0.66), Vector3.new(0.5, 0.02, -0.66), Vector3.new(0.55, -0.5, -0.7), 0.12, color)
-	kit:Triangle("Fringe", Vector3.new(-0.66, 0.02, -0.66), Vector3.new(-0.2, -0.32, -0.7), Vector3.new(-0.66, -0.45, -0.66), 0.12, color)
+	kit:Triangle(
+		"Fringe",
+		Vector3.new(-0.66, 0.02, -0.66),
+		Vector3.new(0.5, 0.02, -0.66),
+		Vector3.new(0.55, -0.5, -0.7),
+		0.12,
+		color
+	)
+	kit:Triangle(
+		"Fringe",
+		Vector3.new(-0.66, 0.02, -0.66),
+		Vector3.new(-0.2, -0.32, -0.7),
+		Vector3.new(-0.66, -0.45, -0.66),
+		0.12,
+		color
+	)
 end
 
 Hairstyles.Crop = function(kit, color)
@@ -131,16 +145,39 @@ function StudentAppearance.Apply(character: Model, student, raceId: string?, anc
 		local torso = character:FindFirstChild("UpperTorso") :: BasePart?
 		local front = torso and torso:FindFirstChild("BodyFrontAttachment") :: Attachment?
 		if torso and front then
-			local kit = GeometryKit.new({ Model = folder, Root = torso, Origin = torso.CFrame * front.CFrame, Anchored = anchored })
-			kit:Triangle("Tie", Vector3.new(-0.14, 0.62, -0.03), Vector3.new(0.14, 0.62, -0.03), Vector3.new(0, -0.35, -0.03), 0.06, uniform.Secondary)
+			local kit = GeometryKit.new({
+				Model = folder,
+				Root = torso,
+				Origin = torso.CFrame * front.CFrame,
+				Anchored = anchored,
+			})
+			kit:Triangle(
+				"Tie",
+				Vector3.new(-0.14, 0.62, -0.03),
+				Vector3.new(0.14, 0.62, -0.03),
+				Vector3.new(0, -0.35, -0.03),
+				0.06,
+				uniform.Secondary
+			)
 			kit:Block("Collar", Vector3.new(0.9, 0.12, 0.06), CFrame.new(0, 0.72, -0.02), uniform.Secondary)
 		end
 		local lower = character:FindFirstChild("LowerTorso") :: BasePart?
 		local waist = lower and lower:FindFirstChild("WaistFrontAttachment") :: Attachment?
 		if lower and waist then
-			local kit = GeometryKit.new({ Model = folder, Root = lower, Origin = lower.CFrame * waist.CFrame, Anchored = anchored })
+			local kit = GeometryKit.new({
+				Model = folder,
+				Root = lower,
+				Origin = lower.CFrame * waist.CFrame,
+				Anchored = anchored,
+			})
 			kit:Block("Belt", Vector3.new(2.06, 0.16, 0.08), CFrame.new(0, 0.1, -0.02), Color3.fromRGB(28, 26, 30))
-			kit:Block("Buckle", Vector3.new(0.26, 0.2, 0.06), CFrame.new(0, 0.1, -0.07), Color3.fromRGB(200, 196, 180), Enum.Material.Metal)
+			kit:Block(
+				"Buckle",
+				Vector3.new(0.26, 0.2, 0.06),
+				CFrame.new(0, 0.1, -0.07),
+				Color3.fromRGB(200, 196, 180),
+				Enum.Material.Metal
+			)
 		end
 	end
 

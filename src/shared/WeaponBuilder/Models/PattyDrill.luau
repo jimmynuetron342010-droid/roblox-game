@@ -14,17 +14,63 @@ return function(api)
 
 	local housing = kit:Group("Housing")
 	local z0, z1 = 0.75, 0.75 - d.HousingLength
-	kit:Cylinder("Housing", Vector3.new(0, 0.1, z0), Vector3.new(0, 0.1, z1), R * 2, p.Housing, Enum.Material.Metal, housing)
-	kit:Cylinder("RearCap", Vector3.new(0, 0.1, z0 + 0.14), Vector3.new(0, 0.1, z0), R * 1.5, p.Accent, Enum.Material.Metal, housing)
+	kit:Cylinder(
+		"Housing",
+		Vector3.new(0, 0.1, z0),
+		Vector3.new(0, 0.1, z1),
+		R * 2,
+		p.Housing,
+		Enum.Material.Metal,
+		housing
+	)
+	kit:Cylinder(
+		"RearCap",
+		Vector3.new(0, 0.1, z0 + 0.14),
+		Vector3.new(0, 0.1, z0),
+		R * 1.5,
+		p.Accent,
+		Enum.Material.Metal,
+		housing
+	)
 	for i = 0, d.Bands - 1 do
 		local z = z0 - 0.15 - i * (d.HousingLength - 0.3) / math.max(d.Bands - 1, 1)
-		kit:Cylinder("Band", Vector3.new(0, 0.1, z + 0.06), Vector3.new(0, 0.1, z - 0.06), R * 2.12, p.Band, Enum.Material.SmoothPlastic, housing)
+		kit:Cylinder(
+			"Band",
+			Vector3.new(0, 0.1, z + 0.06),
+			Vector3.new(0, 0.1, z - 0.06),
+			R * 2.12,
+			p.Band,
+			Enum.Material.SmoothPlastic,
+			housing
+		)
 	end
-	kit:Ball("Skull", 0.42, Vector3.new(R + 0.02, 0.1, z0 - d.HousingLength * 0.5), p.Skull, Enum.Material.SmoothPlastic, housing)
+	kit:Ball(
+		"Skull",
+		0.42,
+		Vector3.new(R + 0.02, 0.1, z0 - d.HousingLength * 0.5),
+		p.Skull,
+		Enum.Material.SmoothPlastic,
+		housing
+	)
 	for _, dz in { -0.08, 0.08 } do
-		kit:Ball("SkullEye", 0.1, Vector3.new(R + 0.2, 0.15, z0 - d.HousingLength * 0.5 + dz), p.Accent, Enum.Material.SmoothPlastic, housing)
+		kit:Ball(
+			"SkullEye",
+			0.1,
+			Vector3.new(R + 0.2, 0.15, z0 - d.HousingLength * 0.5 + dz),
+			p.Accent,
+			Enum.Material.SmoothPlastic,
+			housing
+		)
 	end
-	kit:Cylinder("Collar", Vector3.new(0, 0.1, z1 + 0.04), Vector3.new(0, 0.1, z1 - 0.12), R * 1.9, p.BitDark, Enum.Material.Metal, housing)
+	kit:Cylinder(
+		"Collar",
+		Vector3.new(0, 0.1, z1 + 0.04),
+		Vector3.new(0, 0.1, z1 - 0.12),
+		R * 1.9,
+		p.BitDark,
+		Enum.Material.Metal,
+		housing
+	)
 
 	-- Bit: tiered cone + helical grooves, all welded to the first tier which spins.
 	local bit = kit:Group("Bit")
@@ -40,7 +86,15 @@ return function(api)
 		local za = start - i * tierLength
 		local zb = za - tierLength
 		local r = radiusAt(za + -tierLength * 0.5)
-		local tier = kit:Cylinder("Tier", Vector3.new(0, 0.1, za + 0.02), Vector3.new(0, 0.1, zb), r * 2, i % 2 == 0 and p.Bit or p.BitDark, Enum.Material.Metal, bit)
+		local tier = kit:Cylinder(
+			"Tier",
+			Vector3.new(0, 0.1, za + 0.02),
+			Vector3.new(0, 0.1, zb),
+			r * 2,
+			i % 2 == 0 and p.Bit or p.BitDark,
+			Enum.Material.Metal,
+			bit
+		)
 		if root then
 			kit:Reweld(tier, root)
 		else
@@ -58,7 +112,17 @@ return function(api)
 			local r = radiusAt(z) + 0.03
 			local point = Vector3.new(math.cos(angle) * r, 0.1 + math.sin(angle) * r, z)
 			if prev then
-				local groove = kit:Bar("Groove", prev, point, 0.09, 0.07, p.Band:Lerp(p.Bit, 0.4), Vector3.zAxis, Enum.Material.Metal, bit)
+				local groove = kit:Bar(
+					"Groove",
+					prev,
+					point,
+					0.09,
+					0.07,
+					p.Band:Lerp(p.Bit, 0.4),
+					Vector3.zAxis,
+					Enum.Material.Metal,
+					bit
+				)
 				kit:Reweld(groove, rootPart)
 			end
 			prev = point

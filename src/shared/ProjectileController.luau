@@ -181,7 +181,13 @@ function ProjectileController.ActiveCount(): number
 end
 
 -- Closed-form position for tests and prediction.
-function ProjectileController.PositionAt(origin: Vector3, direction: Vector3, speed: number, gravity: number?, t: number): Vector3
+function ProjectileController.PositionAt(
+	origin: Vector3,
+	direction: Vector3,
+	speed: number,
+	gravity: number?,
+	t: number
+): Vector3
 	local v = direction.Unit * speed
 	local g = Vector3.new(0, -(gravity or 0), 0)
 	return origin + v * t + g * (0.5 * t * t)

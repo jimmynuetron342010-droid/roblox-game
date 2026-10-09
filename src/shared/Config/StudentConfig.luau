@@ -33,7 +33,12 @@ StudentConfig.HairColors = {
 StudentConfig.HairStyles = { "Keep", "Spiked", "Pigtails", "Swept", "Crop" }
 
 StudentConfig.Uniforms = {
-	{ Name = "My Avatar Outfit", Keep = true, Primary = Color3.fromRGB(60, 60, 70), Secondary = Color3.fromRGB(196, 40, 52) },
+	{
+		Name = "My Avatar Outfit",
+		Keep = true,
+		Primary = Color3.fromRGB(60, 60, 70),
+		Secondary = Color3.fromRGB(196, 40, 52),
+	},
 	{ Name = "DWMA Classic", Primary = Color3.fromRGB(40, 40, 52), Secondary = Color3.fromRGB(196, 40, 52) },
 	{ Name = "Crescent Night", Primary = Color3.fromRGB(32, 28, 60), Secondary = Color3.fromRGB(240, 196, 60) },
 	{ Name = "Bone White", Primary = Color3.fromRGB(220, 216, 206), Secondary = Color3.fromRGB(40, 40, 46) },

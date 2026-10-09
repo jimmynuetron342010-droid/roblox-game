@@ -138,7 +138,13 @@ local function flat(v: Vector3): Vector3
 	return f.Magnitude > 1e-4 and f.Unit or Vector3.new(0, 0, -1)
 end
 
-function CombatService:QueryArc(attacker: Combatant, direction: Vector3, range: number, angle: number, height: number): { Combatant }
+function CombatService:QueryArc(
+	attacker: Combatant,
+	direction: Vector3,
+	range: number,
+	angle: number,
+	height: number
+): { Combatant }
 	local out = {}
 	local origin = attacker.Root.Position
 	local forward = flat(direction)
@@ -157,12 +163,20 @@ function CombatService:QueryArc(attacker: Combatant, direction: Vector3, range: 
 	return out
 end
 
-function CombatService:QueryCircle(attacker: Combatant?, center: Vector3, radius: number, height: number?): { Combatant }
+function CombatService:QueryCircle(
+	attacker: Combatant?,
+	center: Vector3,
+	radius: number,
+	height: number?
+): { Combatant }
 	local out = {}
 	for _, target in self:AllCombatants() do
 		if not attacker or self:CanDamage(attacker, target) then
 			local offset = target.Root.Position - center
-			if Vector3.new(offset.X, 0, offset.Z).Magnitude - BODY_RADIUS <= radius and math.abs(offset.Y) <= (height or 10) then
+			if
+				Vector3.new(offset.X, 0, offset.Z).Magnitude - BODY_RADIUS <= radius
+				and math.abs(offset.Y) <= (height or 10)
+			then
 				table.insert(out, target)
 			end
 		end
@@ -232,9 +246,14 @@ local function mitigate(target: Combatant, raw: number, info: DamageInfo): numbe
 	local effective = stats
 	if shred > 0 then
 		effective = table.clone(stats)
-		effective.DamageReduction = StatCalculator.DamageReductionFromDefense(stats.Values.Defense * (1 - shred), stats.Level or 1)
+		effective.DamageReduction =
+			StatCalculator.DamageReductionFromDefense(stats.Values.Defense * (1 - shred), stats.Level or 1)
 	end
-	local damage = StatCalculator.Mitigate(raw, effective, { Ranged = info.Ranged, Poison = info.Poison, TrueDamage = info.TrueDamage })
+	local damage = StatCalculator.Mitigate(
+		raw,
+		effective,
+		{ Ranged = info.Ranged, Poison = info.Poison, TrueDamage = info.TrueDamage }
+	)
 	if target.Player then
 		damage *= MadnessService:IncomingMultiplier(target.Player)
 	end
@@ -261,12 +280,23 @@ function CombatService:ApplyDamage(attacker: Combatant, target: Combatant, info:
 	if target.Player and damage >= before then
 		local profile = DataService:GetProfile(target.Player)
 		local s = state(target.Player)
-		if profile and profile.Race.Active == "Zombie" and before > humanoid.MaxHealth * 0.25 and os.clock() >= s.UndyingReadyAt then
+		if
+			profile
+			and profile.Race.Active == "Zombie"
+			and before > humanoid.MaxHealth * 0.25
+			and os.clock() >= s.UndyingReadyAt
+		then
 			s.UndyingReadyAt = os.clock() + 180
 			damage = math.floor(before - 1)
 			StatusService:Apply(target.Model, "Invulnerable", { Duration = 1.5, Source = "UndyingPersistence" })
 			GameEvents.Fire(target.Player, "UndyingTriggered", {})
-			FXBroadcast.Broadcast({ Type = "Ability", Kind = "Buff", Character = target.Model, Color = Color3.fromRGB(150, 255, 150), Duration = 1.5 }, target.Root.Position)
+			FXBroadcast.Broadcast({
+				Type = "Ability",
+				Kind = "Buff",
+				Character = target.Model,
+				Color = Color3.fromRGB(150, 255, 150),
+				Duration = 1.5,
+			}, target.Root.Position)
 		end
 	end
 
@@ -319,7 +349,11 @@ function CombatService:ApplyDamage(attacker: Combatant, target: Combatant, info:
 	if attacker.Player and not info.NoEvents then
 		local player = attacker.Player
 		local tags = info.Tags
-		GameEvents.Fire(player, "DamageDealt", { Amount = dealt, Magic = tags.Magic == true, Ranged = info.Ranged == true })
+		GameEvents.Fire(
+			player,
+			"DamageDealt",
+			{ Amount = dealt, Magic = tags.Magic == true, Ranged = info.Ranged == true }
+		)
 		if tags.Weapon and info.WeaponId then
 			GameEvents.Fire(player, "WeaponHit", {
 				WeaponId = info.WeaponId,
@@ -351,7 +385,10 @@ function CombatService:ApplyDamage(attacker: Combatant, target: Combatant, info:
 	end
 
 	local position = target.Root.Position + Vector3.new(0, 1.5, 0)
-	feedback(attacker.Player, { Target = target.Model, Amount = dealt, Position = position, Kind = info.Tags.Magic and "Magic" or "Hit" })
+	feedback(
+		attacker.Player,
+		{ Target = target.Model, Amount = dealt, Position = position, Kind = info.Tags.Magic and "Magic" or "Hit" }
+	)
 	feedback(target.Player, { Target = target.Model, Amount = dealt, Position = position, Kind = "Taken" })
 
 	if humanoid.Health <= 0 and before > 0 then
@@ -395,7 +432,17 @@ local function impactFX(config, positions: { Vector3 }, direction: Vector3)
 	}, positions[1])
 end
 
-local function resolveHit(_player: Player, attacker: Combatant, config, attackId: string, attack, hit, direction: Vector3, startPosition: Vector3, attackSpeed: number)
+local function resolveHit(
+	_player: Player,
+	attacker: Combatant,
+	config,
+	attackId: string,
+	attack,
+	hit,
+	direction: Vector3,
+	startPosition: Vector3,
+	attackSpeed: number
+)
 	local character = attacker.Model
 	local humanoid = attacker.Humanoid
 	if humanoid.Health <= 0 or not character.Parent or StatusService:Has(character, "Stagger") then
@@ -569,7 +616,19 @@ local function onAttack(player: Player, slot: any, aim: any, seq: any)
 
 	local startPosition = attacker.Root.Position
 	for _, hit in attack.Hits do
-		task.delay(hit.Time / attackSpeed, resolveHit, player, attacker, config, attackId, attack, hit, direction, startPosition, attackSpeed)
+		task.delay(
+			hit.Time / attackSpeed,
+			resolveHit,
+			player,
+			attacker,
+			config,
+			attackId,
+			attack,
+			hit,
+			direction,
+			startPosition,
+			attackSpeed
+		)
 	end
 	return nil
 end
@@ -587,7 +646,12 @@ function CombatService:Init(registry)
 end
 
 function CombatService:Start()
-	RemoteGuard.OnEvent("AttackRequest", GameConfig.Combat.MaxAttackRequestRate, GameConfig.Combat.MaxAttackRequestRate, onAttack)
+	RemoteGuard.OnEvent(
+		"AttackRequest",
+		GameConfig.Combat.MaxAttackRequestRate,
+		GameConfig.Combat.MaxAttackRequestRate,
+		onAttack
+	)
 	Players.PlayerRemoving:Connect(function(player)
 		attackStates[player] = nil
 	end)
@@ -597,7 +661,11 @@ function CombatService:Start()
 		local source = status.Applier and CombatService:GetCombatant(status.Applier)
 		if target and amount > 0 then
 			local attacker = source or target
-			CombatService:ApplyDamage(attacker, target, { Base = amount, Tags = { Magic = true }, Poison = true, TrueDamage = false, NoEvents = true })
+			CombatService:ApplyDamage(
+				attacker,
+				target,
+				{ Base = amount, Tags = { Magic = true }, Poison = true, TrueDamage = false, NoEvents = true }
+			)
 		end
 	end
 end
