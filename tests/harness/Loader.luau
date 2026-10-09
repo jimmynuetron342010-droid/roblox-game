@@ -171,6 +171,10 @@ function Loader.new(options: LoaderOptions?)
 	end
 	sharedGlobals.game = game
 	sharedGlobals.workspace = self.Services.Workspace or sharedGlobals.workspace
+	-- Fresh copy of the globals every loaded chunk sees (used to run LocalScripts/Scripts).
+	function self.Globals()
+		return table.clone(sharedGlobals)
+	end
 
 	local function requireNode(node)
 		if type(node) ~= "table" or not rawget(node, "__node") then

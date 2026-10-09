@@ -207,19 +207,23 @@ function StudentCreator.new(layer: Frame)
 					onChange()
 				end
 				self:Validate()
-			end, { LayoutOrder = index, TextSize = Theme.TextSize.Small, Parent = row }, "Ghost")
+			end, { LayoutOrder = index, TextSize = Theme.TextSize.Small, TextWrapped = true, Parent = row }, "Ghost")
 			if entry.Color then
+				-- Text starts after the swatch. UIPadding also shifts child frames, so the swatch
+				-- sits in the padded gutter at a negative offset.
+				button.TextXAlignment = Enum.TextXAlignment.Left
+				local padding = Components.Padding(0, 0)
+				padding.PaddingLeft = UDim.new(0, 38)
+				padding.PaddingRight = UDim.new(0, 8)
+				padding.Parent = button
 				local swatch = Components.New("Frame", {
 					BackgroundColor3 = entry.Color,
 					Size = UDim2.fromOffset(18, 18),
-					Position = UDim2.new(0, 10, 0.5, -9),
+					Position = UDim2.new(0, -28, 0.5, -9),
 					Parent = button,
 				})
 				Components.Corner(UDim.new(1, 0)).Parent = swatch
-				button.TextXAlignment = Enum.TextXAlignment.Left
-				Components.Padding(0, 0).Parent = button
-				local pad = button:FindFirstChildOfClass("UIPadding") :: UIPadding
-				pad.PaddingLeft = UDim.new(0, 36)
+				Components.Stroke(Color3.new(0, 0, 0), 1, 0.5).Parent = swatch
 			end
 			buttons[entry.Value] = button
 		end
@@ -251,7 +255,8 @@ function StudentCreator.new(layer: Frame)
 	end
 	options("HairStyle", hairRow, styles, refresh)
 
-	local _, uniformRow = section("Uniform", '"My Avatar Outfit" keeps your Roblox clothing.')
+	local _, uniformRow, uniformGrid = section("Uniform", '"My Avatar Outfit" keeps your Roblox clothing.')
+	uniformGrid.CellSize = UDim2.fromOffset(190, 44)
 	local uniforms = {}
 	for i, uniform in StudentConfig.Uniforms do
 		table.insert(uniforms, { Value = i, Text = uniform.Name, Color = uniform.Primary })
@@ -260,7 +265,7 @@ function StudentCreator.new(layer: Frame)
 
 	local _, waveRow, waveGrid =
 		section("Soul Wavelength", "Affects how well you synchronize with a partner (Meister ⇄ Demon Weapon).")
-	waveGrid.CellSize = UDim2.fromOffset(200, 44)
+	waveGrid.CellSize = UDim2.fromOffset(270, 44)
 	local waves = {}
 	for _, wave in StudentConfig.Wavelengths do
 		table.insert(waves, { Value = wave.Id, Text = wave.Id .. " — " .. wave.Description })
@@ -301,7 +306,7 @@ function StudentCreator.new(layer: Frame)
 	-- Footer: error text + submit.
 	self.Error = Components.Label("", {
 		Position = UDim2.new(0, 16, 1, -74),
-		Size = UDim2.new(1, -230, 0, 60),
+		Size = UDim2.new(1, -300, 0, 60),
 		TextColor3 = Theme.Colors.Bad,
 		FontFace = Theme.Fonts.BodyBold,
 		TextSize = Theme.TextSize.Body,
@@ -312,7 +317,7 @@ function StudentCreator.new(layer: Frame)
 	end, {
 		AnchorPoint = Vector2.new(1, 1),
 		Position = UDim2.new(1, -16, 1, -16),
-		Size = UDim2.fromOffset(200, 52),
+		Size = UDim2.fromOffset(260, 52),
 		TextSize = Theme.TextSize.Large,
 		Parent = formPanel,
 	}, "Primary")
@@ -320,7 +325,7 @@ function StudentCreator.new(layer: Frame)
 		UIController.CloseSelf("StudentCreator")
 	end, {
 		AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, -226, 1, -16),
+		Position = UDim2.new(1, -286, 1, -16),
 		Size = UDim2.fromOffset(120, 52),
 		Visible = false,
 		Parent = formPanel,

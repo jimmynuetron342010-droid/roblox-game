@@ -54,6 +54,8 @@ local REASONS = {
 }
 
 local HOLD_TIME = 1.2
+local COMPARE_HEIGHT = 236
+local COMPARE_HEIGHT_COMPACT = 150
 
 local function sortedRaces()
 	local list = table.clone(RaceConfig.List)
@@ -89,7 +91,7 @@ function RaceRollUI.new(layer: Frame)
 	Components.Gradient(Color3.fromRGB(34, 18, 46), Color3.fromRGB(6, 4, 10)).Parent = root
 	self.Root = root
 
-	Components.Title("SOUL ALTAR", {
+	self.Title = Components.Title("SOUL ALTAR", {
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 14),
 		Size = UDim2.fromOffset(500, 50),
@@ -97,7 +99,7 @@ function RaceRollUI.new(layer: Frame)
 		TextSize = Theme.TextSize.Hero,
 		Parent = root,
 	})
-	Components.Label("Awaken your soul's origin. Your role, weapon and magic stay your own choice.", {
+	self.Subtitle = Components.Label("Awaken your soul's origin. Your role, weapon and magic stay your own choice.", {
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 62),
 		Size = UDim2.fromOffset(640, 22),
@@ -121,7 +123,6 @@ function RaceRollUI.new(layer: Frame)
 		Size = UDim2.fromOffset(44, 44),
 		Parent = root,
 	}, "Ghost")
-	self.CloseButton.AccessibilityDescription = "Close the Soul Altar"
 
 	-- Full-screen tint used for the Epic+ flash (never pure white, never strobing).
 	self.Flash = Components.New("Frame", {
@@ -150,6 +151,7 @@ function RaceRollUI:BuildOdds(root: Frame)
 		Size = UDim2.new(0, 330, 1, -124),
 		Parent = root,
 	})
+	self.OddsPanel = panel
 	Components.Label("Probability Table", {
 		Position = UDim2.fromOffset(16, 10),
 		Size = UDim2.new(1, -32, 0, 28),
@@ -243,6 +245,7 @@ function RaceRollUI:BuildSide(root: Frame)
 		Size = UDim2.new(0, 320, 1, -124),
 		Parent = root,
 	})
+	self.SidePanel = panel
 	Components.Label("Current Origin", {
 		Position = UDim2.fromOffset(16, 10),
 		Size = UDim2.new(1, -32, 0, 28),
@@ -301,7 +304,13 @@ function RaceRollUI:BuildSide(root: Frame)
 	end, { Size = UDim2.new(1, 0, 0, 44), LayoutOrder = 2, Parent = actions }, "Secondary")
 	self.FastToggle = Components.Button("", function()
 		self:ToggleFast()
-	end, { Size = UDim2.new(1, 0, 0, 40), LayoutOrder = 3, TextSize = Theme.TextSize.Small, Parent = actions }, "Ghost")
+	end, {
+		Size = UDim2.new(1, 0, 0, 40),
+		LayoutOrder = 3,
+		TextSize = Theme.TextSize.Small,
+		TextWrapped = true,
+		Parent = actions,
+	}, "Ghost")
 	self.Status = Components.Label("", {
 		Size = UDim2.new(1, 0, 0, 40),
 		LayoutOrder = 4,
@@ -357,7 +366,7 @@ function RaceRollUI:RefreshSide()
 	if seen then
 		self.FastToggle.Text = "Fast reveal: " .. (profile.Settings.FastReveal and "ON" or "OFF")
 	else
-		self.FastToggle.Text = "Fast reveal unlocks after your first full reveal"
+		self.FastToggle.Text = "Fast reveal unlocks after one full reveal"
 	end
 	self.FastToggle.TextColor3 = seen and Theme.Colors.Text or Theme.Colors.TextMuted
 	for id, row in self.OddsRows do
@@ -442,6 +451,7 @@ function RaceRollUI:BuildStage(root: Frame)
 		"Frame",
 		{ Name = "Shards", BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Parent = stage }
 	)
+	self.Shards:SetAttribute("Decorative", true) -- burst particles are meant to fly off-screen
 end
 
 local function waitOrSkip(seconds: number, self)
@@ -569,6 +579,9 @@ local function section(parent: Instance, order: number, title: string, body: str
 end
 
 function RaceRollUI:ShowCard(result, decision: boolean)
+	-- Height kept free below the portrait/details: footer buttons, plus the comparison when deciding.
+	local compareHeight = self.Compact and COMPARE_HEIGHT_COMPACT or COMPARE_HEIGHT
+	local reserved = decision and (80 + compareHeight + 10) or 120
 	self:ClearCard()
 	local profile = ClientState.Profile
 	local race = RaceConfig.ById[result.RaceId]
@@ -604,22 +617,25 @@ function RaceRollUI:ShowCard(result, decision: boolean)
 	})
 
 	-- Portrait (left) and details (right).
-	local portrait = Components.New("Frame", {
-		BackgroundColor3 = Theme.Colors.InkLight,
-		Position = UDim2.fromOffset(14, 46),
-		Size = UDim2.new(0.36, -14, 1, -120),
-		Parent = card,
-	})
-	Components.Corner().Parent = portrait
-	local stage = BuildModifiers.RaceStage(profile, race.Id)
-	Viewport.Character(
-		portrait,
-		{ Student = profile.Student, RaceId = race.Id, Stage = stage, Framing = "Full", Spin = true }
-	)
+	local split = self.Compact and 0 or 0.36
+	if not self.Compact then
+		local portrait = Components.New("Frame", {
+			BackgroundColor3 = Theme.Colors.InkLight,
+			Position = UDim2.fromOffset(14, 46),
+			Size = UDim2.new(split, -14, 1, -reserved),
+			Parent = card,
+		})
+		Components.Corner().Parent = portrait
+		local stage = BuildModifiers.RaceStage(profile, race.Id)
+		Viewport.Character(
+			portrait,
+			{ Student = profile.Student, RaceId = race.Id, Stage = stage, Framing = "Full", Spin = true }
+		)
+	end
 
 	local details = Components.Scroll({
-		Position = UDim2.new(0.36, 10, 0, 46),
-		Size = UDim2.new(0.64, -24, 1, -120),
+		Position = UDim2.new(split, self.Compact and 14 or 10, 0, 46),
+		Size = UDim2.new(1 - split, -24, 1, -reserved),
 		Parent = card,
 	})
 	Components.List(Enum.FillDirection.Vertical, 8).Parent = details
@@ -734,8 +750,8 @@ function RaceRollUI:BuildDecision(card: Frame, footer: Frame, result)
 		Name = "Compare",
 		AnchorPoint = Vector2.new(0.5, 1),
 		Position = UDim2.new(0.5, 0, 1, -80),
-		Size = UDim2.new(1, -28, 0, 0),
-		AutomaticSize = Enum.AutomaticSize.Y,
+		Size = UDim2.new(1, -28, 0, self.Compact and COMPARE_HEIGHT_COMPACT or COMPARE_HEIGHT),
+		ClipsDescendants = true,
 		BackgroundColor3 = Theme.Colors.InkLight,
 		ZIndex = 5,
 		Parent = card,
@@ -753,7 +769,7 @@ function RaceRollUI:BuildDecision(card: Frame, footer: Frame, result)
 		}
 	)
 	local lines = {}
-	for i = 1, math.min(#diff, 6) do
+	for i = 1, math.min(#diff, self.Compact and 4 or 6) do
 		local d = diff[i]
 		local arrow = d.Delta >= 0 and "▲" or "▼"
 		table.insert(
@@ -808,15 +824,23 @@ function RaceRollUI:BuildDecision(card: Frame, footer: Frame, result)
 
 	local keep = Components.Button("Keep " .. (current and current.DisplayName or "current"), function()
 		self:Resolve(result.RequestId, false)
-	end, { Position = UDim2.fromScale(0, 0), Size = UDim2.new(0.5, -6, 1, 0), Parent = footer }, "Secondary")
+	end, {
+		Position = UDim2.fromScale(0, 0),
+		Size = UDim2.new(0.5, -6, 1, 0),
+		TextWrapped = true,
+		Parent = footer,
+	}, "Secondary")
+	Components.Padding(4, 10).Parent = keep
 	local invested = current ~= nil and isInvested(profile, currentId)
 	local replace = Components.Button("", nil, {
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.fromScale(1, 0),
 		Size = UDim2.new(0.5, -6, 1, 0),
 		ClipsDescendants = true,
+		TextWrapped = true,
 		Parent = footer,
 	}, "Primary")
+	Components.Padding(4, 10).Parent = replace
 	if not invested then
 		replace.Text = "Replace with " .. newRace.DisplayName
 		replace.Activated:Connect(function()
@@ -835,11 +859,15 @@ end
 
 -- Press-and-hold (mouse, touch, or gamepad A / Enter while selected).
 function RaceRollUI:MakeHold(button: TextButton, onConfirm: () -> ())
+	-- The button has UIPadding (4, 10); the fill sits in the padding gutter so it spans edge to edge.
+	local function fillSize(t: number): UDim2
+		return UDim2.new(t, 20 * t, 1, 8)
+	end
 	local fill = Components.New("Frame", {
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		BackgroundTransparency = 0.6,
-		BorderSizePixel = 0,
-		Size = UDim2.fromScale(0, 1),
+		Position = UDim2.fromOffset(-10, -4),
+		Size = fillSize(0),
 		ZIndex = button.ZIndex + 1,
 		Parent = button,
 	})
@@ -856,7 +884,7 @@ function RaceRollUI:MakeHold(button: TextButton, onConfirm: () -> ())
 		task.spawn(function()
 			while holding and mine == token and button.Parent do
 				local t = (os.clock() - started) / HOLD_TIME
-				fill.Size = UDim2.fromScale(math.clamp(t, 0, 1), 1)
+				fill.Size = fillSize(math.clamp(t, 0, 1))
 				if t >= 1 then
 					holding = false
 					UISound.Play("Confirm")
@@ -865,7 +893,7 @@ function RaceRollUI:MakeHold(button: TextButton, onConfirm: () -> ())
 				end
 				task.wait()
 			end
-			fill.Size = UDim2.fromScale(0, 1)
+			fill.Size = fillSize(0)
 		end)
 	end
 	local function stop()
@@ -891,6 +919,28 @@ function RaceRollUI:MakeHold(button: TextButton, onConfirm: () -> ())
 		began:Disconnect()
 		ended:Disconnect()
 	end)
+end
+
+-- ── Responsive layout ─────────────────────────────────────────────────────────
+-- Short screens (phones in landscape) drop the side portrait and tighten the header so the roll
+-- buttons never cover the current-origin details.
+function RaceRollUI:ApplyLayout(compact: boolean)
+	self.Compact = compact
+	local top = compact and 74 or 100
+	self.Title.TextSize = compact and 34 or Theme.TextSize.Hero
+	self.Title.Position = UDim2.new(0.5, 0, 0, compact and 6 or 14)
+	self.Subtitle.Position = UDim2.new(0.5, 0, 0, compact and 44 or 62)
+	self.OddsPanel.Position = UDim2.fromOffset(24, top)
+	self.OddsPanel.Size = UDim2.new(0, 330, 1, -(top + 24))
+	self.SidePanel.Position = UDim2.new(1, -24, 0, top)
+	self.SidePanel.Size = UDim2.new(0, 320, 1, -(top + 24))
+	self.Stage.Position = UDim2.fromOffset(370, top - 4)
+	self.Stage.Size = UDim2.new(1, -726, 1, -(top + 16))
+	self.PortraitHolder.Visible = not compact
+	local infoTop = compact and 44 or 200
+	self.CurrentName.Position = UDim2.fromOffset(16, infoTop)
+	self.CurrentInfo.Position = UDim2.fromOffset(16, infoTop + 30)
+	self.Wallet.Position = UDim2.fromOffset(16, infoTop + 74)
 end
 
 -- ── Flow ──────────────────────────────────────────────────────────────────────
@@ -1037,6 +1087,7 @@ function RaceRollUI:EndReveal()
 end
 
 function RaceRollUI:Open(_args)
+	self:ApplyLayout(UIController.IsCompact())
 	self.Root.Visible = true
 	self.Status.Text = ""
 	if self.State == "Idle" then

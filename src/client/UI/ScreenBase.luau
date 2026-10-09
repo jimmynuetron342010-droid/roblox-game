@@ -12,6 +12,8 @@ local UIController = require(script.Parent.UIController)
 
 local ScreenBase = {}
 
+local backdrops: { [GuiObject]: GuiObject } = setmetatable({}, { __mode = "k" }) :: any
+
 function ScreenBase.Modal(name: string, title: string, layer: Instance, size: UDim2?, maxSize: Vector2?)
 	local root, content = Components.Modal(title, size or UDim2.fromScale(0.9, 0.88), function()
 		UIController.CloseSelf(name)
@@ -24,12 +26,32 @@ function ScreenBase.Modal(name: string, title: string, layer: Instance, size: UD
 	local scale = Instance.new("UIScale")
 	scale.Name = "PopScale"
 	scale.Parent = root
+	-- Dims the game behind the menu; clicking outside the window closes it.
+	local backdrop = Components.New("TextButton", {
+		Name = name .. "Backdrop",
+		Text = "",
+		AutoButtonColor = false,
+		Selectable = false,
+		BackgroundColor3 = Theme.Colors.Overlay,
+		BackgroundTransparency = 0.4,
+		Size = UDim2.fromScale(1, 1),
+		ZIndex = 0,
+		Visible = false,
+		Parent = layer,
+	})
+	backdrop.Activated:Connect(function()
+		UIController.CloseSelf(name)
+	end)
+	backdrops[root] = backdrop
 	root.Parent = layer
 	return root, content
 end
 
 function ScreenBase.Show(root: GuiObject)
 	root.Visible = true
+	if backdrops[root] then
+		backdrops[root].Visible = true
+	end
 	local scale = root:FindFirstChild("PopScale") :: UIScale?
 	if scale and not Theme.ReducedMotion() then
 		scale.Scale = 0.94
@@ -39,6 +61,9 @@ end
 
 function ScreenBase.Hide(root: GuiObject)
 	root.Visible = false
+	if backdrops[root] then
+		backdrops[root].Visible = false
+	end
 end
 
 -- Removes every child except layouts/paddings/constraints (used when rebuilding lists).

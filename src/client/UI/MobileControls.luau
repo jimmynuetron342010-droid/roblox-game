@@ -6,7 +6,7 @@
 	  * Attack supports press-and-hold (charged combos), like holding the mouse.
 	  * Skill buttons show the same cooldown sweep as the HUD.
 	  * Only shown while the last input was touch; hidden while any menu is open.
-	  * Utility row (top-right): Perception, Draw/Holster, Form (Tsubaki only), Kishin (once
+	  * Utility row (top-center): Perception, Draw/Holster, Form (Tsubaki only), Kishin (once
 	    unlocked), and ☰ which opens the HUD menu column.
 ]]
 
@@ -58,7 +58,6 @@ local function actionButton(
 		Selectable = false,
 		Parent = parent,
 	})
-	button.AccessibilityDescription = action
 	Components.Corner(UDim.new(1, 0)).Parent = button
 	local stroke = Components.Stroke(Theme.Colors.Gold, 2, 0.35)
 	stroke.Parent = button
@@ -106,7 +105,6 @@ local function smallButton(parent: Instance, name: string, text: string, order: 
 		Selectable = false,
 		Parent = parent,
 	}, "Ghost")
-	button.AccessibilityDescription = name
 	return button
 end
 
@@ -158,26 +156,27 @@ function MobileControls.Mount(layer: Frame)
 	})
 	local frame = root :: Frame
 
-	-- Thumb cluster (offsets from the bottom-right corner, left of the Roblox jump button).
-	actionButton(frame, "Attack", "⚔", Vector2.new(-250, -120), 108, Theme.Colors.RedDark)
-	withCooldown(actionButton(frame, "SkillZ", "Z", Vector2.new(-372, -86), 66), "Z")
-	withCooldown(actionButton(frame, "SkillX", "X", Vector2.new(-356, -196), 66), "X")
-	withCooldown(actionButton(frame, "SkillC", "C", Vector2.new(-262, -256), 66), "C")
-	withCooldown(actionButton(frame, "SkillV", "V", Vector2.new(-158, -244), 66), "V")
-	actionButton(frame, "Dash", "»", Vector2.new(-470, -76), 62, Theme.Colors.InkLighter)
-	actionButton(frame, "Sprint", "⇧", Vector2.new(-462, -170), 56, Theme.Colors.InkLighter)
+	-- Thumb cluster (offsets from the bottom-right corner): an arc around Attack that stays left of
+	-- and above Roblox's jump button, and below the quest/wallet panels.
+	actionButton(frame, "Attack", "⚔", Vector2.new(-205, -105), 100, Theme.Colors.RedDark)
+	withCooldown(actionButton(frame, "SkillZ", "Z", Vector2.new(-318, -66), 62), "Z")
+	withCooldown(actionButton(frame, "SkillX", "X", Vector2.new(-308, -170), 62), "X")
+	withCooldown(actionButton(frame, "SkillC", "C", Vector2.new(-212, -222), 62), "C")
+	withCooldown(actionButton(frame, "SkillV", "V", Vector2.new(-104, -200), 62), "V")
+	actionButton(frame, "Dash", "»", Vector2.new(-412, -66), 58, Theme.Colors.InkLighter)
+	actionButton(frame, "Sprint", "⇧", Vector2.new(-404, -162), 52, Theme.Colors.InkLighter)
 
-	-- Utility row (top-right, under the quest + wallet panels).
+	-- Utility row (top-center: free space between the vitals and the quest panel).
 	local row = Components.New("Frame", {
-		Name = "Utility",
+		Name = "MobileUtility",
 		BackgroundTransparency = 1,
-		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -16, 0, 188),
-		Size = UDim2.fromOffset(320, 52),
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 16),
+		Size = UDim2.fromOffset(300, 52),
 		Parent = frame,
 	})
 	local list = Components.List(Enum.FillDirection.Horizontal, 8)
-	list.HorizontalAlignment = Enum.HorizontalAlignment.Right
+	list.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	list.Parent = row
 	smallButton(row, "Perception", "👁", 1, tap("Perception"))
 	smallButton(row, "Holster", "⚔↕", 2, tap("Holster"))

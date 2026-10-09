@@ -24,7 +24,12 @@ local function apply(instance: Instance, props: Props?)
 end
 
 function Components.New(className: string, props: Props?): any
-	return apply(Instance.new(className), props)
+	local instance = Instance.new(className)
+	if instance:IsA("GuiObject") then
+		-- Roblox defaults to a 1px dark border on new GUI objects; the art style never uses it.
+		(instance :: GuiObject).BorderSizePixel = 0
+	end
+	return apply(instance, props)
 end
 
 function Components.Corner(radius: UDim?): UICorner
@@ -205,10 +210,15 @@ function Components.Bar(color: Color3, props: Props?, trailColor: Color3?)
 		Parent = container,
 	})
 	local current = 1
+	local initialized = false
 	local function setFill(fraction: number)
 		fraction = math.clamp(fraction, 0, 1)
 		fill.Size = UDim2.fromScale(fraction, 1)
-		if fraction < current then
+		if not initialized then
+			-- First value snaps; the trail only animates real decreases (damage, spending).
+			initialized = true
+			trail.Size = UDim2.fromScale(fraction, 1)
+		elseif fraction < current then
 			-- Delayed "damage trail" catches up after a moment.
 			task.delay(0.25, function()
 				Theme.Tween(trail, 0.35, { Size = UDim2.fromScale(fraction, 1) })
@@ -255,7 +265,6 @@ function Components.Modal(title: string, size: UDim2, onClose: (() -> ())?)
 		Size = UDim2.fromOffset(40, 40),
 		Parent = header,
 	}, "Ghost")
-	close.AccessibilityDescription = "Close"
 	Components.New("Frame", {
 		Name = "Divider",
 		BackgroundColor3 = Theme.Colors.Gold,

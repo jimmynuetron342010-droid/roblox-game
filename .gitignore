@@ -5,3 +5,4 @@ sourcemap.json
 node_modules/
 *.rbxl.lock
 *.rbxlx.lock
+/tests/ui/fonts/

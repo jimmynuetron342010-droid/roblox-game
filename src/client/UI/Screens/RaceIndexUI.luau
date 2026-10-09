@@ -108,9 +108,7 @@ function RaceIndexUI:Refresh()
 		local active = profile.Race.Active == race.Id
 		local card = Components.Button("", function()
 			self:Select(race.Id)
-		end, { LayoutOrder = index, Size = UDim2.fromOffset(136, 150), Parent = self.Grid }, "Ghost")
-		card.AccessibilityDescription = found and race.DisplayName
-			or ("Undiscovered " .. rarity.DisplayName .. " origin")
+		end, { LayoutOrder = index, Size = UDim2.fromOffset(136, 150), Parent = self.Grid }, "Ghost") or ("Undiscovered " .. rarity.DisplayName .. " origin")
 		local stroke = card:FindFirstChildOfClass("UIStroke")
 		if stroke then
 			stroke.Color = found and rarity.Color or Theme.Colors.Stroke

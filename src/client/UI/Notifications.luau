@@ -12,8 +12,11 @@ local Theme = require(script.Parent.Theme)
 
 local Notifications = {}
 
+local UserInputService = game:GetService("UserInputService")
+
 local list: Frame
-local MAX = 5
+local MAX = 4
+local counter = 0
 
 local KIND_COLORS = {
 	Info = Theme.Colors.TextDim,
@@ -31,11 +34,12 @@ function Notifications.Show(text: string, kind: string?, rarity: string?)
 	if rarity then
 		color = Theme.Rarity(rarity).Color
 	end
+	counter += 1
 	local toast = Components.Panel({
 		Size = UDim2.fromScale(1, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
 		BackgroundTransparency = 0.12,
-		LayoutOrder = -math.floor(os.clock() * 1000),
+		LayoutOrder = counter, -- newest closest to the anchor edge
 	})
 	Components.Padding(10, 14).Parent = toast
 	local accent = Instance.new("Frame")
@@ -61,9 +65,9 @@ function Notifications.Show(text: string, kind: string?, rarity: string?)
 	end
 	if #items > MAX then
 		table.sort(items, function(a, b)
-			return a.LayoutOrder > b.LayoutOrder
+			return a.LayoutOrder < b.LayoutOrder
 		end)
-		items[1]:Destroy()
+		items[1]:Destroy() -- oldest
 	end
 	task.delay(kind == "Rare" and 6 or 3.5, function()
 		if toast.Parent then
@@ -78,11 +82,16 @@ function Notifications.Mount(layer: Frame)
 	list = Instance.new("Frame")
 	list.Name = "Toasts"
 	list.BackgroundTransparency = 1
-	list.AnchorPoint = Vector2.new(0.5, 0)
-	list.Position = UDim2.new(0.5, 0, 0, 96)
-	list.Size = UDim2.fromOffset(460, 400)
+	-- Keyboard/gamepad: bottom-center above the weapon line, clear of menu titles and the HUD.
+	-- Touch: top-center under the touch utility row, because the bottom belongs to the thumbs.
+	local touch = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	list.AnchorPoint = Vector2.new(0.5, touch and 0 or 1)
+	list.Position = touch and UDim2.new(0.5, 0, 0, 78) or UDim2.new(0.5, 0, 1, -56)
+	list.Size = UDim2.fromOffset(440, 360)
 	list.Parent = layer
-	Components.List(Enum.FillDirection.Vertical, 6, Enum.HorizontalAlignment.Center).Parent = list
+	local layout = Components.List(Enum.FillDirection.Vertical, 6, Enum.HorizontalAlignment.Center)
+	layout.VerticalAlignment = touch and Enum.VerticalAlignment.Top or Enum.VerticalAlignment.Bottom
+	layout.Parent = list
 	Net.Event("Notify").OnClientEvent:Connect(function(payload)
 		if type(payload) == "table" and type(payload.Text) == "string" then
 			Notifications.Show(payload.Text, payload.Kind, payload.Rarity)

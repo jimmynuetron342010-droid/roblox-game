@@ -87,7 +87,6 @@ function InventoryUI:Refresh(rebuildDetail: boolean?)
 		local card = Components.Button("", function()
 			self:Select(weaponId)
 		end, { LayoutOrder = index, Size = UDim2.fromOffset(142, 118), Parent = self.Grid }, "Ghost")
-		card.AccessibilityDescription = weapon.DisplayName .. (owned and "" or " (locked)")
 		local stroke = card:FindFirstChildOfClass("UIStroke")
 		if stroke then
 			stroke.Color = equipped and Theme.Colors.Gold

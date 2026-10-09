@@ -35,6 +35,7 @@ local UIController = require(script.Parent.UIController)
 
 local HUD = {}
 HUD.Root = nil :: Frame?
+HUD.RightColumn = nil :: Frame?
 HUD.TouchLayout = false
 
 local player = Players.LocalPlayer
@@ -254,43 +255,60 @@ local function buildLevel(layer: Frame)
 end
 
 -- ── Quest + currencies + menu (right) ─────────────────────────────────────────
+-- One stacked column, so a long quest description pushes the wallet and menu down instead of
+-- overlapping them.
 local function buildRight(layer: Frame)
-	local quest = Components.Panel({
-		Name = "Quest",
+	local column = Components.New("Frame", {
+		Name = "RightColumn",
+		BackgroundTransparency = 1,
 		AnchorPoint = Vector2.new(1, 0),
 		Position = UDim2.new(1, -16, 0, 16),
-		Size = UDim2.fromOffset(300, 116),
+		Size = UDim2.fromOffset(300, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
 		Parent = layer,
 	})
+	Components.List(Enum.FillDirection.Vertical, 8, Enum.HorizontalAlignment.Right).Parent = column
+	HUD.RightColumn = column
+
+	local quest = Components.Panel({
+		Name = "Quest",
+		Size = UDim2.fromOffset(300, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		LayoutOrder = 1,
+		Parent = column,
+	})
 	Components.Padding(12, 14).Parent = quest
+	Components.List(Enum.FillDirection.Vertical, 4).Parent = quest
 	label("Main Quest", {
 		Size = UDim2.new(1, 0, 0, 22),
 		FontFace = Theme.Fonts.Hand,
 		TextSize = 18,
 		TextColor3 = Theme.Colors.Gold,
+		LayoutOrder = 1,
 		Parent = quest,
 	})
 	refs.QuestTitle = label("—", {
-		Position = UDim2.fromOffset(0, 26),
-		Size = UDim2.new(1, 0, 0, 24),
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
 		FontFace = Theme.Fonts.BodyBold,
 		TextSize = Theme.TextSize.Body,
+		LayoutOrder = 2,
 		Parent = quest,
 	})
 	refs.QuestProgress = label("", {
-		Position = UDim2.fromOffset(0, 52),
-		Size = UDim2.new(1, 0, 0, 36),
+		Size = UDim2.fromScale(1, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
 		TextSize = Theme.TextSize.Small,
 		TextColor3 = Theme.Colors.TextDim,
+		LayoutOrder = 3,
 		Parent = quest,
 	})
 
 	local wallet = Components.Panel({
 		Name = "Wallet",
-		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -16, 0, 140),
 		Size = UDim2.fromOffset(300, 40),
-		Parent = layer,
+		LayoutOrder = 2,
+		Parent = column,
 	})
 	refs.Wallet = label("", {
 		Position = UDim2.fromOffset(14, 0),
@@ -302,11 +320,10 @@ local function buildRight(layer: Frame)
 
 	local menu = Components.Panel({
 		Name = "Menu",
-		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(1, -16, 0, 192),
 		Size = UDim2.fromOffset(200, 0),
 		AutomaticSize = Enum.AutomaticSize.Y,
-		Parent = layer,
+		LayoutOrder = 4,
+		Parent = column,
 	})
 	Components.Padding(10).Parent = menu
 	Components.List(Enum.FillDirection.Vertical, 8, Enum.HorizontalAlignment.Center).Parent = menu
@@ -320,7 +337,7 @@ local function buildRight(layer: Frame)
 		{ "Settings", "Settings" },
 	}
 	for index, item in items do
-		Components.Button(item[1], function()
+		local button = Components.Button(item[1], function()
 			if HUD.TouchLayout then
 				menu.Visible = false
 			end
@@ -331,6 +348,7 @@ local function buildRight(layer: Frame)
 			TextXAlignment = Enum.TextXAlignment.Left,
 			Parent = menu,
 		}, "Secondary")
+		Components.Padding(0, 14).Parent = button
 	end
 
 	-- Weapon / perception indicator (bottom center).
@@ -517,7 +535,6 @@ function HUD.UseTouchLayout(enabled: boolean)
 		refs.LevelPanel.Position = enabled and UDim2.fromOffset(16, 280) or UDim2.new(0, 16, 1, -16)
 	end
 	if refs.Menu then
-		refs.Menu.Position = enabled and UDim2.new(1, -16, 0, 246) or UDim2.new(1, -16, 0, 192)
 		refs.Menu.Visible = not enabled
 	end
 end

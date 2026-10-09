@@ -31,13 +31,31 @@ UIController.Gui = nil :: ScreenGui?
 UIController.Layers = {} :: { [string]: Frame }
 UIController.Changed = Signal.new() -- (openScreenName?) fired whenever a menu opens or closes
 
-local function computeScale(): number
+-- Screen area available to the ScreenGui (IgnoreGuiInset = false excludes the top bar).
+local function guiArea(): Vector2
 	local camera = workspace.CurrentCamera
 	local viewport = camera and camera.ViewportSize or Vector2.new(1280, 720)
-	local base = math.min(viewport.X / 1280, viewport.Y / 720)
+	local inset = GuiService:GetGuiInset()
+	return Vector2.new(viewport.X, math.max(viewport.Y - inset.Y, 1))
+end
+
+local function computeScale(): number
+	local area = guiArea()
+	local base = math.min(area.X / 1280, area.Y / 662)
 	local userScale = ClientState.Profile and ClientState.Profile.Settings.UIScale or 1
-	-- Phones get a floor so text stays readable; TVs are capped to avoid giant panels.
-	return math.clamp(base, 0.62, 1.35) * userScale
+	-- Phones get a floor so 14px text never renders below ~10pt; TVs are capped to avoid
+	-- giant panels. Short screens switch screens to their compact layouts instead.
+	return math.clamp(base, 0.7, 1.35) * userScale
+end
+
+-- Size of every layer in "design pixels" (what screens lay themselves out in).
+function UIController.DesignSize(): Vector2
+	return guiArea() / computeScale()
+end
+
+-- Phones in landscape and other short screens: screens drop optional decoration.
+function UIController.IsCompact(): boolean
+	return UIController.DesignSize().Y < 600
 end
 
 function UIController.Register(name: string, screen)
