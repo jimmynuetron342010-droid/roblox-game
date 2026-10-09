@@ -271,7 +271,7 @@ local function genericDefault(def)
 			return Color3.new(0, 0, 0)
 		elseif typeName == "CFrame" then
 			return roblox.CFrame.new()
-		elseif typeName == "Content" then
+		elseif typeName == "Content" or typeName == "ContentId" then
 			return ""
 		elseif typeName == "Font" then
 			return LEGACY_FONT
@@ -363,7 +363,7 @@ local function validate(self, prop: string, def, value: any)
 			typeError(self, prop, "number (not NaN)", value)
 		end
 	elseif category == "DataType" then
-		if typeName == "Content" then
+		if typeName == "Content" or typeName == "ContentId" then
 			if type(value) ~= "string" then
 				typeError(self, prop, "Content (string)", value)
 			end
@@ -475,7 +475,50 @@ function MockInstance.new(className: string, parent: any?, internal: boolean?)
 	return self
 end
 
+-- Derived spatial properties Roblox keeps in sync (Position follows CFrame, attachment world
+-- frames follow their parent part).
+local function derivedGet(self, key)
+	local class = rawget(self, "_class")
+	if key == "Position" and MockInstance.IsA(class, "BasePart") then
+		return (rawget(self, "_props").CFrame or roblox.CFrame.new()).Position, true
+	elseif key == "Orientation" and MockInstance.IsA(class, "BasePart") then
+		local rx, ry, rz = (rawget(self, "_props").CFrame or roblox.CFrame.new()):ToOrientation()
+		return roblox.Vector3.new(math.deg(rx), math.deg(ry), math.deg(rz)), true
+	elseif (key == "WorldCFrame" or key == "WorldPosition") and class == "Attachment" then
+		local parent = rawget(self, "_parent")
+		local base = parent and MockInstance.IsA(rawget(parent, "_class"), "BasePart") and parent.CFrame
+			or roblox.CFrame.new()
+		local world = base * (rawget(self, "_props").CFrame or roblox.CFrame.new())
+		return key == "WorldCFrame" and world or world.Position, true
+	elseif key == "Position" and class == "Attachment" then
+		return (rawget(self, "_props").CFrame or roblox.CFrame.new()).Position, true
+	end
+	return nil, false
+end
+
+local function derivedSet(self, key, value): boolean
+	local class = rawget(self, "_class")
+	if key == "Position" and (MockInstance.IsA(class, "BasePart") or class == "Attachment") then
+		if typeof(value) ~= "Vector3" then
+			error("Unable to assign property Position. Vector3 expected, got " .. MockInstance.TypeOf(value), 3)
+		end
+		local current = rawget(self, "_props").CFrame or roblox.CFrame.new()
+		rawget(self, "_props").CFrame = roblox.CFrame.new(value) * current.Rotation
+		return true
+	elseif key == "WorldCFrame" and class == "Attachment" then
+		local parent = rawget(self, "_parent")
+		local base = parent and parent.CFrame or roblox.CFrame.new()
+		rawget(self, "_props").CFrame = base:Inverse() * value
+		return true
+	end
+	return false
+end
+
 instanceMeta.__index = function(self, key)
+	local derived, handled = derivedGet(self, key)
+	if handled then
+		return derived
+	end
 	if key == "ClassName" then
 		return rawget(self, "_class")
 	elseif key == "Name" then
@@ -529,6 +572,9 @@ instanceMeta.__index = function(self, key)
 end
 
 instanceMeta.__newindex = function(self, key, value)
+	if derivedSet(self, key, value) then
+		return
+	end
 	if key == "Parent" then
 		setParent(self, value)
 		return
@@ -834,6 +880,21 @@ end
 -- Sound playback is a no-op headless.
 function methods.Play(_self) end
 function methods.Stop(_self) end
+function methods.Pause(_self) end
+function methods.Resume(_self) end
+
+-- ParticleEmitter bursts are counted so tests can assert effects actually emitted.
+MockInstance.Emitted = 0
+function methods.Emit(self, count: number?)
+	if not MockInstance.IsA(rawget(self, "_class"), "ParticleEmitter") then
+		error("Emit is not a valid member of " .. describe(self), 2)
+	end
+	if count ~= nil and (type(count) ~= "number" or count ~= count) then
+		error("ParticleEmitter:Emit expects a number", 2)
+	end
+	MockInstance.Emitted += count or 16
+end
+function methods.Clear(_self) end
 
 -- Lets a test override a method (e.g. Players:GetPlayers) on one instance.
 function MockInstance.Override(self, name: string, fn)

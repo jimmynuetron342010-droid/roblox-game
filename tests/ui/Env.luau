@@ -19,11 +19,13 @@ local MockInstance = require("./MockInstance")
 
 local Signal = MockInstance.Signal
 local Vector2 = roblox.Vector2
+local Vector3 = roblox.Vector3
 local Enum = roblox.Enum
 
 local Env = {}
 
 export type Options = {
+	Real3D: boolean?, -- run the real VFXController / VFXClient / AnimationController (VFX harness)
 	Viewport: Vector2?,
 	Inset: number?,
 	Touch: boolean?,
@@ -97,13 +99,28 @@ function Env.new(options: Options?)
 	MockInstance.Override(workspace, "GetServerTimeNow", function()
 		return serverClock + os.clock()
 	end)
-	MockInstance.Override(workspace, "Raycast", function()
+	-- Flat ground at Y = 0 for downward rays (impacts and slams look for a floor); others miss.
+	MockInstance.Override(workspace, "Raycast", function(_, origin, direction)
+		if direction.Y < 0 and origin.Y > 0 and origin.Y + direction.Y <= 0 then
+			local t = origin.Y / -direction.Y
+			return {
+				Position = origin + direction * t,
+				Normal = Vector3.new(0, 1, 0),
+				Material = Enum.Material.Concrete,
+				Instance = workspace,
+				Distance = (direction * t).Magnitude,
+			}
+		end
+		return nil
+	end)
+	MockInstance.Override(workspace, "Spherecast", function()
 		return nil
 	end)
 	self.Workspace = workspace
 
 	local renderStepped, heartbeat, stepped =
 		Signal.new("RenderStepped"), Signal.new("Heartbeat"), Signal.new("Stepped")
+	local boundSteps = {}
 	local runService = {
 		RenderStepped = renderStepped,
 		Heartbeat = heartbeat,
@@ -119,9 +136,18 @@ function Env.new(options: Options?)
 		IsStudio = function()
 			return true
 		end,
-		BindToRenderStep = function() end,
-		UnbindFromRenderStep = function() end,
+		UnbindFromRenderStep = function(_, name)
+			local connection = boundSteps[name]
+			if connection then
+				connection:Disconnect()
+				boundSteps[name] = nil
+			end
+		end,
 	}
+	-- BindToRenderStep callbacks run every rendered frame (VFXController drives effects this way).
+	function runService.BindToRenderStep(_, name: string, _priority: number, callback)
+		boundSteps[name] = renderStepped:Connect(callback)
+	end
 	-- Advances every frame-driven system (HUD refresh, turntables, cooldown sweeps).
 	function self.Step(frames: number?, dt: number?)
 		for _ = 1, frames or 1 do
@@ -216,6 +242,28 @@ function Env.new(options: Options?)
 			return { Args = table.pack(...) }
 		end,
 	}
+	-- Query parameter objects (plain data in the engine API).
+	local function params(defaults)
+		return {
+			new = function()
+				return table.clone(defaults)
+			end,
+		}
+	end
+	local RaycastParams = params({
+		FilterType = Enum.RaycastFilterType.Exclude,
+		FilterDescendantsInstances = {},
+		IgnoreWater = false,
+		CollisionGroup = "Default",
+		RespectCanCollide = false,
+	})
+	local OverlapParams = params({
+		FilterType = Enum.RaycastFilterType.Exclude,
+		FilterDescendantsInstances = {},
+		MaxParts = 0,
+		CollisionGroup = "Default",
+		RespectCanCollide = false,
+	})
 	-- `task` wrapper: errors inside threads spawned by game code are recorded, not just printed.
 	local function guard(fn, label)
 		if type(fn) ~= "function" then
@@ -254,6 +302,8 @@ function Env.new(options: Options?)
 			Instance = MockInstance.InstanceGlobal,
 			typeof = MockInstance.TypeOf,
 			TweenInfo = TweenInfo,
+			RaycastParams = RaycastParams,
+			OverlapParams = OverlapParams,
 			workspace = workspace,
 			task = guardedTask,
 		},
@@ -301,38 +351,40 @@ function Env.new(options: Options?)
 	end
 	self.Stub("ReplicatedStorage.Modules.Core.Net", { Event = remoteEvent, Function = remoteFunction })
 
-	-- 3D-only modules.
+	-- 3D-only modules (kept real for the VFX harness).
 	local vfxCalls = {}
 	self.VFXCalls = vfxCalls
-	self.Stub(
-		"ReplicatedStorage.Modules.VFXController",
-		setmetatable({}, {
-			__index = function(_, key)
-				return function(...)
-					table.insert(vfxCalls, { key, ... })
-				end
-			end,
-		})
-	)
-	-- Controllers that only drive 3D visuals: same public surface, no engine work.
-	local function noopController(signals: { string })
-		local stub = { Init = function() end, Start = function() end }
-		for _, name in signals do
-			stub[name] = Signal.new(name)
+	if not opts.Real3D then
+		self.Stub(
+			"ReplicatedStorage.Modules.VFXController",
+			setmetatable({}, {
+				__index = function(_, key)
+					return function(...)
+						table.insert(vfxCalls, { key, ... })
+					end
+				end,
+			})
+		)
+		-- Controllers that only drive 3D visuals: same public surface, no engine work.
+		local function noopController(signals: { string })
+			local stub = { Init = function() end, Start = function() end }
+			for _, name in signals do
+				stub[name] = Signal.new(name)
+			end
+			return setmetatable(stub, {
+				__index = function()
+					return function()
+						return nil
+					end
+				end,
+			})
 		end
-		return setmetatable(stub, {
-			__index = function()
-				return function()
-					return nil
-				end
-			end,
-		})
+		self.Stub(
+			"StarterPlayer.StarterPlayerScripts.Client.Controllers.VFXClient",
+			noopController({ "Knockback", "Rejected", "AbilityFailed", "Notice" })
+		)
+		self.Stub("StarterPlayer.StarterPlayerScripts.Client.Controllers.AnimationController", noopController({}))
 	end
-	self.Stub(
-		"StarterPlayer.StarterPlayerScripts.Client.Controllers.VFXClient",
-		noopController({ "Knockback", "Rejected", "AbilityFailed", "Notice" })
-	)
-	self.Stub("StarterPlayer.StarterPlayerScripts.Client.Controllers.AnimationController", noopController({}))
 
 	-- Viewport: real ViewportFrames, but the 3D content is described instead of built.
 	self.Stub("StarterPlayer.StarterPlayerScripts.Client.UI.Viewport", {

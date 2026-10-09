@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Headless UI walkthrough: boots the real client UI against a simulated server on several device
+# Headless client run: executes every VFX effect / ability visual / the animator on strict mock
+# Instances, then the UI walkthrough boots the real client UI against a simulated server on several device
 # profiles, plays through every screen, and fails on any runtime error, invalid Roblox property
 # access or failed expectation. If RENDER_DEPS (node_modules with playwright) and CHROMIUM_PATH are
 # set, it also renders every step to PNG and reports text overflow / off-screen elements.
@@ -12,6 +13,8 @@ if [[ ${#profiles[@]} -eq 0 ]]; then
 	profiles=(desktop laptop tablet phone)
 fi
 status=0
+# 3D systems first: all weapon effects, ability visuals and the animator on strict mocks.
+lune run tests/ui/run_vfx.luau || status=1
 for profile in "${profiles[@]}"; do
 	if ! lune run tests/ui/run_ui.luau "$profile" tests/renders/out/ui; then
 		status=1
