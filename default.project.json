@@ -81,6 +81,9 @@
       "$className": "ServerStorage",
       "RBX_ANIMSAVES": {
         "$path": "assets/RBX_ANIMSAVES"
+      },
+      "AnimationRigs": {
+        "$path": "assets/AnimationRigs"
       }
     },
     "StarterPlayer": {

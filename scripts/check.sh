@@ -25,9 +25,9 @@ echo "== selene"
 if [[ ! -f roblox.yml ]]; then
 	selene generate-roblox-std
 fi
-selene src tests || status=1
+selene src tests tools || status=1
 
 echo "== stylua --check"
-stylua --check src tests || status=1
+stylua --check src tests tools || status=1
 
 exit $status

@@ -132,6 +132,10 @@ return function(api)
 	kit:Reweld(tip, rootPart)
 	kit:Motor("BitSpin", handle, rootPart, CFrame.new(0, 0.1, start))
 
+	-- Trail points ride on the spinning bit, so drilling leaves a spiral streak.
+	local trailNear, trailFar = start - d.BitLength * 0.2, start - d.BitLength * 0.85
+	kit:Attachment("TrailA", rootPart, CFrame.new(radiusAt(trailNear), 0.1, trailNear))
+	kit:Attachment("TrailB", rootPart, CFrame.new(radiusAt(trailFar), 0.1, trailFar))
 	kit:Attachment("Impact", handle, CFrame.new(0, 0.1, start - d.BitLength))
 	kit:Attachment("DrillContact", handle, CFrame.new(0, 0.1, start - d.BitLength * 0.75))
 end

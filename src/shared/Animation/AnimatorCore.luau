@@ -125,6 +125,9 @@ function AnimatorCore.new(character: Model)
 	self.Chains = {}
 	self.DrillAngle = 0
 	self.Recoil = {}
+	-- When uploaded animation tracks drive the body (WeaponConfig.AnimationIds /
+	-- AnimationLibrary.UploadedIds), only the weapon's own moving parts stay procedural.
+	self.MuteBody = false
 	return self
 end
 
@@ -395,10 +398,12 @@ function AnimatorCore:Update(dt: number, ctx)
 
 	-- Write body joints.
 	local presence = self.Presence
-	for name, motor in self.Motors do
-		local value = pose[name]
-		if value then
-			motor.Transform = presence >= 0.999 and value or motor.Transform:Lerp(value, presence)
+	if not self.MuteBody then
+		for name, motor in self.Motors do
+			local value = pose[name]
+			if value then
+				motor.Transform = presence >= 0.999 and value or motor.Transform:Lerp(value, presence)
+			end
 		end
 	end
 
@@ -407,7 +412,9 @@ function AnimatorCore:Update(dt: number, ctx)
 	self.FloorY = ctx.FloorY or (rootCF.Y - (self.Root.Size.Y / 2 + (ctx.HipHeight or 2)))
 	local lowerWorld = RigMath.ChildWorld(rootCF, self.Motors.Root)
 	local torsoWorld = RigMath.ChildWorld(lowerWorld, self.Motors.Waist)
-	self:_solveWeapon(torsoWorld, targets, release, presence)
+	if not self.MuteBody then
+		self:_solveWeapon(torsoWorld, targets, release, presence)
+	end
 	self:_animateWeaponJoints(dt, torsoWorld, actionParams)
 end
 
@@ -448,7 +455,7 @@ function AnimatorCore:_solveWeapon(torsoWorld: CFrame, targets: { [string]: CFra
 			if not release[side] then
 				local arm = self:_armJoints(side)
 				if arm.Shoulder and arm.Elbow and arm.Wrist then
-					local targetWorld = torsoWorld * target
+					local targetWorld = RigMath.ReachableGrip(torsoWorld, arm, torsoWorld * target)
 					local solution =
 						RigMath.SolveArm(torsoWorld, arm, targetWorld, side == "Right" and poleRight or poleLeft)
 					applyArm(arm, solution, presence)

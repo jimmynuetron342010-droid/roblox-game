@@ -174,6 +174,9 @@ local function buildPistol(api, name: string, mount: string, trim: Color3, longB
 	kit:Motor("Slide", handle, slide, CFrame.new(0, 0.79, -0.32))
 
 	kit:Attachment("Muzzle", handle, CFrame.new(0, 0.6, z1 - 0.02))
+	-- Thin streak along the slide for gun-kata spins and quick draws.
+	kit:Attachment("TrailA", handle, CFrame.new(0, 0.79, -0.2))
+	kit:Attachment("TrailB", handle, CFrame.new(0, 0.62, z1 + 0.1))
 	kit:Attachment("Impact", handle, CFrame.new(0, 0.6, z1))
 end
 

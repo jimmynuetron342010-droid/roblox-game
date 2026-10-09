@@ -8,16 +8,24 @@
 	  back smoothly when holstered.
 	* Distance LOD: full rate within 70 studs, 20 Hz to 180 studs, frozen beyond.
 	* Weapon trails are switched on exactly during each action's trail window.
-	* If you upload real animations (WeaponConfig.AnimationIds), you can play them through the
-	  Animator as usual; the procedural layer only drives a character while it has a drawn weapon.
+	* Uploaded animations replace the procedural clips automatically:
+	    - WeaponConfig.Weapons[id].AnimationIds = { Idle, Walk, Run } (all three set) → those tracks
+	      play through the Humanoid's Animator, blended by speed, while the weapon is drawn;
+	    - AnimationLibrary.UploadedIds[actionName] → that attack/gesture plays as a track.
+	  While tracks drive the body, AnimatorCore keeps only the weapon's own moving parts (chains,
+	  drill bit, spider legs) procedural. Unset ids stay "rbxassetid://0" placeholders and the
+	  procedural animation is used. tools/export_animations.luau bakes every procedural clip into
+	  an editable KeyframeSequence (ServerStorage.RBX_ANIMSAVES) to start from.
 ]]
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local Modules = game:GetService("ReplicatedStorage"):WaitForChild("Modules")
+local AnimationLibrary = require(Modules.Animation.AnimationLibrary)
 local AnimatorCore = require(Modules.Animation.AnimatorCore)
 local VFXController = require(Modules.VFXController)
+local WeaponConfig = require(Modules.WeaponConfig)
 
 local AnimationController = {}
 
@@ -30,6 +38,8 @@ type Entry = {
 	Accumulator: number,
 	Trails: { Trail },
 	Connections: { RBXScriptConnection },
+	Loco: { [string]: AnimationTrack }?, -- uploaded Idle/Walk/Run tracks for the current weapon
+	ActionTrack: AnimationTrack?, -- uploaded attack/gesture currently playing
 }
 
 local entries: { [Model]: Entry } = {}
@@ -48,6 +58,97 @@ local function collectTrails(weapon: Model?): { Trail }
 	return trails
 end
 
+-- ── Uploaded clips ────────────────────────────────────────────────────────────
+local animationObjects: { [string]: Animation } = {}
+
+local function uploadedId(id: any): string?
+	if type(id) == "string" and id ~= "" and not WeaponConfig.IsPlaceholder(id) then
+		return id
+	end
+	return nil
+end
+
+local function loadTrack(entry: Entry, id: string, priority: Enum.AnimationPriority, looped: boolean): AnimationTrack?
+	local animator = entry.Humanoid:FindFirstChildOfClass("Animator")
+	if not animator then
+		return nil
+	end
+	local animation = animationObjects[id]
+	if not animation then
+		animation = Instance.new("Animation")
+		animation.AnimationId = id
+		animationObjects[id] = animation
+	end
+	local ok, track = pcall(function()
+		return animator:LoadAnimation(animation)
+	end)
+	if not ok or not track then
+		warn("[AnimationController] could not load animation " .. id)
+		return nil
+	end
+	track.Priority = priority
+	track.Looped = looped
+	return track
+end
+
+local function stopLoco(entry: Entry)
+	for _, track in (entry.Loco or {}) :: { [string]: AnimationTrack } do
+		track:Stop(0.2)
+	end
+	entry.Loco = nil
+end
+
+-- Loads the weapon's uploaded locomotion set (only when Idle, Walk and Run are all provided).
+local function refreshLoco(entry: Entry)
+	stopLoco(entry)
+	local character = entry.Character
+	local config = entry.Weapon
+		and WeaponConfig.Resolve(character:GetAttribute("EquippedWeapon") or "", character:GetAttribute("WeaponForm"))
+	local ids = config and config.AnimationIds
+	if not ids then
+		return
+	end
+	local idle, walk, run = uploadedId(ids.Idle), uploadedId(ids.Walk), uploadedId(ids.Run)
+	if not (idle and walk and run) then
+		return
+	end
+	local loco = {}
+	for name, id in { Idle = idle, Walk = walk, Run = run } do
+		local track = loadTrack(entry, id, Enum.AnimationPriority.Action, true)
+		if not track then
+			return
+		end
+		loco[name] = track
+	end
+	entry.Loco = loco
+end
+
+local function updateLoco(entry: Entry, speed: number, isPresent: boolean)
+	local loco = entry.Loco
+	if not loco then
+		return
+	end
+	local walk = math.clamp(speed / 10, 0, 1)
+	local run = math.clamp((speed - 16) / 6, 0, 1)
+	local weights = {
+		Idle = isPresent and (1 - walk) or 0,
+		Walk = isPresent and walk * (1 - run) or 0,
+		Run = isPresent and walk * run or 0,
+	}
+	for name, track in loco do
+		local weight = weights[name]
+		if weight > 0.01 then
+			if not track.IsPlaying then
+				track:Play(0.2, weight, 1)
+			else
+				track:AdjustWeight(weight, 0.15)
+			end
+		elseif track.IsPlaying then
+			track:Stop(0.2)
+		end
+	end
+end
+
 local function refreshWeapon(entry: Entry)
 	local weapon = entry.Character:FindFirstChild("EquippedWeapon")
 	if weapon and not weapon:IsA("Model") then
@@ -63,6 +164,7 @@ local function refreshWeapon(entry: Entry)
 	entry.Weapon = weapon :: Model?
 	entry.Animator:SetWeapon(weapon, entry.Character:GetAttribute("HoldStyle"))
 	entry.Trails = collectTrails(weapon :: Model?)
+	refreshLoco(entry)
 end
 
 local function track(character: Model)
@@ -133,6 +235,10 @@ function AnimationController.Untrack(character: Model)
 	for _, trail in entry.Trails do
 		trail.Enabled = false
 	end
+	stopLoco(entry)
+	if entry.ActionTrack then
+		entry.ActionTrack:Stop(0)
+	end
 	entries[character] = nil
 end
 
@@ -145,7 +251,24 @@ function AnimationController.PlayAction(character: Model?, actionName: string?, 
 	local entry = character and entries[character]
 	if entry and actionName then
 		refreshWeapon(entry)
+		-- Timing (combo windows, trails) always comes from the procedural action definition.
 		entry.Animator:PlayAction(actionName, duration)
+		if entry.ActionTrack then
+			entry.ActionTrack:Stop(0.05)
+			entry.ActionTrack = nil
+		end
+		local id = uploadedId(AnimationLibrary.UploadedIds[actionName])
+		if id then
+			local track = loadTrack(entry, id, Enum.AnimationPriority.Action2, false)
+			if track then
+				track:Play(0.05, 1, 1)
+				-- Stretch the clip to the attack's gameplay duration once its length is known.
+				if track.Length > 0 then
+					track:AdjustSpeed(track.Length / math.max(duration, 0.05))
+				end
+				entry.ActionTrack = track
+			end
+		end
 	end
 end
 
@@ -153,6 +276,10 @@ function AnimationController.StopAction(character: Model?)
 	local entry = character and entries[character]
 	if entry then
 		entry.Animator:StopAction()
+		if entry.ActionTrack then
+			entry.ActionTrack:Stop(0.1)
+			entry.ActionTrack = nil
+		end
 		for _, trail in entry.Trails do
 			trail.Enabled = false
 		end
@@ -175,10 +302,19 @@ end
 local function updateEntry(entry: Entry, dt: number)
 	local velocity = entry.Root.AssemblyLinearVelocity
 	local speed = Vector3.new(velocity.X, 0, velocity.Z).Magnitude
+	local isPresent = present(entry)
+	updateLoco(entry, speed, isPresent)
+	if entry.ActionTrack and not entry.ActionTrack.IsPlaying then
+		entry.ActionTrack = nil
+	end
+	-- Uploaded tracks own the body while they play; a procedural-only action still overrides
+	-- uploaded locomotion for its duration.
+	local actionUploaded = entry.ActionTrack ~= nil
+	entry.Animator.MuteBody = actionUploaded or (entry.Loco ~= nil and entry.Animator.Action == nil)
 	entry.Animator:Update(dt, {
 		Speed = speed,
 		Grounded = entry.Humanoid.FloorMaterial ~= Enum.Material.Air,
-		Present = present(entry),
+		Present = isPresent,
 		RootCFrame = entry.Root.CFrame,
 		HipHeight = entry.Humanoid.HipHeight,
 	})

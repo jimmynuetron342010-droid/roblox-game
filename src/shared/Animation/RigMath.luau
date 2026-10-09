@@ -109,6 +109,31 @@ function RigMath.SolveArm(torsoWorld: CFrame, arm: ArmJoints, gripTarget: CFrame
 	}
 end
 
+-- Keeps a hand-held weapon *in the hand*: if the requested grip frame would need a longer (or
+-- shorter) arm than the rig has, the whole weapon frame is slid along the shoulder→wrist line
+-- until it is reachable. Orientation is preserved, so swings keep their shape and only tighten
+-- slightly, instead of the weapon floating away from the fist at full extension.
+function RigMath.ReachableGrip(torsoWorld: CFrame, arm: ArmJoints, gripTarget: CFrame, margin: number?): CFrame
+	local shoulder, elbow, wrist = arm.Shoulder, arm.Elbow, arm.Wrist
+	local wristTarget = (gripTarget * arm.Grip:Inverse() * wrist.C1).Position
+	local a = (shoulder.C1:Inverse() * elbow.C0).Position.Magnitude
+	local b = (elbow.C1:Inverse() * wrist.C0).Position.Magnitude
+	local s = (torsoWorld * shoulder.C0).Position
+	local offset = wristTarget - s
+	local distance = offset.Magnitude
+	if distance < EPS then
+		return gripTarget
+	end
+	local maxReach = (a + b) * (margin or 0.995)
+	local minReach = math.abs(a - b) + 0.05
+	if distance > maxReach then
+		return gripTarget + offset / distance * (maxReach - distance)
+	elseif distance < minReach then
+		return gripTarget + offset / distance * (minReach - distance)
+	end
+	return gripTarget
+end
+
 -- Euler-degree helper used by animation data: { rx, ry, rz } -> rotation CFrame.
 function RigMath.Euler(values: { number }?): CFrame
 	if not values then
