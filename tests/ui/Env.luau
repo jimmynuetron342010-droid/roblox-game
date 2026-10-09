@@ -149,11 +149,17 @@ function Env.new(options: Options?)
 		boundSteps[name] = renderStepped:Connect(callback)
 	end
 	-- Advances every frame-driven system (HUD refresh, turntables, cooldown sweeps).
+	-- Frame events carry the real elapsed time (unless a fixed dt is requested), so frame-driven
+	-- and clock-driven systems stay in step like in the engine.
+	local lastStep = nil
 	function self.Step(frames: number?, dt: number?)
 		for _ = 1, frames or 1 do
-			renderStepped:Fire(dt or 1 / 60)
-			stepped:Fire(os.clock(), dt or 1 / 60)
-			heartbeat:Fire(dt or 1 / 60)
+			local now = os.clock()
+			local delta = dt or math.clamp(now - (lastStep or now - 1 / 60), 1 / 240, 0.1)
+			lastStep = now
+			renderStepped:Fire(delta)
+			stepped:Fire(now, delta)
+			heartbeat:Fire(delta)
 			task.wait()
 		end
 	end

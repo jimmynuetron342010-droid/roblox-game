@@ -247,6 +247,24 @@ local DEFAULTS = {
 	UIAspectRatioConstraint = { AspectRatio = 1 },
 	ScreenGui = { Enabled = true, ResetOnSpawn = true, IgnoreGuiInset = false, DisplayOrder = 0 },
 	Sound = { Volume = 0.5, PlaybackSpeed = 1, SoundId = "" },
+	Humanoid = {
+		Health = 100,
+		MaxHealth = 100,
+		WalkSpeed = 16,
+		JumpPower = 50,
+		JumpHeight = 7.2,
+		HipHeight = 2,
+		UseJumpPower = false,
+	},
+	BasePart = {
+		Size = roblox.Vector3.new(4, 1, 2),
+		Transparency = 0,
+		Anchored = false,
+		CanCollide = true,
+		CanQuery = true,
+		CanTouch = true,
+		Color = Color3.fromRGB(163, 162, 165),
+	},
 }
 
 local function genericDefault(def)
@@ -601,6 +619,18 @@ instanceMeta.__newindex = function(self, key, value)
 	if props[key] == value and value ~= nil then
 		return
 	end
+	local class = rawget(self, "_class")
+	if class == "Humanoid" and key == "Health" then
+		local before = props.Health or 100
+		value = math.clamp(value, 0, props.MaxHealth or 100)
+		props.Health = value
+		propertyChanged(self, key)
+		fireIf(self, "HealthChanged", value)
+		if before > 0 and value <= 0 then
+			fireIf(self, "Died")
+		end
+		return
+	end
 	props[key] = value
 	propertyChanged(self, key)
 end
@@ -868,13 +898,104 @@ function methods.HasTag(_self, _tag)
 	return false
 end
 
--- Models in UI previews are positioned with pivots; the harness only tracks them.
+-- Pivots: parts pivot on their CFrame; models on PrimaryPart (or the first part), moving every
+-- descendant part rigidly like Model:PivotTo does.
+local function firstPart(model)
+	local primary = rawget(model, "_props").PrimaryPart
+	if primary then
+		return primary
+	end
+	for _, d in methods.GetDescendants(model) do
+		if MockInstance.IsA(rawget(d, "_class"), "BasePart") then
+			return d
+		end
+	end
+	return nil
+end
+
 function methods.GetPivot(self)
-	return rawget(self, "_pivot") or roblox.CFrame.new()
+	if MockInstance.IsA(rawget(self, "_class"), "BasePart") then
+		return self.CFrame
+	end
+	-- Roblox: PrimaryPart.CFrame (× PivotOffset) when set, otherwise the model's WorldPivot.
+	local primary = rawget(self, "_props").PrimaryPart
+	if primary then
+		return primary.CFrame
+	end
+	local part = firstPart(self)
+	return rawget(self, "_pivot") or (part and part.CFrame) or roblox.CFrame.new()
 end
 
 function methods.PivotTo(self, cframe)
+	if MockInstance.IsA(rawget(self, "_class"), "BasePart") then
+		self.CFrame = cframe
+		return
+	end
+	local delta = cframe * methods.GetPivot(self):Inverse()
+	for _, d in methods.GetDescendants(self) do
+		if MockInstance.IsA(rawget(d, "_class"), "BasePart") then
+			rawget(d, "_props").CFrame = delta * (rawget(d, "_props").CFrame or roblox.CFrame.new())
+		end
+	end
 	rawset(self, "_pivot", cframe)
+end
+
+function methods.GetBoundingBox(self)
+	local minV, maxV
+	for _, d in methods.GetDescendants(self) do
+		if MockInstance.IsA(rawget(d, "_class"), "BasePart") then
+			local p, s = d.CFrame.Position, d.Size / 2
+			local lo, hi = p - s, p + s
+			minV = minV and roblox.Vector3.new(math.min(minV.X, lo.X), math.min(minV.Y, lo.Y), math.min(minV.Z, lo.Z))
+				or lo
+			maxV = maxV and roblox.Vector3.new(math.max(maxV.X, hi.X), math.max(maxV.Y, hi.Y), math.max(maxV.Z, hi.Z))
+				or hi
+		end
+	end
+	if not minV then
+		return roblox.CFrame.new(), roblox.Vector3.new(0, 0, 0)
+	end
+	return roblox.CFrame.new((minV + maxV) / 2), maxV - minV
+end
+
+function methods.GetExtentsSize(self)
+	local _, size = methods.GetBoundingBox(self)
+	return size
+end
+
+-- Physics ownership / impulses have no effect headless.
+function methods.SetNetworkOwner(_self, _player) end
+function methods.GetNetworkOwner(_self)
+	return nil
+end
+function methods.CanSetNetworkOwnership(_self)
+	return true
+end
+function methods.ApplyImpulse(_self, _impulse) end
+function methods.GetMass(self)
+	local s = self.Size
+	return s.X * s.Y * s.Z * 0.7
+end
+
+-- Humanoids: MoveTo records the goal (the harness can walk it), TakeDamage respects
+-- ForceFields like the engine does not here (none exist headless).
+function methods.MoveTo(self, position, _part)
+	if rawget(self, "_class") ~= "Humanoid" then
+		error("MoveTo is not a valid member of " .. describe(self), 2)
+	end
+	rawset(self, "_moveTarget", position)
+end
+function methods.TakeDamage(self, amount: number)
+	self.Health = math.max(0, self.Health - amount)
+end
+function methods.ChangeState(self, state)
+	rawset(self, "_state", state)
+end
+function methods.GetState(self)
+	return rawget(self, "_state") or roblox.Enum.HumanoidStateType.Running
+end
+function methods.Kick(self, message: string?)
+	rawset(self, "_kicked", message or "")
 end
 
 -- Sound playback is a no-op headless.

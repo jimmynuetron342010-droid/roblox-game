@@ -109,6 +109,42 @@ function Polyfills.HttpService()
 	}
 end
 
+-- Lune 0.10.5's CFrame.lookAt (and the two-argument CFrame.new(pos, target)) flip the Z component
+-- of the look direction: lookAt(origin, origin + Z) faces -Z. fromMatrix / Angles / components are
+-- correct, so rebuild Roblox's lookAt on top of fromMatrix for everything the harness runs.
+local function lookAt(at, target, up)
+	local look = target - at
+	if look.Magnitude < 1e-9 then
+		return roblox.CFrame.new(at)
+	end
+	local back = -look.Unit
+	local upHint = up or roblox.Vector3.new(0, 1, 0)
+	local right = upHint:Cross(back)
+	if right.Magnitude < 1e-6 then
+		-- Looking straight along the up hint: pick any perpendicular right vector.
+		right = roblox.Vector3.new(0, 0, 1):Cross(back)
+		if right.Magnitude < 1e-6 then
+			right = roblox.Vector3.new(1, 0, 0)
+		end
+	end
+	right = right.Unit
+	local upAxis = back:Cross(right).Unit
+	return roblox.CFrame.fromMatrix(at, right, upAxis, back)
+end
+Polyfills.LookAt = lookAt
+
+Polyfills.CFrame = setmetatable({
+	lookAt = lookAt,
+	new = function(...)
+		local count = select("#", ...)
+		local a, b = ...
+		if count == 2 and typeof(a) == "Vector3" and typeof(b) == "Vector3" then
+			return lookAt(a, b)
+		end
+		return roblox.CFrame.new(...)
+	end,
+}, { __index = roblox.CFrame })
+
 function Polyfills.Globals(opts)
 	opts = opts or {}
 	local g = {}
@@ -117,6 +153,7 @@ function Polyfills.Globals(opts)
 			g[key] = value
 		end
 	end
+	g.CFrame = Polyfills.CFrame
 	g.task = task
 	g.Random = Random
 	g.warn = function(...)
