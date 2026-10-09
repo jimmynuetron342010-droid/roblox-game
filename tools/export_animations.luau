@@ -3,7 +3,7 @@
 	Bakes the procedural weapon animations (AnimatorCore + AnimationLibrary) into Roblox
 	KeyframeSequences, so every clip can be opened, edited and published in Roblox Studio:
 
-	  assets/RBX_ANIMSAVES/<Weapon>/<Clip>.rbxm   → ServerStorage.RBX_ANIMSAVES.<Weapon>.<Clip>
+	  assets/RBX_ANIMSAVES/<Weapon>Rig/<Clip>.rbxm → ServerStorage.RBX_ANIMSAVES.<Weapon>Rig.<Clip>
 	  assets/AnimationRigs/<Weapon>Rig.rbxm       → ServerStorage.AnimationRigs (R15 rig + weapon)
 
 	Clips per weapon (and per Tsubaki form): Idle, Walk, Run (looping) and every attack in its
@@ -221,7 +221,8 @@ for _, id in WeaponConfig.Order do
 					table.insert(motors, motor)
 				end
 			end
-			local folder = "assets/RBX_ANIMSAVES/" .. name
+			-- Folder named exactly like the rig: the Animation Editor lists saves per rig name.
+			local folder = "assets/RBX_ANIMSAVES/" .. name .. "Rig"
 			if fs.isDir(folder) then
 				fs.removeDir(folder)
 			end

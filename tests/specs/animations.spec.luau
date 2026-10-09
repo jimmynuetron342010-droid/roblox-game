@@ -65,7 +65,7 @@ describe("Baked weapon animations (ServerStorage.RBX_ANIMSAVES)", function()
 			local name = form and (id .. "_" .. form) or id
 			it(name .. ": Idle/Walk/Run loops and every moveset attack are exported and valid", function()
 				local config = WeaponConfig.Resolve(id, form or nil)
-				local folder = ROOT .. "/" .. name
+				local folder = ROOT .. "/" .. name .. "Rig"
 				expect(fs.isDir(folder)).toBe(true)
 				expect(fs.isFile("assets/AnimationRigs/" .. name .. "Rig.rbxm")).toBe(true)
 
