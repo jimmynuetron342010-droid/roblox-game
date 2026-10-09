@@ -1,0 +1,6 @@
+{
+	"languageMode": "nonstrict",
+	"lint": { "*": true, "LocalShadow": false, "SameLineStatement": false, "MultiLineStatement": false, "ImportUnused": true },
+	"lintErrors": false,
+	"typeErrors": true
+}

@@ -1,0 +1,148 @@
+{
+  "name": "SoulEaterRPG",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Modules": {
+        "$path": "src/shared"
+      },
+      "Remotes": {
+        "$className": "Folder",
+        "GetProfile": {
+          "$className": "RemoteFunction"
+        },
+        "CreateStudent": {
+          "$className": "RemoteFunction"
+        },
+        "RollRace": {
+          "$className": "RemoteFunction"
+        },
+        "ResolveRaceRoll": {
+          "$className": "RemoteFunction"
+        },
+        "EquipWeapon": {
+          "$className": "RemoteFunction"
+        },
+        "SetLoadout": {
+          "$className": "RemoteFunction"
+        },
+        "UpdateSettings": {
+          "$className": "RemoteFunction"
+        },
+        "PartnerAction": {
+          "$className": "RemoteFunction"
+        },
+        "ProfileChanged": {
+          "$className": "RemoteEvent"
+        },
+        "Notify": {
+          "$className": "RemoteEvent"
+        },
+        "AttackRequest": {
+          "$className": "RemoteEvent"
+        },
+        "AbilityRequest": {
+          "$className": "RemoteEvent"
+        },
+        "MovementRequest": {
+          "$className": "RemoteEvent"
+        },
+        "CombatFX": {
+          "$className": "RemoteEvent"
+        },
+        "DamageFeedback": {
+          "$className": "RemoteEvent"
+        },
+        "StatsChanged": {
+          "$className": "RemoteEvent"
+        }
+      },
+      "WeaponAssets": {
+        "$className": "Folder",
+        "$attributes": {
+          "Note": "Optional: drop a MeshPart named <WeaponId>_<ComponentName> here to override a procedural component."
+        }
+      },
+      "VFXAssets": {
+        "$className": "Folder",
+        "$attributes": {
+          "Note": "Optional: put custom ParticleEmitter/Trail templates here; VFXController falls back to built-in textures."
+        }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "ServerStorage": {
+      "$className": "ServerStorage",
+      "RBX_ANIMSAVES": {
+        "$path": "assets/RBX_ANIMSAVES"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "$properties": {
+        "GameSettingsAvatar": "R15",
+        "CameraMaxZoomDistance": 40,
+        "CharacterWalkSpeed": 16
+      },
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "Client": {
+          "$path": "src/client"
+        }
+      },
+      "StarterCharacterScripts": {
+        "$className": "StarterCharacterScripts",
+        "$path": "src/character"
+      }
+    },
+    "StarterGui": {
+      "$className": "StarterGui",
+      "$properties": {
+        "ResetPlayerGuiOnSpawn": false
+      }
+    },
+    "Players": {
+      "$className": "Players",
+      "$properties": {
+        "CharacterAutoLoads": false,
+        "RespawnTime": 4
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$properties": {
+        "ClockTime": 0.2,
+        "Brightness": 1.6,
+        "Ambient": [
+          0.16,
+          0.12,
+          0.22
+        ],
+        "OutdoorAmbient": [
+          0.32,
+          0.26,
+          0.42
+        ],
+        "EnvironmentDiffuseScale": 0.6,
+        "EnvironmentSpecularScale": 0.8,
+        "GlobalShadows": true,
+        "Technology": "Future"
+      }
+    },
+    "SoundService": {
+      "$className": "SoundService"
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": {
+        "Gravity": 196.2
+      }
+    }
+  }
+}
