@@ -1,0 +1,141 @@
+//@version=6
+// Check me out for motivewave delta candles @uxoriaa
+indicator("C", shorttitle="Crossed", overlay=true)
+
+// --- Inputs ---
+group_calc = "Calculation"
+deltaMethod = input.string("Intrabar", "Delta Method", options=["Intrabar", "Close Location", "Candle Direction"], group=group_calc,
+     tooltip="Intrabar: adds up buy/sell volume from lower-timeframe bars (most accurate). Close Location: splits each bar's volume by where it closed in its range. Candle Direction: the original method, all of a bar's volume goes to one side.")
+intrabarTf = input.timeframe("1", "Intrabar Timeframe", group=group_calc,
+     tooltip="Used by the Intrabar method. Must be lower than the chart timeframe to add accuracy. On a 1-minute chart use seconds (e.g. 1S, needs a Premium plan) or it behaves like Candle Direction.")
+smoothing_length = input.int(15, "Lookback Smoothing (Bars)", minval=1, group=group_calc)
+gradientScale = input.float(0.8, "Gradient Scale (x AvgΔ)", minval=0.1, step=0.1, group=group_calc)
+
+group_colors = "Colors"
+c_strongBuy = input.color(color.rgb(0, 120, 255), "Strong Buy Color", group=group_colors)
+c_strongSell = input.color(color.rgb(255, 0, 150), "Strong Sell Color", group=group_colors)
+c_neutral = input.color(color.gray, "Neutral Color", group=group_colors)
+
+group_style = "Style (Outline & Wick)"
+useCustom = input.bool(false, "Use Custom Brightness?", group=group_style)
+outlinePct = input.int(20, "Outline Brightness %", minval=-100, maxval=100, group=group_style)
+wickPct = input.int(20, "Wick Brightness %", minval=-100, maxval=100, group=group_style)
+
+group_signals = "Signals & Alerts"
+strongLevel = input.float(0.8, "Strong Level (Ratio)", minval=0.1, maxval=1.0, step=0.05, group=group_signals,
+     tooltip="Strong Buy fires when the pressure ratio reaches +this level, Strong Sell at -this level. 1.0 = only fully saturated candles.")
+resetLevel = input.float(0.3, "Re-arm Level (Ratio)", minval=0.0, maxval=1.0, step=0.05, group=group_signals,
+     tooltip="After a Strong Buy, another can't fire until the ratio drops below +this level (mirror for sells). Stops repeat alerts during one push and chop around the threshold.")
+confirmOnClose = input.bool(true, "Signal Only on Bar Close", group=group_signals,
+     tooltip="Stops alerts on a candle that turns strong mid-bar and fades before it closes.")
+useSession = input.bool(false, "Limit Signals to Session", group=group_signals)
+signalSession = input.session("0930-1600", "Signal Session (New York Time)", group=group_signals)
+showMarkers = input.bool(true, "Show Signal Markers", group=group_signals)
+
+// --- Helper Functions ---
+// Positive pct blends a channel toward white, negative toward black, so the hue doesn't shift
+f_shift_channel(float ch, float p) =>
+    p >= 0 ? ch + (255 - ch) * p : ch * (1 + p)
+
+f_adjust_brightness(color color_in, int pct) =>
+    float p = pct / 100.0
+    color.rgb(f_shift_channel(color.r(color_in), p), f_shift_channel(color.g(color_in), p), f_shift_channel(color.b(color_in), p), color.t(color_in))
+
+// All of a bar's volume goes to the candle's side; dojis fall back to the tick rule (close vs prior close)
+f_direction_delta() =>
+    float v = nz(volume)
+    close > open ? v : close < open ? -v : close > close[1] ? v : close < close[1] ? -v : 0.0
+
+// Splits a bar's volume by where it closed in its range: +volume at the high, -volume at the low
+f_close_location_delta() =>
+    float v = nz(volume)
+    float rng = high - low
+    rng > 0 ? v * (2 * close - high - low) / rng : 0.0
+
+// --- Calculations ---
+// 1. Estimate Delta (buy volume - sell volume)
+// Never request a timeframe above the chart's (runtime error); the chart's own timeframe is the safe fallback
+string ltf = deltaMethod == "Intrabar" and timeframe.in_seconds(intrabarTf) < timeframe.in_seconds() ? intrabarTf : timeframe.period
+array<float> intrabarDeltas = request.security_lower_tf(syminfo.tickerid, ltf, f_direction_delta())
+float directionDelta = f_direction_delta()
+float locationDelta = f_close_location_delta()
+// Lower-timeframe history is shorter than chart history, so older bars fall back to Close Location
+float rawDelta = switch deltaMethod
+    "Candle Direction" => directionDelta
+    "Close Location" => locationDelta
+    => array.size(intrabarDeltas) > 0 ? array.sum(intrabarDeltas) : locationDelta
+
+// 2. Weighted Smoothing
+float smoothedDelta = ta.wma(rawDelta, smoothing_length)
+
+// 3. Normalization Baseline
+float avgAbsDelta = ta.sma(math.abs(rawDelta), smoothing_length)
+
+// 4. Calculate Gradient Ratio, clamped to -1.0 .. 1.0
+// No volume (or not enough history yet) leaves the baseline at 0/na: read that as neutral instead of dividing by it
+float normalizationFactor = avgAbsDelta * gradientScale
+float ratio = normalizationFactor > 0 ? math.max(-1.0, math.min(1.0, smoothedDelta / normalizationFactor)) : 0.0
+
+// --- Color Logic ---
+// Base Body Color
+color bodyColor = ratio > 0 ?
+     color.from_gradient(ratio, 0, 1, c_neutral, c_strongBuy) :
+     color.from_gradient(ratio, -1, 0, c_strongSell, c_neutral)
+
+// Derived Outline & Wick Colors
+color colorOutline = useCustom ? f_adjust_brightness(bodyColor, outlinePct) : bodyColor
+color colorWick = useCustom ? f_adjust_brightness(bodyColor, wickPct) : bodyColor
+
+// --- Signals ---
+// Each side fires once when the ratio reaches the strong level, then re-arms after pressure fades below the re-arm level
+bool sessionOpen = not na(time(timeframe.period, signalSession, "America/New_York"))
+bool inSession = not useSession or sessionOpen
+bool canEvaluate = not confirmOnClose or barstate.isconfirmed
+float rearmLevel = math.min(resetLevel, strongLevel)
+
+var bool buyArmed = true
+var bool sellArmed = true
+bool strongBuy = false
+bool strongSell = false
+if not inSession
+    // The first strong bar of the next session can fire
+    buyArmed := true
+    sellArmed := true
+else if canEvaluate
+    if ratio < rearmLevel
+        buyArmed := true
+    if ratio > -rearmLevel
+        sellArmed := true
+    if buyArmed and ratio >= strongLevel
+        strongBuy := true
+        buyArmed := false
+    if sellArmed and ratio <= -strongLevel
+        strongSell := true
+        sellArmed := false
+
+// --- Plotting ---
+// We use plotcandle to draw the specialized colors
+// Note: Hide original chart candles for best results
+plotcandle(open, high, low, close,
+     title="Heatmap Candles",
+     color=bodyColor,
+     wickcolor=colorWick,
+     bordercolor=colorOutline)
+
+plotshape(showMarkers and strongBuy, title="Strong Buy", style=shape.triangleup, location=location.belowbar, color=c_strongBuy, size=size.tiny)
+plotshape(showMarkers and strongSell, title="Strong Sell", style=shape.triangledown, location=location.abovebar, color=c_strongSell, size=size.tiny)
+
+// Shown in the Data Window and usable in alert messages; not drawn on the chart
+plot(ratio, title="Pressure Ratio", display=display.data_window)
+plot(rawDelta, title="Delta (Est.)", format=format.volume, display=display.data_window)
+
+// --- Alerts ---
+// Separate alerts: pick "Strong Buy" or "Strong Sell" as the condition
+alertcondition(strongBuy, title="Strong Buy", message='{{ticker}} {{interval}}: Strong Buy at {{close}} (ratio {{plot("Pressure Ratio")}})')
+alertcondition(strongSell, title="Strong Sell", message='{{ticker}} {{interval}}: Strong Sell at {{close}} (ratio {{plot("Pressure Ratio")}})')
+
+// One alert for both sides: pick "Any alert() function call" as the condition
+if strongBuy
+    alert(syminfo.ticker + " " + timeframe.period + ": STRONG BUY at " + str.tostring(close, format.mintick) + " (ratio " + str.tostring(ratio, "0.00") + ")", alert.freq_once_per_bar)
+if strongSell
+    alert(syminfo.ticker + " " + timeframe.period + ": STRONG SELL at " + str.tostring(close, format.mintick) + " (ratio " + str.tostring(ratio, "0.00") + ")", alert.freq_once_per_bar)
